@@ -1,0 +1,21 @@
+{
+	"LocalIP"                : "127.0.0.1:19000",
+	"TransportProtocols"     : "tcp",
+	"Listen"                 : "127.0.0.1:19000",
+	"LogFile"                : "msg_server.log",
+	"ScanDeadSessionTimeout" : 30,
+	"Expire"                 : 60,
+	
+	"SessionManagerServerList" : [
+		"127.0.0.1:18000"
+	],
+	
+	"Redis" : { 
+		"Addr" : "127.0.0.1", 
+		"Port" : ":6379",
+		"ConnectTimeout" : 2000,
+		"ReadTimeout" : 1000,
+		"WriteTimeout" : 1000
+	}
+	
+}

@@ -1,0 +1,18 @@
+{
+	"TransportProtocols" : "tcp",
+	"Listen"             : "127.0.0.1:18000",
+	"LogFile"            : "manager.log",
+	"UUID"               : "18000",
+	"MsgServerList"      : [
+		"127.0.0.1:19000",
+		"127.0.0.1:19001"
+	],
+	
+	"Redis"              : { 
+			"Addr" : "127.0.0.1", 
+			"Port" : ":6379",
+			"ConnectTimeout" : 2000,
+			"ReadTimeout" : 1000,
+			"WriteTimeout" : 1000
+	}
+}
