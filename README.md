@@ -16,8 +16,9 @@ It is not usable yet and still under early development.
 
 Todo
 ======
-- [ ] support p2p communication
+- [x] support p2p communication
 - [x] support group communication
+- [ ] support message encryption
 
 
 
