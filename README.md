@@ -19,6 +19,9 @@ Todo
 - [x] support p2p communication
 - [x] support group communication
 - [ ] support message encryption
+- [ ] support file transfer
+- [ ] support audio
+- [ ] support video
 
 
 
