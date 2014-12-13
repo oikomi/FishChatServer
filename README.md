@@ -17,3 +17,4 @@ It is not usable yet and still under early development.
 
 技术细节
 ======
+FishChatServer完全采用Golang开发(https://golang.org/)
