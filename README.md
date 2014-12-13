@@ -14,6 +14,12 @@ It is not usable yet and still under early development.
 
 ![](./docs/pics/fishchat.png)
 
+Todo
+======
+- [ ] support p2p communication
+- [x] support group communication
+
+
 
 技术细节
 ======
