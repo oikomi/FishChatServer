@@ -12,4 +12,8 @@ It is not usable yet and still under early development.
 系统架构
 ======
 
-![](./docs/fishchat.png)
+![](./docs/pics/fishchat.png)
+
+
+技术细节
+======
