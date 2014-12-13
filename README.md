@@ -9,11 +9,6 @@ Status
 
 It is not usable yet and still under early development.
 
-系统架构
-======
-
-![](./docs/pics/fishchat.png)
-
 Todo
 ======
 - [x] support p2p communication
@@ -23,6 +18,10 @@ Todo
 - [ ] support audio
 - [ ] support video
 
+系统架构
+======
+
+![](./docs/pics/fishchat.png)
 
 
 技术细节
