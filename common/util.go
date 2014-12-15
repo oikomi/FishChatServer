@@ -19,10 +19,11 @@ import (
 	"time"
 	"math/rand"
 	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/storage"
 )
 
-const KeyPrefix string = "push"
+const KeyPrefix string = base.COMM_PREFIX
 
 var DefaultRedisConnectTimeout uint32 = 2000
 var DefaultRedisReadTimeout    uint32 = 1000
@@ -35,7 +36,7 @@ var DefaultRedisOptions storage.RedisStoreOptions = storage.RedisStoreOptions {
 	ReadTimeout    : time.Duration(DefaultRedisReadTimeout)*time.Millisecond,
 	WriteTimeout   : time.Duration(DefaultRedisWriteTimeout)*time.Millisecond,
 	Database       : 1,
-	KeyPrefix      : "push",
+	KeyPrefix      : base.COMM_PREFIX,
 }
 
 func SelectServer(serverList []string, serverNum int) string {
