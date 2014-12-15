@@ -56,7 +56,7 @@ func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) 
 	
 	cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
 	
-	err = self.Router.msgServerClientMap[store_session.MsgServerAddr].Send(link.JSON {
+	err = self.Router.msgServerClientMap[store_session.MsgServerAddr].Send(libnet.JSON {
 		cmd,
 	})
 	if err != nil {

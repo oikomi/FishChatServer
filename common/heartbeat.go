@@ -19,13 +19,13 @@ import (
 	"sync"
 	"time"
 	"github.com/golang/glog"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/funny/link"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/protocol"
 )
 
 type HeartBeat struct {
 	name       string
-	session    *link.Session
+	session    *libnet.Session
 	mu         sync.Mutex
 	timeout    time.Duration
 	expire     time.Duration
@@ -33,7 +33,7 @@ type HeartBeat struct {
 	threshold  uint64
 }
 
-func NewHeartBeat(name string, session *link.Session, timeout time.Duration, expire time.Duration, limit uint64) *HeartBeat {
+func NewHeartBeat(name string, session *libnet.Session, timeout time.Duration, expire time.Duration, limit uint64) *HeartBeat {
 	return &HeartBeat {
 		name      : name,
 		session   : session,
@@ -66,7 +66,7 @@ func (self *HeartBeat) Beat() {
 				cmd.CmdName = protocol.SEND_PING_CMD
 				cmd.Args = append(cmd.Args, protocol.PING)
 				
-				err := self.session.Send(link.JSON {
+				err := self.session.Send(libnet.JSON {
 					cmd,
 				})
 				if err != nil {

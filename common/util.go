@@ -19,7 +19,7 @@ import (
 	"time"
 	"math/rand"
 	"github.com/golang/glog"
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 const KeyPrefix string = "push"

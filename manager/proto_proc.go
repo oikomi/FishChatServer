@@ -18,9 +18,9 @@ package main
 import (
 	"flag"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 func init() {
@@ -38,7 +38,7 @@ func NewProtoProc(m *Manager) *ProtoProc {
 	}
 }
 
-func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procStoreSession")
 	var err error
 	glog.Info(cmd.GetAnyData())
@@ -51,7 +51,7 @@ func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *link.Session) 
 	return nil
 }
 
-func (self *ProtoProc)procStoreTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procStoreTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procStoreTopic")
 	var err error
 	glog.Info(cmd.GetAnyData())

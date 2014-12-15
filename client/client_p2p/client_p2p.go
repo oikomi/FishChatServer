@@ -18,10 +18,10 @@ package main
 import (
 	"fmt"
 	"flag"
-	"github.com/funny/link"
 	"github.com/golang/glog"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/oikomi/gopush/common"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/common"
 )
 
 var InputConfFile = flag.String("conf_file", "client.json", "input conf file name")   
@@ -31,7 +31,7 @@ func init() {
 	flag.Set("log_dir", "false")
 }
 
-func heartBeat(cfg Config, msgServerClient *link.Session) {
+func heartBeat(cfg Config, msgServerClient *libnet.Session) {
 	hb := common.NewHeartBeat("client", msgServerClient, cfg.HeartBeatTime, cfg.Expire, 10)
 	hb.Beat()
 }
@@ -44,9 +44,9 @@ func main() {
 		return
 	}
 
-	p := link.PacketN(2, link.BigEndianBO, link.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
 
-	gatewayClient, err := link.Dial("tcp", cfg.GatewayServer, p)
+	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer, p)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func main() {
 
 	gatewayClient.Close(nil)
 
-	msgServerClient, err := link.Dial("tcp", string(inMsg.Get()), p)
+	msgServerClient, err := libnet.Dial("tcp", string(inMsg.Get()), p)
 	if err != nil {
 		panic(err)
 	}
@@ -76,7 +76,7 @@ func main() {
 	cmd.CmdName = protocol.SEND_CLIENT_ID_CMD
 	cmd.Args = append(cmd.Args, input)
 	
-	err = msgServerClient.Send(link.JSON {
+	err = msgServerClient.Send(libnet.JSON {
 		cmd,
 	})
 	if err != nil {
@@ -104,7 +104,7 @@ func main() {
 	
 	cmd.Args = append(cmd.Args, input)
 	
-	err = msgServerClient.Send(link.JSON {
+	err = msgServerClient.Send(libnet.JSON {
 		cmd,
 	})
 	if err != nil {
@@ -113,7 +113,7 @@ func main() {
 	
 	defer msgServerClient.Close(nil)
 	
-	msgServerClient.ReadLoop(func(msg link.InBuffer) {
+	msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
 		glog.Info(string(msg.Get()))
 	})
 	

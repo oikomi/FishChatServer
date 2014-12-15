@@ -16,12 +16,12 @@
 package base
 
 import (
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/protocol"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/protocol"
 )
 
 type ChannelMap map[string]*ChannelState
-type SessionMap map[string]*link.Session
+type SessionMap map[string]*libnet.Session
 
 var ChannleList []string
 
@@ -32,11 +32,11 @@ func init() {
 
 type ChannelState struct {
 	ChannelName   string
-	Channel       *link.Channel
+	Channel       *libnet.Channel
 	ClientIDlist  []string
 }
 
-func NewChannelState(channelName string, channel *link.Channel) *ChannelState{
+func NewChannelState(channelName string, channel *libnet.Channel) *ChannelState{
 	return &ChannelState {
 		ChannelName  : channelName,
 		Channel      : channel,

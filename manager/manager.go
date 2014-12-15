@@ -76,7 +76,7 @@ func main() {
 	sm := NewManager(cfg)
 	go sm.subscribeChannels()
 	
-	server.AcceptLoop(func(session *link.Session) {
+	server.AcceptLoop(func(session *libnet.Session) {
 	
 	})
 }
