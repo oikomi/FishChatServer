@@ -38,11 +38,11 @@ FishChatServer完全采用Golang开发(https://golang.org/)
 
 **format:** *SEND_CLIENT_ID*
 
----
+--
 
 **syntax:** *SEND_CLIENT_ID_CMD*
 
 **format:** *SEND_CLIENT_ID ID*
 
----
+--
 
