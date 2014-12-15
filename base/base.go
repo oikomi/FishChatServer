@@ -23,6 +23,8 @@ import (
 type ChannelMap map[string]*ChannelState
 type SessionMap map[string]*libnet.Session
 
+const COMM_PREFIX = "IM"
+
 var ChannleList []string
 
 func init() {

@@ -19,6 +19,7 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/storage"
 	"github.com/oikomi/FishChatServer/protocol"
@@ -40,7 +41,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			ReadTimeout    : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
 			WriteTimeout   : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
 			Database       : 1,
-			KeyPrefix      : "push",
+			KeyPrefix      : base.COMM_PREFIX,
 		})),
 		topicStore         : storage.NewTopicStore(storage.NewRedisStore(&storage.RedisStoreOptions {
 			Network        : "tcp",
@@ -49,7 +50,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			ReadTimeout    : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
 			WriteTimeout   : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
 			Database       : 1,
-			KeyPrefix      : "push",
+			KeyPrefix      : base.COMM_PREFIX,
 		})),
 	}
 }

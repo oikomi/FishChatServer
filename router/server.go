@@ -20,6 +20,7 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/storage"
@@ -44,7 +45,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 					ReadTimeout : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
 					WriteTimeout : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
 					Database :  1,
-					KeyPrefix : "push",
+					KeyPrefix : base.COMM_PREFIX,
 		})),
 		topicServerMap     : make(map[string]string),
 	}
