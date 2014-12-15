@@ -107,7 +107,13 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 			if err != nil {
 				glog.Fatalln(err.Error())
 			}
+		} else
+		{
+			//todo
+			//session is offline
+		
 		}
+		
 	} else {
 		if self.msgServer.channels[protocol.SYSCTRL_SEND] != nil {
 			err = self.msgServer.channels[protocol.SYSCTRL_SEND].Channel.Broadcast(libnet.JSON {
