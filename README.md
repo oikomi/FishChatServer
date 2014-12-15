@@ -32,3 +32,17 @@ FishChatServer完全采用Golang开发(https://golang.org/)
 
 协议
 ---------------------
+### 1. client to MsgServer
+
+**syntax:** *SEND_PING_CMD*
+
+**format:** *SEND_CLIENT_ID*
+
+---
+
+**syntax:** *SEND_CLIENT_ID_CMD*
+
+**format:** *SEND_CLIENT_ID ID*
+
+---
+
