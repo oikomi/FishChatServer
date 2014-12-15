@@ -2,6 +2,6 @@
 	"TransportProtocols" : "tcp",
 	"LogFile"            : "client.log",
 	"GatewayServer"      : "127.0.0.1:17000",
-	"HeartBeatTime"      : 10,
-	"Expire"             : 100
+	"HeartBeatTime"      : 100,
+	"Expire"             : 500
 }
