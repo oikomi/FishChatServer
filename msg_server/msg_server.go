@@ -16,10 +16,12 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"time"
+	"flag"
 	"github.com/golang/glog"
 	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 /*
@@ -76,7 +78,18 @@ func main() {
 		return
 	}
 	
-	ms := NewMsgServer(cfg)
+	rs := storage.NewRedisStore(&storage.RedisStoreOptions{
+			Network        : "tcp",
+			Address        : cfg.Redis.Port,
+			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
+			ReadTimeout    : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
+			WriteTimeout   : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
+			Database       : 1,
+			KeyPrefix      : "push",
+		})
+	
+	
+	ms := NewMsgServer(cfg, rs)
 	
 	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
 	

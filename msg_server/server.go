@@ -44,31 +44,15 @@ type MsgServer struct {
 	scanSessionMutex  sync.Mutex
 }
 
-func NewMsgServer(cfg *MsgServerConfig) *MsgServer {
+func NewMsgServer(cfg *MsgServerConfig, rs *storage.RedisStore) *MsgServer {
 	return &MsgServer {
 		cfg                : cfg,
 		sessions           : make(base.SessionMap),
 		channels           : make(base.ChannelMap),
 		topics             : make(protocol.TopicMap),
 		server             : new(libnet.Server),
-		sessionStore       : storage.NewSessionStore(storage.NewRedisStore(&storage.RedisStoreOptions{
-			Network        : "tcp",
-			Address        : cfg.Redis.Port,
-			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
-			ReadTimeout    : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
-			WriteTimeout   : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
-			Database       : 1,
-			KeyPrefix      : "push",
-		})),
-		topicStore         : storage.NewTopicStore(storage.NewRedisStore(&storage.RedisStoreOptions {
-			Network        : "tcp",
-			Address        : cfg.Redis.Port,
-			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
-			ReadTimeout    : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
-			WriteTimeout   : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
-			Database       : 1,
-			KeyPrefix      : "push",
-		})),
+		sessionStore       : storage.NewSessionStore(rs),
+		topicStore         : storage.NewTopicStore(rs),
 	}
 }
 
