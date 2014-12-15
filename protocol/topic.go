@@ -16,8 +16,8 @@
 package protocol
 
 import (
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 type TopicMap   map[string]*Topic
@@ -25,17 +25,17 @@ type TopicMap   map[string]*Topic
 type Topic struct {
 	TopicName     string
 	MsgAddr       string
-	Channel       *link.Channel
+	Channel       *libnet.Channel
 	TA            *TopicAttribute
 	ClientIDList  []string
 	TSD           *storage.TopicStoreData
 }
 
-func NewTopic(topicName string, msgAddr string, CreaterID string, CreaterSession *link.Session) *Topic {
+func NewTopic(topicName string, msgAddr string, CreaterID string, CreaterSession *libnet.Session) *Topic {
 	return &Topic {
 		TopicName    : topicName,
 		MsgAddr      : msgAddr,
-		Channel      : new(link.Channel),
+		Channel      : new(libnet.Channel),
 		TA           : NewTopicAttribute(CreaterID, CreaterSession),
 		ClientIDList : make([]string, 0),
 	}
@@ -47,10 +47,10 @@ func (self *Topic)AddMember(m *storage.Member) {
 
 type TopicAttribute struct {
 	CreaterID          string
-	CreaterSession     *link.Session
+	CreaterSession     *libnet.Session
 }
 
-func NewTopicAttribute(CreaterID string, CreaterSession *link.Session) *TopicAttribute {
+func NewTopicAttribute(CreaterID string, CreaterSession *libnet.Session) *TopicAttribute {
 	return &TopicAttribute {
 		CreaterID      : CreaterID,
 		CreaterSession : CreaterSession,

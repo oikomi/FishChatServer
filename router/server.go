@@ -20,14 +20,14 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 type Router struct {
 	cfg                 *RouterConfig
-	msgServerClientMap  map[string]*link.Session
+	msgServerClientMap  map[string]*libnet.Session
 	sessionStore        *storage.SessionStore
 	topicServerMap      map[string]string
 	readMutex           sync.Mutex
@@ -36,7 +36,7 @@ type Router struct {
 func NewRouter(cfg *RouterConfig) *Router {
 	return &Router {
 		cfg                : cfg,
-		msgServerClientMap : make(map[string]*link.Session),
+		msgServerClientMap : make(map[string]*libnet.Session),
 		sessionStore       : storage.NewSessionStore(storage.NewRedisStore(&storage.RedisStoreOptions {
 					Network :   "tcp",
 					Address :   cfg.Redis.Port,
@@ -50,9 +50,9 @@ func NewRouter(cfg *RouterConfig) *Router {
 	}
 }
 
-func (self *Router)connectMsgServer(ms string) (*link.Session, error) {
-	p := link.PacketN(2, link.BigEndianBO, link.LittleEndianBF)
-	client, err := link.Dial("tcp", ms, p)
+func (self *Router)connectMsgServer(ms string) (*libnet.Session, error) {
+	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	client, err := libnet.Dial("tcp", ms, p)
 	if err != nil {
 		glog.Error(err.Error())
 		panic(err)
@@ -61,8 +61,8 @@ func (self *Router)connectMsgServer(ms string) (*link.Session, error) {
 	return client, err
 }
 
-func (self *Router)handleMsgServerClient(msc *link.Session) {
-	msc.ReadLoop(func(msg link.InBuffer) {
+func (self *Router)handleMsgServerClient(msc *libnet.Session) {
+	msc.ReadLoop(func(msg libnet.InBuffer) {
 		glog.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Get()))
 		var c protocol.CmdInternal
 		pp := NewProtoProc(self)
@@ -110,7 +110,7 @@ func (self *Router)subscribeChannels() error {
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_SEND)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
-		err = msgServerClient.Send(link.JSON {
+		err = msgServerClient.Send(libnet.JSON {
 			cmd,
 		})
 		if err != nil {
@@ -124,7 +124,7 @@ func (self *Router)subscribeChannels() error {
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_TOPIC_SYNC)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
-		err = msgServerClient.Send(link.JSON {
+		err = msgServerClient.Send(libnet.JSON {
 			cmd,
 		})
 		if err != nil {

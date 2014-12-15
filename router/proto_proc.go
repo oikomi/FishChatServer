@@ -18,9 +18,9 @@ package main
 import (
 	"flag"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/oikomi/gopush/common"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/common"
 )
 
 func init() {
@@ -38,7 +38,7 @@ func NewProtoProc(r *Router) *ProtoProc {
 	}
 }
 
-func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procSendMsgP2P")
 	var err error
 	send2ID := cmd.GetArgs()[0]
@@ -67,7 +67,7 @@ func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *link.Session) er
 	return nil
 }
 
-func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procCreateTopic")
 	topicName := cmd.GetArgs()[0]
 	serverAddr := cmd.GetAnyData().(string)
@@ -76,14 +76,14 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *link.Session) e
 	return nil
 }
 
-func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procJoinTopic")
 	
 	return nil
 }
 
 
-func (self *ProtoProc)procSendMsgTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procSendMsgTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procSendMsgTopic")
 	//var err error
 	//topicName := string(cmd.Args[0])

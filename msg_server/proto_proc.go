@@ -19,11 +19,11 @@ import (
 	"flag"
 	"strconv"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/base"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/oikomi/gopush/common"
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/base"
+	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/common"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func NewProtoProc(msgServer *MsgServer) *ProtoProc {
 	}
 }
 
-func (self *ProtoProc)procPing(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procPing")
 	cid := session.State.(*base.SessionState).ClientID
 	self.msgServer.scanSessionMutex.Lock()
@@ -51,7 +51,7 @@ func (self *ProtoProc)procPing(cmd protocol.Cmd, session *link.Session) error {
 	return nil
 }
 
-func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procClientID")
 	var err error
 	sessionStoreData := storage.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
@@ -65,7 +65,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *link.Session) erro
 	glog.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS].Channel.Broadcast(link.JSON {
+		err = self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS].Channel.Broadcast(libnet.JSON {
 			CCmd,
 		})
 		if err != nil {
@@ -80,7 +80,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *link.Session) erro
 	return nil
 }
 
-func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procSendMessageP2P")
 	var err error
 	send2ID := cmd.GetArgs()[0]
@@ -99,7 +99,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *link.Session
 		resp.Args = append(resp.Args, send2Msg)
 		
 		if self.msgServer.sessions[send2ID] != nil {
-			self.msgServer.sessions[send2ID].Send(link.JSON {
+			self.msgServer.sessions[send2ID].Send(libnet.JSON {
 				resp,
 			})
 			if err != nil {
@@ -108,7 +108,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *link.Session
 		}
 	} else {
 		if self.msgServer.channels[protocol.SYSCTRL_SEND] != nil {
-			err = self.msgServer.channels[protocol.SYSCTRL_SEND].Channel.Broadcast(link.JSON {
+			err = self.msgServer.channels[protocol.SYSCTRL_SEND].Channel.Broadcast(libnet.JSON {
 				cmd,
 			})
 			if err != nil {
@@ -121,7 +121,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *link.Session
 	return nil
 }
 
-func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procRouteMessageP2P")
 	var err error
 	send2ID := cmd.GetArgs()[0]
@@ -138,7 +138,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *link.Sessio
 	resp.Args = append(resp.Args, send2Msg)
 	
 	if self.msgServer.sessions[send2ID] != nil {
-		self.msgServer.sessions[send2ID].Send(link.JSON {
+		self.msgServer.sessions[send2ID].Send(libnet.JSON {
 			resp,
 		})
 		if err != nil {
@@ -150,7 +150,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *link.Sessio
 }
 
 
-func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procSendMessageTopic")
 	var err error
 	topicName := cmd.GetArgs()[0]
@@ -159,7 +159,7 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *link.Sessi
 	glog.Info(topicName)
 
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_SYNC] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_SYNC].Channel.Broadcast(link.JSON {
+		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_SYNC].Channel.Broadcast(libnet.JSON {
 			cmd,
 		})
 		if err != nil {
@@ -171,7 +171,7 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *link.Sessi
 	return nil
 }
 
-func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *link.Session) {
+func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Session) {
 	glog.Info("procSubscribeChannel")
 	channelName := cmd.GetArgs()[0]
 	cUUID := cmd.GetArgs()[1]
@@ -184,7 +184,7 @@ func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *link.Sessi
 	}
 }
 
-func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procCreateTopic")
 	var err error
 	topicName := cmd.GetArgs()[0]
@@ -208,7 +208,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *link.Session) e
 	glog.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(link.JSON {
+		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(libnet.JSON {
 			CCmd,
 		})
 		if err != nil {
@@ -227,7 +227,7 @@ func (self *ProtoProc)findTopicMsgAddr(topicName string) (*storage.TopicStoreDat
 	return t, err
 }
 
-func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *link.Session) error {
+func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procJoinTopic")
 	var err error
 	topicName := cmd.GetArgs()[0]
@@ -244,7 +244,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *link.Session) err
 		resp.CmdName = protocol.LOCATE_TOPIC_MSG_ADDR_CMD
 		resp.Args = append(resp.Args, t.MsgServerAddr)
 		
-		err = session.Send(link.JSON {
+		err = session.Send(libnet.JSON {
 			resp,
 		})
 		
@@ -270,7 +270,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *link.Session) err
 	glog.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(link.JSON {
+		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(libnet.JSON {
 			CCmd,
 		})
 		if err != nil {

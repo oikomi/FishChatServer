@@ -16,7 +16,7 @@
 package protocol
 
 import (
-	//"github.com/funny/link"
+	//"github.com/oikomi/FishChatServer/libnet"
 )
 
 const (

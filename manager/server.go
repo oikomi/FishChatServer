@@ -19,9 +19,9 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/storage"
-	"github.com/oikomi/gopush/protocol"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/protocol"
 )
 
 type Manager struct {
@@ -54,9 +54,9 @@ func NewManager(cfg *ManagerConfig) *Manager {
 	}
 }
 
-func (self *Manager)connectMsgServer(ms string) (*link.Session, error) {
-	p := link.PacketN(2, link.BigEndianBO, link.LittleEndianBF)
-	client, err := link.Dial("tcp", ms, p)
+func (self *Manager)connectMsgServer(ms string) (*libnet.Session, error) {
+	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	client, err := libnet.Dial("tcp", ms, p)
 	if err != nil {
 		glog.Error(err.Error())
 		panic(err)
@@ -65,7 +65,7 @@ func (self *Manager)connectMsgServer(ms string) (*link.Session, error) {
 	return client, err
 }
 
-func (self *Manager)parseProtocol(cmd []byte, session *link.Session) error {
+func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 	var c protocol.CmdInternal
 	
 	err := json.Unmarshal(cmd, &c)

@@ -19,7 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/golang/glog"
-	"github.com/funny/link"
+	"github.com/oikomi/FishChatServer/libnet"
 )
 
 /*
@@ -54,8 +54,8 @@ func version() {
 
 var InputConfFile = flag.String("conf_file", "msg_server.json", "input conf file name")   
 
-func handleSession(ms *MsgServer, session *link.Session) {
-	session.ReadLoop(func(msg link.InBuffer) {
+func handleSession(ms *MsgServer, session *libnet.Session) {
+	session.ReadLoop(func(msg libnet.InBuffer) {
 		glog.Info(string(msg.Get()))
 		
 		err := ms.parseProtocol(msg.Get(), session)
@@ -78,9 +78,9 @@ func main() {
 	
 	ms := NewMsgServer(cfg)
 	
-	p := link.PacketN(2, link.BigEndianBO, link.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
 	
-	ms.server, err = link.Listen(cfg.TransportProtocols, cfg.Listen, p)
+	ms.server, err = libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
 	if err != nil {
 		panic(err)
 	}
@@ -89,7 +89,7 @@ func main() {
 	ms.createChannels()
 	go ms.scanDeadSession()
 
-	ms.server.AcceptLoop(func(session *link.Session) {
+	ms.server.AcceptLoop(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
 		
 		go handleSession(ms, session)

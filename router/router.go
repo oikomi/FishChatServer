@@ -19,7 +19,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/golang/glog"
-	"github.com/funny/link"
+	"github.com/oikomi/FishChatServer/libnet"
 )
 
 /*
@@ -64,9 +64,9 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
-	p := link.PacketN(2, link.BigEndianBO, link.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
 	
-	server, err := link.Listen(cfg.TransportProtocols, cfg.Listen, p)
+	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
 	if err != nil {
 		glog.Error(err.Error())
 		return
@@ -75,7 +75,7 @@ func main() {
 	
 	r := NewRouter(cfg)
 	go r.subscribeChannels()
-	server.AcceptLoop(func(session *link.Session) {
+	server.AcceptLoop(func(session *libnet.Session) {
 	
 	})
 }

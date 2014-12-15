@@ -21,11 +21,11 @@ import (
 	"sync"
 	"encoding/json"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/base"
-	"github.com/oikomi/gopush/common"
-	"github.com/oikomi/gopush/protocol"
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/base"
+	"github.com/oikomi/FishChatServer/common"
+	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 func init() {
@@ -38,7 +38,7 @@ type MsgServer struct {
 	sessions          base.SessionMap
 	channels          base.ChannelMap
 	topics            protocol.TopicMap
-	server            *link.Server
+	server            *libnet.Server
 	sessionStore      *storage.SessionStore
 	topicStore        *storage.TopicStore
 	scanSessionMutex  sync.Mutex
@@ -50,7 +50,7 @@ func NewMsgServer(cfg *MsgServerConfig) *MsgServer {
 		sessions           : make(base.SessionMap),
 		channels           : make(base.ChannelMap),
 		topics             : make(protocol.TopicMap),
-		server             : new(link.Server),
+		server             : new(libnet.Server),
 		sessionStore       : storage.NewSessionStore(storage.NewRedisStore(&storage.RedisStoreOptions{
 			Network        : "tcp",
 			Address        : cfg.Redis.Port,
@@ -76,7 +76,7 @@ func (self *MsgServer)createChannels() {
 	glog.Info("createChannels")
 	for _, c := range base.ChannleList {
 		glog.Info(c)
-		channel := link.NewChannel(self.server.Protocol())
+		channel := libnet.NewChannel(self.server.Protocol())
 		self.channels[c] = base.NewChannelState(c, channel)
 	}
 }
@@ -112,7 +112,7 @@ func (self *MsgServer)scanDeadSession() {
 	}
 }
 
-func (self *MsgServer)parseProtocol(cmd []byte, session *link.Session) error {
+func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 	var c protocol.CmdSimple
 	
 	err := json.Unmarshal(cmd, &c)
