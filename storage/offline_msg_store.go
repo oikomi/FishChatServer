@@ -35,7 +35,13 @@ func NewOfflineMsgStore(RS *RedisStore) *OfflineMsgStore {
 
 type OfflineMsgStoreData struct {
 	OwnerName     string
+	MsgList       []OfflineMsgData
 	MaxAge        time.Duration
+}
+
+type OfflineMsgData struct {
+	Msg        string
+	FromID     string
 }
 
 func NewOfflineMsgStoreData() *OfflineMsgStoreData {

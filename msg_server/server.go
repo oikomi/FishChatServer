@@ -41,6 +41,7 @@ type MsgServer struct {
 	server            *libnet.Server
 	sessionStore      *storage.SessionStore
 	topicStore        *storage.TopicStore
+	offlineMsgStore   *storage.OfflineMsgStore
 	scanSessionMutex  sync.Mutex
 }
 
@@ -53,6 +54,7 @@ func NewMsgServer(cfg *MsgServerConfig, rs *storage.RedisStore) *MsgServer {
 		server             : new(libnet.Server),
 		sessionStore       : storage.NewSessionStore(rs),
 		topicStore         : storage.NewTopicStore(rs),
+		offlineMsgStore    : storage.NewOfflineMsgStore(rs),
 	}
 }
 
