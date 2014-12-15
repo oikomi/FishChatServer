@@ -101,8 +101,8 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 	return err
 }
 
-func (self *Manager)handleMsgServerClient(msc *link.Session) {
-	msc.ReadLoop(func(msg link.InBuffer) {
+func (self *Manager)handleMsgServerClient(msc *libnet.Session) {
+	msc.ReadLoop(func(msg libnet.InBuffer) {
 		glog.Info("msg_server", msc.Conn().RemoteAddr().String(),"say:", string(msg.Get()))
 		
 		self.parseProtocol(msg.Get(), msc)
@@ -111,7 +111,7 @@ func (self *Manager)handleMsgServerClient(msc *link.Session) {
 
 func (self *Manager)subscribeChannels() error {
 	glog.Info("subscribeChannels")
-	var msgServerClientList []*link.Session
+	var msgServerClientList []*libnet.Session
 	for _, ms := range self.cfg.MsgServerList {
 		msgServerClient, err := self.connectMsgServer(ms)
 		if err != nil {
@@ -124,7 +124,7 @@ func (self *Manager)subscribeChannels() error {
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_CLIENT_STATUS)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
-		err = msgServerClient.Send(link.JSON {
+		err = msgServerClient.Send(libnet.JSON {
 			cmd,
 		})
 		if err != nil {
@@ -138,7 +138,7 @@ func (self *Manager)subscribeChannels() error {
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_TOPIC_STATUS)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
-		err = msgServerClient.Send(link.JSON {
+		err = msgServerClient.Send(libnet.JSON {
 			cmd,
 		})
 		if err != nil {

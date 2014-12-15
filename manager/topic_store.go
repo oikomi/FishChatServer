@@ -16,7 +16,7 @@
 package main
 
 import (
-	"github.com/oikomi/gopush/storage"
+	"github.com/oikomi/FishChatServer/storage"
 )
 
 type TopicStoreCmd struct {

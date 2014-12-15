@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"flag"
 	"github.com/golang/glog"
-	"github.com/funny/link"
-	"github.com/oikomi/gopush/common"
+	"github.com/oikomi/FishChatServer/libnet"
+	"github.com/oikomi/FishChatServer/common"
 )
 
 /*
@@ -66,20 +66,20 @@ func main() {
 		return
 	}
 	
-	p := link.PacketN(2, link.BigEndianBO, link.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
 	
-	server, err := link.Listen(cfg.TransportProtocols, cfg.Listen, p)
+	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
 	if err != nil {
 		glog.Error(err.Error())
 		return
 	}
 	glog.Info("server start: ", server.Listener().Addr().String())
 
-	server.AcceptLoop(func(session *link.Session) {
+	server.AcceptLoop(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
 		msgServer := common.SelectServer(cfg.MsgServerList, cfg.MsgServerNum)
 		
-		err = session.Send(link.Binary(msgServer))
+		err = session.Send(libnet.Binary(msgServer))
 		if err != nil {
 			glog.Error(err.Error())
 			return
