@@ -85,6 +85,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 	var err error
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
+	fromID := cmd.GetArgs()[2]
 	store_session, err := common.GetSessionFromCID(self.msgServer.sessionStore, send2ID)
 	if err != nil {
 		glog.Warningf("no ID : %s", send2ID)
@@ -97,6 +98,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		resp := protocol.NewCmdSimple()
 		resp.CmdName = protocol.RESP_MESSAGE_P2P_CMD
 		resp.Args = append(resp.Args, send2Msg)
+		resp.Args = append(resp.Args, fromID)
 		
 		if self.msgServer.sessions[send2ID] != nil {
 			self.msgServer.sessions[send2ID].Send(libnet.JSON {

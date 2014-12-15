@@ -29,3 +29,6 @@ Todo
 技术细节
 ======
 FishChatServer完全采用Golang开发(https://golang.org/)
+
+协议
+---------------------

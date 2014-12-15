@@ -104,6 +104,13 @@ func main() {
 	
 	cmd.Args = append(cmd.Args, input)
 	
+	fmt.Println("input my ID :")
+	if _, err = fmt.Scanf("%s\n", &input); err != nil {
+		glog.Error(err.Error())
+	}
+	
+	cmd.Args = append(cmd.Args, input)
+	
 	err = msgServerClient.Send(libnet.JSON {
 		cmd,
 	})
