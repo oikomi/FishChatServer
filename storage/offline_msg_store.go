@@ -20,6 +20,7 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
+	"github.com/oikomi/FishChatServer/base"
 )
 
 type OfflineMsgStore struct {
