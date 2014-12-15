@@ -81,3 +81,8 @@ func GetTopicFromTopicName(topicStore *storage.TopicStore, topicName string) (*s
 	return topic, nil
 }
 
+func FindKeyExist(rs *storage.RedisStore, key string) (bool, error) {
+	
+	
+}
+

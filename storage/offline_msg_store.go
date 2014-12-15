@@ -33,15 +33,19 @@ func NewOfflineMsgStore(RS *RedisStore) *OfflineMsgStore {
 	}
 }
 
-type OfflineMsgStoreData struct {
-	OwnerName     string
-	MsgList       []OfflineMsgData
-	MaxAge        time.Duration
-}
-
 type OfflineMsgData struct {
 	Msg        string
 	FromID     string
+}
+
+type OfflineMsgStoreData struct {
+	OwnerName     string
+	MsgList       []*OfflineMsgData
+	MaxAge        time.Duration
+}
+
+func (self *OfflineMsgStoreData) AddMsg(d *OfflineMsgData) {
+	self.MsgList = append(self.MsgList, d)
 }
 
 func NewOfflineMsgStoreData() *OfflineMsgStoreData {
@@ -54,9 +58,9 @@ func NewOfflineMsgStoreData() *OfflineMsgStoreData {
 func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := k
+	key := k + base.OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + k
+		key = self.RS.opts.KeyPrefix + ":" + k + base.OFFLINE_MSG_UNIQ_PREFIX
 	}
 	b, err := redis.Bytes(self.RS.conn.Do("GET", key))
 	if err != nil {
@@ -78,9 +82,9 @@ func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
 	if err != nil {
 		return err
 	}
-	key := sess.OwnerName
+	key := sess.OwnerName + base.OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + sess.OwnerName
+		key = self.RS.opts.KeyPrefix + ":" + sess.OwnerName + base.OFFLINE_MSG_UNIQ_PREFIX
 	}
 	ttl := sess.MaxAge
 	if ttl == 0 {
@@ -101,9 +105,9 @@ func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
 func (self *OfflineMsgStore) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := id
+	key := id + base.OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + id
+		key = self.RS.opts.KeyPrefix + ":" + id + base.OFFLINE_MSG_UNIQ_PREFIX
 	}
 	_, err := self.RS.conn.Do("DEL", key)
 	if err != nil {
