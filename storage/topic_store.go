@@ -20,7 +20,6 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
-	"github.com/oikomi/FishChatServer/base"
 )
 
 type TopicStore struct {
@@ -73,9 +72,9 @@ func (self *TopicStoreData)AddMember(m *Member) {
 func (self *TopicStore) Get(k string) (*TopicStoreData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := k + base.TOPIC_UNIQ_PREFIX
+	key := k + TOPIC_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + k + base.TOPIC_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + k + TOPIC_UNIQ_PREFIX
 	}
 	b, err := redis.Bytes(self.RS.conn.Do("GET", key))
 	if err != nil {
@@ -97,9 +96,9 @@ func (self *TopicStore) Set(sess *TopicStoreData) error {
 	if err != nil {
 		return err
 	}
-	key := sess.TopicName + base.TOPIC_UNIQ_PREFIX
+	key := sess.TopicName + TOPIC_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + sess.TopicName + base.TOPIC_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + sess.TopicName + TOPIC_UNIQ_PREFIX
 	}
 	ttl := sess.MaxAge
 	if ttl == 0 {
@@ -120,9 +119,9 @@ func (self *TopicStore) Set(sess *TopicStoreData) error {
 func (self *TopicStore) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := id + base.TOPIC_UNIQ_PREFIX
+	key := id + TOPIC_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + id + base.TOPIC_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + id + TOPIC_UNIQ_PREFIX
 	}
 	_, err := self.RS.conn.Do("DEL", key)
 	if err != nil {

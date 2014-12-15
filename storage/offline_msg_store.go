@@ -20,7 +20,6 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
-	"github.com/oikomi/FishChatServer/base"
 )
 
 type OfflineMsgStore struct {
@@ -59,9 +58,9 @@ func NewOfflineMsgStoreData() *OfflineMsgStoreData {
 func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := k + base.OFFLINE_MSG_UNIQ_PREFIX
+	key := k + OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + k + base.OFFLINE_MSG_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + k + OFFLINE_MSG_UNIQ_PREFIX
 	}
 	b, err := redis.Bytes(self.RS.conn.Do("GET", key))
 	if err != nil {
@@ -83,9 +82,9 @@ func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
 	if err != nil {
 		return err
 	}
-	key := sess.OwnerName + base.OFFLINE_MSG_UNIQ_PREFIX
+	key := sess.OwnerName + OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + sess.OwnerName + base.OFFLINE_MSG_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + sess.OwnerName + OFFLINE_MSG_UNIQ_PREFIX
 	}
 	ttl := sess.MaxAge
 	if ttl == 0 {
@@ -106,9 +105,9 @@ func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
 func (self *OfflineMsgStore) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := id + base.OFFLINE_MSG_UNIQ_PREFIX
+	key := id + OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + id + base.OFFLINE_MSG_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + id + OFFLINE_MSG_UNIQ_PREFIX
 	}
 	_, err := self.RS.conn.Do("DEL", key)
 	if err != nil {

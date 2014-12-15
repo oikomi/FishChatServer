@@ -1,7 +1,4 @@
 
-cd client
-./client.sh
-cd ..
 
 cd gateway
 rm -f gateway

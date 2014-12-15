@@ -20,7 +20,6 @@ import (
 	"time"
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
-	"github.com/oikomi/FishChatServer/base"
 )
 
 type SessionStore struct {
@@ -63,9 +62,9 @@ func (self *SessionStoreData)StoreKey() string {
 func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := k + base.SESSION_UNIQ_PREFIX
+	key := k + SESSION_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + k + base.SESSION_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + k + SESSION_UNIQ_PREFIX
 	}
 	b, err := redis.Bytes(self.RS.conn.Do("GET", key))
 	if err != nil {
@@ -87,9 +86,9 @@ func (self *SessionStore) Set(sess *SessionStoreData) error {
 	if err != nil {
 		return err
 	}
-	key := sess.ClientID + base.SESSION_UNIQ_PREFIX
+	key := sess.ClientID + SESSION_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + sess.ClientID + base.SESSION_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + sess.ClientID + SESSION_UNIQ_PREFIX
 	}
 	ttl := sess.MaxAge
 	if ttl == 0 {
@@ -110,9 +109,9 @@ func (self *SessionStore) Set(sess *SessionStoreData) error {
 func (self *SessionStore) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := id + base.SESSION_UNIQ_PREFIX
+	key := id + SESSION_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + id + base.SESSION_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + id + SESSION_UNIQ_PREFIX
 	}
 	_, err := self.RS.conn.Do("DEL", key)
 	if err != nil {
