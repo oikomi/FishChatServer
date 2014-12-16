@@ -51,9 +51,45 @@ func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error 
 	return nil
 }
 
+func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
+	var err error
+	exist, err := self.msgServer.offlineMsgStore.IsKeyExist(ID)
+	if exist.(int64) == 0 {
+		return err
+	} else {
+		omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgStore, ID)
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
+		for  _, v := range omrd.MsgList {
+			resp := protocol.NewCmdSimple()
+			resp.CmdName = protocol.RESP_MESSAGE_P2P_CMD
+			resp.Args = append(resp.Args, v.Msg)
+			resp.Args = append(resp.Args, v.FromID)
+			
+			if self.msgServer.sessions[ID] != nil {
+				self.msgServer.sessions[ID].Send(libnet.JSON {
+					resp,
+				})
+				if err != nil {
+					glog.Error(err.Error())
+					return err
+				}
+			} 
+		}
+		
+		omrd.ClearMsg()
+		self.msgServer.offlineMsgStore.Set(omrd)
+	}
+	
+	return err
+}
+
 func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procClientID")
 	var err error
+	ID := cmd.GetArgs()[0]
 	sessionStoreData := storage.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
 		self.msgServer.cfg.LocalIP, strconv.FormatUint(session.Id(), 10))
 		
@@ -76,6 +112,8 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 
 	self.msgServer.sessions[cmd.GetArgs()[0]] = session
 	self.msgServer.sessions[cmd.GetArgs()[0]].State = base.NewSessionState(true, cmd.GetArgs()[0])
+	
+	self.procOfflineMsg(session, ID)
 	
 	return nil
 }

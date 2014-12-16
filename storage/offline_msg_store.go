@@ -55,6 +55,10 @@ func (self *OfflineMsgStoreData) AddMsg(d *OfflineMsgData) {
 	self.MsgList = append(self.MsgList, d)
 }
 
+func (self *OfflineMsgStoreData) ClearMsg() {
+	self.MsgList = self.MsgList[:0]
+}
+
 func NewOfflineMsgStoreData(ownerName string) *OfflineMsgStoreData {
 	return &OfflineMsgStoreData {
 		OwnerName : ownerName,
