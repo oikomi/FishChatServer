@@ -38,6 +38,13 @@ type OfflineMsgData struct {
 	FromID     string
 }
 
+func NewOfflineMsgData(msg string, fromID string) *OfflineMsgData {
+	return &OfflineMsgData {
+		Msg : msg,
+		FromID : fromID,
+	}
+}
+
 type OfflineMsgStoreData struct {
 	OwnerName     string
 	MsgList       []*OfflineMsgData
@@ -48,11 +55,11 @@ func (self *OfflineMsgStoreData) AddMsg(d *OfflineMsgData) {
 	self.MsgList = append(self.MsgList, d)
 }
 
-func NewOfflineMsgStoreData() *OfflineMsgStoreData {
+func NewOfflineMsgStoreData(ownerName string) *OfflineMsgStoreData {
 	return &OfflineMsgStoreData {
+		OwnerName : ownerName,
 	}
 }
-
 
 // Get the session from the store.
 func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
@@ -137,6 +144,7 @@ func (self *OfflineMsgStore) Clear() error {
 	}
 	return nil
 }
+
 // Get the number of session keys in the store. Requires the use of a
 // key prefix in the store options, otherwise returns -1 (cannot tell
 // session keys from other keys).
@@ -149,6 +157,7 @@ func (self *OfflineMsgStore) Len() int {
 	}
 	return len(vals)
 }
+
 func (self *OfflineMsgStore) getSessionKeys() ([]interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
@@ -156,4 +165,21 @@ func (self *OfflineMsgStore) getSessionKeys() ([]interface{}, error) {
 		return redis.Values(self.RS.conn.Do("KEYS", self.RS.opts.KeyPrefix+":*"))
 	}
 	return nil, ErrNoKeyPrefix
+}
+
+func (self *OfflineMsgStore) IsKeyExist(k string) (interface{}, error) {
+	self.rwMutex.Lock()
+	defer self.rwMutex.Unlock()
+	
+	key := k + OFFLINE_MSG_UNIQ_PREFIX
+	if self.RS.opts.KeyPrefix != "" {
+		key = self.RS.opts.KeyPrefix + ":" + k + OFFLINE_MSG_UNIQ_PREFIX
+	}
+	
+	v, err := self.RS.conn.Do("EXISTS", key)
+	if err != nil {
+		return v, err
+	}
+
+	return v, err
 }

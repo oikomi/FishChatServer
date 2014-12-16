@@ -82,8 +82,18 @@ func GetTopicFromTopicName(topicStore *storage.TopicStore, topicName string) (*s
 	return topic, nil
 }
 
-func FindKeyExist(rs *storage.RedisStore, key string) (bool, error) {
+func GetOfflineMsgFromOwnerName(offlineMsgStore *storage.OfflineMsgStore, ownerName string) (*storage.OfflineMsgStoreData, error) {
+	o ,err := offlineMsgStore.Get(ownerName)
 	
-	return true, nil
+	if err != nil {
+		glog.Warningf("no ownerName : %s", ownerName)
+		return nil, err
+	}
+	if o != nil {
+		glog.Info(o)
+	}
+	
+	return o, nil
 }
+
 

@@ -57,7 +57,7 @@ func (self *HeartBeat) ChangeThreshold(thres uint64) {
 
 func (self *HeartBeat) Beat() {
 	timer := time.NewTicker(self.timeout * time.Second)
-	ttl := time.After(self.expire * time.Second)
+	//ttl := time.After(self.expire * time.Second)
 	for {
 		select {
 		case <-timer.C:
@@ -73,8 +73,8 @@ func (self *HeartBeat) Beat() {
 					glog.Error(err.Error())
 				}
 			}()
-		case <-ttl:
-			break
+		//case <-ttl:
+			//break
 		}
 	}
 }

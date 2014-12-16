@@ -23,7 +23,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/base"
-	"github.com/oikomi/FishChatServer/common"
+	//"github.com/oikomi/FishChatServer/common"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/storage"
 )
@@ -70,30 +70,30 @@ func (self *MsgServer)createChannels() {
 func (self *MsgServer)scanDeadSession() {
 	glog.Info("scanDeadSession")
 	timer := time.NewTicker(self.cfg.ScanDeadSessionTimeout * time.Second)
-	ttl := time.After(self.cfg.Expire * time.Second)
+	//ttl := time.After(self.cfg.Expire * time.Second)
 	for {
 		select {
 		case <-timer.C:
-			//glog.Info("scanDeadSession timeout")
+			glog.Info("scanDeadSession timeout")
 			go func() {
 				for id, s := range self.sessions {
 					self.scanSessionMutex.Lock()
-					defer self.scanSessionMutex.Unlock()
+					//defer self.scanSessionMutex.Unlock()
 					if (s.State).(*base.SessionState).Alive == false {
 						glog.Info("delete" + id)
 						delete(self.sessions, id)
-						err := common.DelSessionFromCID(self.sessionStore, id)
-						if err != nil {
-							glog.Warningf("delete ID : %s failed!!", id)
-						}
+						//err := common.DelSessionFromCID(self.sessionStore, id)
+						//if err != nil {
+						//	glog.Warningf("delete ID : %s failed!!", id)
+						//}
 					} else {
 						s.State.(*base.SessionState).Alive = false
 					}
+					self.scanSessionMutex.Unlock()
 				}
-				
 			}()
-		case <-ttl:
-			break
+		//case <-ttl:
+			//break
 		}
 	}
 }

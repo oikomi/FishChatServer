@@ -93,6 +93,34 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		return err
 	}
 	
+	if self.msgServer.sessions[send2ID] == nil {
+		//offline
+		glog.Info(send2ID + " | is offline")
+		exist, err := self.msgServer.offlineMsgStore.IsKeyExist(send2ID)
+		if exist.(int64) == 0 {
+			tmp := storage.NewOfflineMsgStoreData(send2ID)
+			tmp.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID))
+			
+			self.msgServer.offlineMsgStore.Set(tmp)
+			if err != nil {
+				glog.Error(err.Error())
+				return err
+			}
+		} else {
+			omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgStore, send2ID)
+			if err != nil {
+				glog.Error(err.Error())
+				return err
+			}
+			omrd.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID))
+			self.msgServer.offlineMsgStore.Set(omrd)
+			if err != nil {
+				glog.Error(err.Error())
+				return err
+			}
+		}
+	}
+	
 	if store_session.MsgServerAddr == self.msgServer.cfg.LocalIP {
 		glog.Info("in the same server")
 		resp := protocol.NewCmdSimple()
@@ -105,7 +133,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 				resp,
 			})
 			if err != nil {
-				glog.Fatalln(err.Error())
+				glog.Error(err.Error())
 			}
 		} 
 	} else {
