@@ -59,8 +59,6 @@ var InputConfFile = flag.String("conf_file", "msg_server.json", "input conf file
 
 func handleSession(ms *MsgServer, session *libnet.Session) {
 	session.ReadLoop(func(msg libnet.InBuffer) {
-		glog.Info(string(msg.Get()))
-		
 		err := ms.parseProtocol(msg.Get(), session)
 		if err != nil {
 			glog.Error(err.Error())
@@ -88,8 +86,7 @@ func main() {
 			Database       : 1,
 			KeyPrefix      : base.COMM_PREFIX,
 		})
-	
-	
+
 	ms := NewMsgServer(cfg, rs)
 	
 	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
@@ -98,14 +95,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	glog.Info("server start:", ms.server.Listener().Addr().String())
+	glog.Info("server start: ", ms.server.Listener().Addr().String())
 	
 	ms.createChannels()
 	go ms.scanDeadSession()
 
 	ms.server.AcceptLoop(func(session *libnet.Session) {
-		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
-		
+		glog.Info("a new client ", session.Conn().RemoteAddr().String(), " | come in")
 		go handleSession(ms, session)
 	})
 }
