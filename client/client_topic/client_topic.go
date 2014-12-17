@@ -45,6 +45,8 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
+	
+	c := NewClient(&cfg)
 
 	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
 
@@ -52,7 +54,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	fmt.Println("input id :")
 	var input string
 	if _, err := fmt.Scanf("%s\n", &input); err != nil {
@@ -91,7 +93,7 @@ func main() {
 	
 	go msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
 		glog.Info(string(msg.Get()))
-		parseProtocol(msg.Get())
+		c.parseProtocol(msg.Get())
 	})
 	
 	glog.Info("test.. send create topic...")
@@ -167,12 +169,9 @@ func main() {
 	})
 	if err != nil {
 		glog.Error(err.Error())
-	}	
+	}
 
 	defer msgServerClient.Close(nil)
-	
-
-
 	
 	glog.Flush()
 }

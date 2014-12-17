@@ -18,11 +18,28 @@ package main
 import (
 	"encoding/json"
 	"github.com/golang/glog"
-	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/libnet"
 )
 
-func locateTopicAddr(c protocol.CmdSimple) {
+type Client struct {
+	TopicClientMap   map[string]*libnet.Session
+	Cfg                  *Config
+}
+
+func NewClient(cfg *Config) *Client {
+	return &Client {
+		Cfg            : cfg,
+		TopicClientMap : make(map[string]*libnet.Session),
+	}
+
+}
+
+func (self *Client)AddTopicClient(s string, c *libnet.Session) {
+	self.TopicClientMap[s] = c
+}
+
+func (self *Client)locateTopicAddr(c protocol.CmdSimple) {
 	glog.Info("locateTopicAddr")
 	serverAddr := c.GetArgs()[0]
 	topicName := c.GetArgs()[1]
@@ -38,6 +55,8 @@ func locateTopicAddr(c protocol.CmdSimple) {
 		glog.Info(string(msg.Get()))
 		
 	})
+	
+	self.AddTopicClient(topicName, msgServerClient)
 	
 	cmd := protocol.NewCmdSimple()
 	
@@ -56,7 +75,7 @@ func locateTopicAddr(c protocol.CmdSimple) {
 
 }
 
-func parseProtocol(cmd []byte) error {
+func (self *Client)parseProtocol(cmd []byte) error {
 	var c protocol.CmdSimple
 	
 	err := json.Unmarshal(cmd, &c)
@@ -69,7 +88,7 @@ func parseProtocol(cmd []byte) error {
 
 	switch c.CmdName {
 		case protocol.LOCATE_TOPIC_MSG_ADDR_CMD:
-			locateTopicAddr(c)
+			self.locateTopicAddr(c)
 
 		}
 	
