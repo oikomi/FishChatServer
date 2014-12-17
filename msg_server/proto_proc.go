@@ -226,17 +226,24 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 	glog.Info(send2Msg)
 	glog.Info(topicName)
 
-	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_SYNC] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_SYNC].Channel.Broadcast(libnet.JSON {
-			cmd,
+	if self.msgServer.topics[topicName] == nil {
+		
+	} else {
+		resp := protocol.NewCmdSimple()
+		resp.CmdName = protocol.RESP_MESSAGE_TOPIC_CMD
+		resp.Args = append(resp.Args, send2Msg)
+		resp.Args = append(resp.Args, session.State.(*base.SessionState).ClientID)
+		err = self.msgServer.topics[topicName].Channel.Broadcast(libnet.JSON {
+			resp,
 		})
 		if err != nil {
 			glog.Error(err.Error())
 			return err
 		}
+
 	}
 	
-	return nil
+	return err
 }
 
 func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Session) {
@@ -264,6 +271,9 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	t.ClientIDList = append(t.ClientIDList, session.State.(*base.SessionState).ClientID)
 	t.TSD = topicStoreData
 	self.msgServer.topics[topicName] = t
+	self.msgServer.topics[topicName].Channel = libnet.NewChannel(self.msgServer.server.Protocol())
+	
+	self.msgServer.topics[topicName].Channel.Join(session, nil)
 	
 
 	glog.Info(topicStoreData)
@@ -332,6 +342,8 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		clientID)
 	
 	self.msgServer.topics[topicName].AddMember(m)
+	
+	self.msgServer.topics[topicName].Channel.Join(session, nil)
 	
 	args := make([]string, 0)
 	args = append(args, topicName)

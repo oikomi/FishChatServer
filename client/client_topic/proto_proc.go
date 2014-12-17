@@ -34,6 +34,11 @@ func locateTopicAddr(c protocol.CmdSimple) {
 		panic(err)
 	}
 	
+	go msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
+		glog.Info(string(msg.Get()))
+		
+	})
+	
 	cmd := protocol.NewCmdSimple()
 	
 	cmd.CmdName = protocol.JOIN_TOPIC_CMD
