@@ -299,9 +299,10 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	glog.Info("procJoinTopic")
 	var err error
 	topicName := cmd.GetArgs()[0]
+	clientID := cmd.GetArgs()[1]
 	
 	if self.msgServer.topics[topicName] == nil {
-		glog.Warning("no topic :" + topicName)
+		glog.Warning("no topic in this server :" + topicName)
 		t, err := self.findTopicMsgAddr(topicName)
 		if err != nil {
 			glog.Warningf("no topicName : %s", topicName)
@@ -311,6 +312,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		resp := protocol.NewCmdSimple()
 		resp.CmdName = protocol.LOCATE_TOPIC_MSG_ADDR_CMD
 		resp.Args = append(resp.Args, t.MsgServerAddr)
+		resp.Args = append(resp.Args, topicName)
 		
 		err = session.Send(libnet.JSON {
 			resp,
@@ -324,10 +326,10 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		return err
 	}
 	
-	m := storage.NewMember(session.State.(*base.SessionState).ClientID)
+	m := storage.NewMember(clientID)
 
 	self.msgServer.topics[topicName].ClientIDList = append(self.msgServer.topics[topicName].ClientIDList, 
-		session.State.(*base.SessionState).ClientID)
+		clientID)
 	
 	self.msgServer.topics[topicName].AddMember(m)
 	

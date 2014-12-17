@@ -24,6 +24,8 @@ import (
 	"github.com/oikomi/FishChatServer/libnet"
 )
 
+var gClientID string
+
 var InputConfFile = flag.String("conf_file", "client.json", "input conf file name")   
 
 func init() {
@@ -57,6 +59,8 @@ func main() {
 		glog.Error(err.Error())
 	}
 	
+	gClientID = input
+	
 	inMsg, err := gatewayClient.Read()
 	if err != nil {
 		glog.Error(err.Error())
@@ -84,6 +88,11 @@ func main() {
 	}
 	
 	go heartBeat(cfg, msgServerClient)
+	
+	go msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
+		glog.Info(string(msg.Get()))
+		parseProtocol(msg.Get())
+	})
 	
 	glog.Info("test.. send create topic...")
 	
@@ -113,6 +122,13 @@ func main() {
 	cmd.CmdName = protocol.JOIN_TOPIC_CMD
 
 	fmt.Println("input topic name :")
+	if _, err = fmt.Scanf("%s\n", &input); err != nil {
+		glog.Error(err.Error())
+	}
+	
+	cmd.Args = append(cmd.Args, input)
+	
+	fmt.Println("input clientID :")
 	if _, err = fmt.Scanf("%s\n", &input); err != nil {
 		glog.Error(err.Error())
 	}
@@ -155,9 +171,8 @@ func main() {
 
 	defer msgServerClient.Close(nil)
 	
-	msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
-		glog.Info(string(msg.Get()))
-	})
+
+
 	
 	glog.Flush()
 }
