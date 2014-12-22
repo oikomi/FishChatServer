@@ -44,26 +44,22 @@ func (self *Client)locateTopicAddr(c protocol.CmdSimple) {
 	serverAddr := c.GetArgs()[0]
 	topicName := c.GetArgs()[1]
 	
-	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndian)
 	
 	msgServerClient, err := libnet.Dial("tcp", serverAddr, p)
 	if err != nil {
 		panic(err)
 	}
 	
-	go msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
-		glog.Info(string(msg.Get()))
+	go msgServerClient.Handle(func(msg *libnet.InBuffer) {
+		glog.Info(string(msg.Data))
 		
 	})
 	
 	self.AddTopicClient(topicName, msgServerClient)
 	
-	cmd := protocol.NewCmdSimple()
-	
-	cmd.CmdName = protocol.JOIN_TOPIC_CMD
-	
+	cmd := protocol.NewCmdSimple(protocol.JOIN_TOPIC_CMD)
 	cmd.Args = append(cmd.Args, topicName)
-	
 	cmd.Args = append(cmd.Args, gClientID)
 	
 	err = msgServerClient.Send(libnet.JSON {

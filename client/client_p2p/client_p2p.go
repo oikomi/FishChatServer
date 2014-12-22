@@ -18,6 +18,7 @@ package main
 import (
 	"fmt"
 	"flag"
+	"encoding/json"
 	"github.com/golang/glog"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
@@ -44,7 +45,7 @@ func main() {
 		return
 	}
 
-	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndian)
 
 	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer, p)
 	if err != nil {
@@ -61,19 +62,24 @@ func main() {
 	if err != nil {
 		glog.Error(err.Error())
 	}
-	glog.Info(string(inMsg.Get()))
+	glog.Info(string(inMsg.Data))
+
+	var c protocol.CmdSimple
+	
+	err = json.Unmarshal(inMsg.Data, &c)
+	if err != nil {
+		glog.Error("error:", err)
+	}
 
 	gatewayClient.Close(nil)
 
-	msgServerClient, err := libnet.Dial("tcp", string(inMsg.Get()), p)
+	msgServerClient, err := libnet.Dial("tcp", string(c.Args[0]), p)
 	if err != nil {
 		panic(err)
 	}
 	
 	glog.Info("test.. send id...")
-	cmd := protocol.NewCmdSimple()
-	
-	cmd.CmdName = protocol.SEND_CLIENT_ID_CMD
+	cmd := protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
 	cmd.Args = append(cmd.Args, input)
 	
 	err = msgServerClient.Send(libnet.JSON {
@@ -86,9 +92,7 @@ func main() {
 	go heartBeat(cfg, msgServerClient)
 	
 	glog.Info("test.. send p2p msg...")
-	cmd = protocol.NewCmdSimple()
-	
-	cmd.CmdName = protocol.SEND_MESSAGE_P2P_CMD
+	cmd = protocol.NewCmdSimple(protocol.SEND_MESSAGE_P2P_CMD)
 	
 	fmt.Println("input 2id :")
 	if _, err = fmt.Scanf("%s\n", &input); err != nil {
@@ -120,8 +124,8 @@ func main() {
 	
 	defer msgServerClient.Close(nil)
 	
-	msgServerClient.ReadLoop(func(msg libnet.InBuffer) {
-		glog.Info(string(msg.Get()))
+	msgServerClient.Handle(func(msg *libnet.InBuffer) {
+		glog.Info(string(msg.Data))
 	})
 	
 	glog.Flush()

@@ -65,7 +65,7 @@ func main() {
 		return
 	}
 	
-	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndian)
 	
 	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
 	if err != nil {
@@ -76,7 +76,7 @@ func main() {
 	sm := NewManager(cfg)
 	go sm.subscribeChannels()
 	
-	server.AcceptLoop(func(session *libnet.Session) {
+	server.Handle(func(session *libnet.Session) {
 	
 	})
 }

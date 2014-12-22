@@ -100,7 +100,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	glog.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS].Channel.Broadcast(libnet.JSON {
+		err = libnet.Broadcast(self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS].Channel, libnet.JSON {
 			CCmd,
 		})
 		if err != nil {
@@ -174,7 +174,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		} 
 	} else {
 		if self.msgServer.channels[protocol.SYSCTRL_SEND] != nil {
-			err = self.msgServer.channels[protocol.SYSCTRL_SEND].Channel.Broadcast(libnet.JSON {
+			err = libnet.Broadcast(self.msgServer.channels[protocol.SYSCTRL_SEND].Channel, libnet.JSON {
 				cmd,
 			})
 			if err != nil {
@@ -229,7 +229,8 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
 		resp.Args = append(resp.Args, send2Msg)
 		resp.Args = append(resp.Args, session.State.(*base.SessionState).ClientID)
-		err = self.msgServer.topics[topicName].Channel.Broadcast(libnet.JSON {
+
+		err = libnet.Broadcast(self.msgServer.topics[topicName].Channel, libnet.JSON {
 			resp,
 		})
 		if err != nil {
@@ -282,7 +283,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	glog.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(libnet.JSON {
+		err = libnet.Broadcast(self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel, libnet.JSON {
 			CCmd,
 		})
 		if err != nil {
@@ -347,7 +348,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	glog.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS] != nil {
-		err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(libnet.JSON {
+		err = libnet.Broadcast(self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel, libnet.JSON {
 			CCmd,
 		})
 		if err != nil {

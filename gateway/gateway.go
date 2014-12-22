@@ -67,7 +67,7 @@ func main() {
 		return
 	}
 	
-	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndian)
 	
 	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
 	if err != nil {
@@ -76,12 +76,12 @@ func main() {
 	}
 	glog.Info("gateway server start at ", server.Listener().Addr().String())
 
-	server.AcceptLoop(func(session *libnet.Session) {
+	server.Handle(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
 		msgServer := common.SelectServer(cfg.MsgServerList, cfg.MsgServerNum)
 
 		resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
-		resp.AddArg(msgServer)
+		resp.Args = append(resp.Args, msgServer)
 		
 		if session != nil {
 			session.Send(libnet.JSON {

@@ -1,16 +1,18 @@
 package libnet
 
 import (
+	"encoding/gob"
 	"encoding/json"
+	"encoding/xml"
 )
 
 // Message.
 type Message interface {
-	// Get a recommend packet size for buffer initialization.
+	// Get a recommend buffer size.
 	RecommendBufferSize() int
 
 	// Write the message to the packet buffer and returns the new buffer like append() function.
-	WriteBuffer(buffer OutBuffer) error
+	WriteBuffer(buffer *OutBuffer) error
 }
 
 // Binary message
@@ -22,8 +24,8 @@ func (bin Binary) RecommendBufferSize() int {
 }
 
 // Implement the Message interface.
-func (bin Binary) WriteBuffer(buffer OutBuffer) error {
-	buffer.WriteBytes([]byte(bin))
+func (bin Binary) WriteBuffer(buffer *OutBuffer) error {
+	buffer.Append([]byte(bin)...)
 	return nil
 }
 
@@ -34,12 +36,42 @@ type JSON struct {
 
 // Implement the Message interface.
 func (j JSON) RecommendBufferSize() int {
-	return 0
+	return 1024
 }
 
 // Implement the Message interface.
-func (j JSON) WriteBuffer(buffer OutBuffer) error {
+func (j JSON) WriteBuffer(buffer *OutBuffer) error {
 	return json.NewEncoder(buffer).Encode(j.V)
+}
+
+// GOB message
+type GOB struct {
+	V interface{}
+}
+
+// Implement the Message interface.
+func (g GOB) RecommendBufferSize() int {
+	return 1024
+}
+
+// Implement the Message interface.
+func (g GOB) WriteBuffer(buffer *OutBuffer) error {
+	return gob.NewEncoder(buffer).Encode(g.V)
+}
+
+// XML message
+type XML struct {
+	V interface{}
+}
+
+// Implement the Message interface.
+func (x XML) RecommendBufferSize() int {
+	return 1024
+}
+
+// Implement the Message interface.
+func (x XML) WriteBuffer(buffer *OutBuffer) error {
+	return xml.NewEncoder(buffer).Encode(x.V)
 }
 
 // A simple send queue. Can used for buffered send.
@@ -65,9 +97,10 @@ func (q *SendQueue) RecommendBufferSize() int {
 }
 
 // Implement the Message interface.
-func (q *SendQueue) WriteBuffer(buffer OutBuffer) error {
+func (q *SendQueue) WriteBuffer(buffer *OutBuffer) error {
+	var err error
 	for _, message := range q.messages {
-		if err := message.WriteBuffer(buffer); err != nil {
+		if err = message.WriteBuffer(buffer); err != nil {
 			return err
 		}
 	}

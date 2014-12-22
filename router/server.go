@@ -52,7 +52,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 }
 
 func (self *Router)connectMsgServer(ms string) (*libnet.Session, error) {
-	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndian)
 	client, err := libnet.Dial("tcp", ms, p)
 	if err != nil {
 		glog.Error(err.Error())
@@ -63,11 +63,11 @@ func (self *Router)connectMsgServer(ms string) (*libnet.Session, error) {
 }
 
 func (self *Router)handleMsgServerClient(msc *libnet.Session) {
-	msc.ReadLoop(func(msg libnet.InBuffer) {
-		glog.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Get()))
+	msc.Handle(func(msg *libnet.InBuffer) {
+		glog.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
 		var c protocol.CmdInternal
 		pp := NewProtoProc(self)
-		err := json.Unmarshal(msg.Get(), &c)
+		err := json.Unmarshal(msg.Data, &c)
 		if err != nil {
 			glog.Error("error:", err)
 		}

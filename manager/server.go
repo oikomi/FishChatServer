@@ -56,7 +56,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 }
 
 func (self *Manager)connectMsgServer(ms string) (*libnet.Session, error) {
-	p := libnet.PacketN(2, libnet.BigEndianBO, libnet.LittleEndianBF)
+	p := libnet.PacketN(2, libnet.BigEndian)
 	client, err := libnet.Dial("tcp", ms, p)
 	if err != nil {
 		glog.Error(err.Error())
@@ -103,10 +103,10 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 }
 
 func (self *Manager)handleMsgServerClient(msc *libnet.Session) {
-	msc.ReadLoop(func(msg libnet.InBuffer) {
-		glog.Info("msg_server", msc.Conn().RemoteAddr().String(),"say:", string(msg.Get()))
+	msc.Handle(func(msg *libnet.InBuffer) {
+		glog.Info("msg_server", msc.Conn().RemoteAddr().String(),"say:", string(msg.Data))
 		
-		self.parseProtocol(msg.Get(), msc)
+		self.parseProtocol(msg.Data, msc)
 	})
 }
 
