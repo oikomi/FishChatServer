@@ -1,3 +1,5 @@
+![logo](./docs/pics/logo.png)
+
 FishChatServer
 ======
 

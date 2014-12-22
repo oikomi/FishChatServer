@@ -83,6 +83,8 @@ func main() {
 		resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
 		resp.AddArg(msgServer)
 		
+		glog.Info(resp)
+		
 		if session != nil {
 			session.Send(libnet.JSON {
 				resp,
