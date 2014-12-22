@@ -65,9 +65,9 @@ type CmdSimple struct {
 	Args    []string
 }
 
-func NewCmdSimple() *CmdSimple {
+func NewCmdSimple(cmdName string) *CmdSimple {
 	return &CmdSimple {
-		CmdName : "",
+		CmdName : cmdName,
 		Args    : make([]string, 0),
 	}
 }

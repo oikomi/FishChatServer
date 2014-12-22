@@ -119,9 +119,7 @@ func (self *Manager)subscribeChannels() error {
 			glog.Error(err.Error())
 			return err
 		}
-		cmd := protocol.NewCmdSimple()
-		
-		cmd.CmdName = protocol.SUBSCRIBE_CHANNEL_CMD
+		cmd := protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_CLIENT_STATUS)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
@@ -133,9 +131,7 @@ func (self *Manager)subscribeChannels() error {
 			return err
 		}
 		
-		cmd = protocol.NewCmdSimple()
-		
-		cmd.CmdName = protocol.SUBSCRIBE_CHANNEL_CMD
+		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_TOPIC_STATUS)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		

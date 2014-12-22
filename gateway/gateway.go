@@ -21,6 +21,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/common"
+	"github.com/oikomi/FishChatServer/protocol"
 )
 
 /*
@@ -78,11 +79,17 @@ func main() {
 	server.AcceptLoop(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
 		msgServer := common.SelectServer(cfg.MsgServerList, cfg.MsgServerNum)
+
+		resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
+		resp.AddArg(msgServer)
 		
-		err = session.Send(libnet.Binary(msgServer))
-		if err != nil {
-			glog.Error(err.Error())
-			return
+		if session != nil {
+			session.Send(libnet.JSON {
+				resp,
+			})
+			if err != nil {
+				glog.Error(err.Error())
+			}
 		}
 		session.Close(nil)
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | close")

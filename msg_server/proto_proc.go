@@ -63,8 +63,7 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 			return err
 		}
 		for  _, v := range omrd.MsgList {
-			resp := protocol.NewCmdSimple()
-			resp.CmdName = protocol.RESP_MESSAGE_P2P_CMD
+			resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 			resp.Args = append(resp.Args, v.Msg)
 			resp.Args = append(resp.Args, v.FromID)
 			
@@ -161,8 +160,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 	
 	if store_session.MsgServerAddr == self.msgServer.cfg.LocalIP {
 		glog.Info("in the same server")
-		resp := protocol.NewCmdSimple()
-		resp.CmdName = protocol.RESP_MESSAGE_P2P_CMD
+		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 		resp.Args = append(resp.Args, send2Msg)
 		resp.Args = append(resp.Args, fromID)
 		
@@ -201,8 +199,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 		return err
 	}
 
-	resp := protocol.NewCmdSimple()
-	resp.CmdName = protocol.RESP_MESSAGE_P2P_CMD
+	resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 	resp.Args = append(resp.Args, send2Msg)
 	
 	if self.msgServer.sessions[send2ID] != nil {
@@ -229,8 +226,7 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 	if self.msgServer.topics[topicName] == nil {
 		
 	} else {
-		resp := protocol.NewCmdSimple()
-		resp.CmdName = protocol.RESP_MESSAGE_TOPIC_CMD
+		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
 		resp.Args = append(resp.Args, send2Msg)
 		resp.Args = append(resp.Args, session.State.(*base.SessionState).ClientID)
 		err = self.msgServer.topics[topicName].Channel.Broadcast(libnet.JSON {
@@ -319,8 +315,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 			return err
 		}
 		
-		resp := protocol.NewCmdSimple()
-		resp.CmdName = protocol.LOCATE_TOPIC_MSG_ADDR_CMD
+		resp := protocol.NewCmdSimple(protocol.LOCATE_TOPIC_MSG_ADDR_CMD)
 		resp.Args = append(resp.Args, t.MsgServerAddr)
 		resp.Args = append(resp.Args, topicName)
 		

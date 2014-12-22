@@ -105,9 +105,7 @@ func (self *Router)subscribeChannels() error {
 			glog.Error(err.Error())
 			return err
 		}
-		cmd := protocol.NewCmdSimple()
-		
-		cmd.CmdName = protocol.SUBSCRIBE_CHANNEL_CMD
+		cmd := protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_SEND)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
@@ -119,9 +117,7 @@ func (self *Router)subscribeChannels() error {
 			return err
 		}
 		
-		cmd = protocol.NewCmdSimple()
-		
-		cmd.CmdName = protocol.SUBSCRIBE_CHANNEL_CMD
+		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
 		cmd.Args = append(cmd.Args, protocol.SYSCTRL_TOPIC_SYNC)
 		cmd.Args = append(cmd.Args, self.cfg.UUID)
 		
