@@ -98,6 +98,7 @@ func main() {
 	glog.Info("server start: ", ms.server.Listener().Addr().String())
 	
 	ms.createChannels()
+
 	go ms.scanDeadSession()
 
 	ms.server.AcceptLoop(func(session *libnet.Session) {

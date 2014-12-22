@@ -73,7 +73,7 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
-	glog.Info("server start: ", server.Listener().Addr().String())
+	glog.Info("gateway server start at ", server.Listener().Addr().String())
 
 	server.AcceptLoop(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")

@@ -39,6 +39,7 @@ var DefaultRedisOptions storage.RedisStoreOptions = storage.RedisStoreOptions {
 	KeyPrefix      : base.COMM_PREFIX,
 }
 
+//Just use random to select msg_server
 func SelectServer(serverList []string, serverNum int) string {
 	return serverList[rand.Intn(serverNum)]
 }

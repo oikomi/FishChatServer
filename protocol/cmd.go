@@ -16,6 +16,10 @@
 package protocol
 
 const (
+	SELECT_MSG_SERVER_FOR_CLIENT_CMD      = "SELECT_MSG_SERVER_FOR_CLIENT"
+)
+
+const (
 	//SEND_PING
 	SEND_PING_CMD                         = "SEND_PING"
 	//SEND_CLIENT_ID CLIENT_ID
