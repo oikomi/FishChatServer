@@ -62,36 +62,36 @@ type Cmd interface {
 
 
 type CmdSimple struct {
-	cmdName string
-	args    []string
+	CmdName string
+	Args    []string
 }
 
 func NewCmdSimple(cmdName string) *CmdSimple {
 	return &CmdSimple {
-		cmdName : cmdName,
-		args    : make([]string, 0),
+		CmdName : cmdName,
+		Args    : make([]string, 0),
 	}
 }
 
 func (self *CmdSimple)GetCmdName() string {
-	return self.cmdName
+	return self.CmdName
 }
 
 func (self *CmdSimple)ChangeCmdName(newName string) {
-	self.cmdName = newName
+	self.CmdName = newName
 }
 
 func (self *CmdSimple)GetArgs() []string {
-	return self.args
+	return self.Args
 }
 
 func (self *CmdSimple)AddArg(arg string) {
-	self.args = append(self.args, arg)
+	self.Args = append(self.Args, arg)
 }
 
 func (self *CmdSimple)ParseCmd(msglist []string) {
-	self.cmdName = msglist[1]
-	self.args = msglist[2:]
+	self.CmdName = msglist[1]
+	self.Args = msglist[2:]
 }
 
 func (self *CmdSimple)GetAnyData() interface{} {
