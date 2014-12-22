@@ -1,6 +1,6 @@
 package libnet
 
-import "github.com/oikomi/FishChatServer/sync"
+import "github.com/oikomi/FishChatServer/syncs"
 
 // The session collection use to fetch session and send broadcast.
 type SessionCollection interface {
@@ -37,7 +37,7 @@ func MustBroadcast(sessions SessionCollection, message Message) error {
 // The channel type. Used to maintain a group of session.
 // Normally used for broadcast classify purpose.
 type Channel struct {
-	mutex    sync.RWMutex
+	mutex    syncs.RWMutex
 	protocol Protocol
 	sessions map[uint64]channelSession
 }

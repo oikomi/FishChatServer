@@ -1,6 +1,6 @@
 // +build deadlock
 
-package sync
+package syncs
 
 import (
 	"bytes"

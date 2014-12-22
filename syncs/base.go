@@ -1,4 +1,4 @@
-package sync
+package syncs
 
 import (
 	"sync"

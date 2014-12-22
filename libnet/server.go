@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net"
 	"sync/atomic"
-	"github.com/oikomi/FishChatServer/sync"
+	"github.com/oikomi/FishChatServer/syncs"
 )
 
 // Errors
@@ -38,11 +38,11 @@ type Server struct {
 	// About sessions
 	maxSessionId uint64
 	sessions     map[uint64]*Session
-	sessionMutex sync.Mutex
+	sessionMutex syncs.Mutex
 
 	// About server start and stop
 	stopFlag   int32
-	stopWait   sync.WaitGroup
+	stopWait   syncs.WaitGroup
 	stopReason interface{}
 
 	SendChanSize   int         // Session send chan buffer size.

@@ -6,7 +6,7 @@ import (
 	"net"
 	"sync/atomic"
 	"time"
-	"github.com/oikomi/FishChatServer/sync"
+	"github.com/oikomi/FishChatServer/syncs"
 )
 
 var dialSessionId uint64
@@ -44,15 +44,15 @@ type Session struct {
 	// About send and receive
 	sendChan       chan Message
 	sendPacketChan chan *OutBuffer
-	readMutex      sync.Mutex
-	sendMutex      sync.Mutex
+	readMutex      syncs.Mutex
+	sendMutex      syncs.Mutex
 	OnSendFailed   func(*Session, error)
 
 	// About session close
 	closeChan           chan int
 	closeFlag           int32
 	closeReason         interface{}
-	closeEventMutex     sync.Mutex
+	closeEventMutex     syncs.Mutex
 	closeEventListeners *list.List
 
 	// Put your session state here.
