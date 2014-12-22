@@ -15,10 +15,6 @@
 
 package protocol
 
-import (
-	//"github.com/oikomi/FishChatServer/libnet"
-)
-
 const (
 	SYSCTRL_CLIENT_STATUS = "/sysctrl/client-status"
 	SYSCTRL_TOPIC_STATUS  = "/sysctrl/topic-status"
