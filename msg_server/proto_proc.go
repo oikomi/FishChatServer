@@ -64,8 +64,8 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 		}
 		for  _, v := range omrd.MsgList {
 			resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
-			resp.Args = append(resp.Args, v.Msg)
-			resp.Args = append(resp.Args, v.FromID)
+			resp.AddArg(v.Msg)
+			resp.AddArg(v.FromID)
 			
 			if self.msgServer.sessions[ID] != nil {
 				self.msgServer.sessions[ID].Send(libnet.JSON {
@@ -161,8 +161,8 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 	if store_session.MsgServerAddr == self.msgServer.cfg.LocalIP {
 		glog.Info("in the same server")
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
-		resp.Args = append(resp.Args, send2Msg)
-		resp.Args = append(resp.Args, fromID)
+		resp.AddArg(send2Msg)
+		resp.AddArg(fromID)
 		
 		if self.msgServer.sessions[send2ID] != nil {
 			self.msgServer.sessions[send2ID].Send(libnet.JSON {
@@ -200,7 +200,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 	}
 
 	resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
-	resp.Args = append(resp.Args, send2Msg)
+	resp.AddArg(send2Msg)
 	
 	if self.msgServer.sessions[send2ID] != nil {
 		self.msgServer.sessions[send2ID].Send(libnet.JSON {
@@ -227,8 +227,8 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 		
 	} else {
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
-		resp.Args = append(resp.Args, send2Msg)
-		resp.Args = append(resp.Args, session.State.(*base.SessionState).ClientID)
+		resp.AddArg(send2Msg)
+		resp.AddArg(session.State.(*base.SessionState).ClientID)
 
 		err = libnet.Broadcast(self.msgServer.topics[topicName].Channel, libnet.JSON {
 			resp,
@@ -317,8 +317,8 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		}
 		
 		resp := protocol.NewCmdSimple(protocol.LOCATE_TOPIC_MSG_ADDR_CMD)
-		resp.Args = append(resp.Args, t.MsgServerAddr)
-		resp.Args = append(resp.Args, topicName)
+		resp.AddArg(t.MsgServerAddr)
+		resp.AddArg(topicName)
 		
 		err = session.Send(libnet.JSON {
 			resp,

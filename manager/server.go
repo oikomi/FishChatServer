@@ -120,8 +120,8 @@ func (self *Manager)subscribeChannels() error {
 			return err
 		}
 		cmd := protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
-		cmd.Args = append(cmd.Args, protocol.SYSCTRL_CLIENT_STATUS)
-		cmd.Args = append(cmd.Args, self.cfg.UUID)
+		cmd.AddArg(protocol.SYSCTRL_CLIENT_STATUS)
+		cmd.AddArg(self.cfg.UUID)
 		
 		err = msgServerClient.Send(libnet.JSON {
 			cmd,
@@ -132,8 +132,8 @@ func (self *Manager)subscribeChannels() error {
 		}
 		
 		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
-		cmd.Args = append(cmd.Args, protocol.SYSCTRL_TOPIC_STATUS)
-		cmd.Args = append(cmd.Args, self.cfg.UUID)
+		cmd.AddArg(protocol.SYSCTRL_TOPIC_STATUS)
+		cmd.AddArg(self.cfg.UUID)
 		
 		err = msgServerClient.Send(libnet.JSON {
 			cmd,

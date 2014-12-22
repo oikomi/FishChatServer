@@ -101,38 +101,36 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 	}
 	
 	pp := NewProtoProc(self)
-	
-	glog.Info(c.CmdName)
 
-	switch c.CmdName {
+	switch c.GetCmdName() {
 		case protocol.SEND_PING_CMD:
-			pp.procPing(c, session)
+			pp.procPing(&c, session)
 		case protocol.SUBSCRIBE_CHANNEL_CMD:
-			pp.procSubscribeChannel(c, session)
+			pp.procSubscribeChannel(&c, session)
 		case protocol.SEND_CLIENT_ID_CMD:
-			err = pp.procClientID(c, session)
+			err = pp.procClientID(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err
 			}
 		case protocol.SEND_MESSAGE_P2P_CMD:
-			pp.procSendMessageP2P(c, session)
+			pp.procSendMessageP2P(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err
 			}
 		case protocol.ROUTE_MESSAGE_P2P_CMD:
-			pp.procRouteMessageP2P(c, session)
+			pp.procRouteMessageP2P(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err
 			}
 		case protocol.CREATE_TOPIC_CMD:
-			pp.procCreateTopic(c, session)
+			pp.procCreateTopic(&c, session)
 		case protocol.JOIN_TOPIC_CMD:
-			pp.procJoinTopic(c, session)
+			pp.procJoinTopic(&c, session)
 		case protocol.SEND_MESSAGE_TOPIC_CMD:
-			pp.procSendMessageTopic(c, session)
+			pp.procSendMessageTopic(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err

@@ -1,7 +1,7 @@
 
 #!/bin/sh
 
-go build
+#go build
 
 cd  client_p2p
 go build

@@ -81,7 +81,7 @@ func main() {
 		msgServer := common.SelectServer(cfg.MsgServerList, cfg.MsgServerNum)
 
 		resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
-		resp.Args = append(resp.Args, msgServer)
+		resp.AddArg(msgServer)
 		
 		if session != nil {
 			session.Send(libnet.JSON {

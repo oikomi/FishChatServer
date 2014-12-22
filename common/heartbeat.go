@@ -63,8 +63,7 @@ func (self *HeartBeat) Beat() {
 		case <-timer.C:
 			go func() {
 				cmd := protocol.NewCmdSimple(protocol.SEND_PING_CMD)
-				cmd.Args = append(cmd.Args, protocol.PING)
-				
+				cmd.AddArg(protocol.PING)
 				err := self.session.Send(libnet.JSON {
 					cmd,
 				})

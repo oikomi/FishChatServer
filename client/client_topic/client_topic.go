@@ -79,14 +79,14 @@ func main() {
 
 	gatewayClient.Close(nil)
 
-	msgServerClient, err := libnet.Dial("tcp", string(cc.Args[0]), p)
+	msgServerClient, err := libnet.Dial("tcp", string(cc.GetArgs()[0]), p)
 	if err != nil {
 		panic(err)
 	}
 	
 	glog.Info("test.. send id...")
 	cmd := protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
-	cmd.Args = append(cmd.Args, input)
+	cmd.AddArg(input)
 	
 	err = msgServerClient.Send(libnet.JSON {
 		cmd,
@@ -111,7 +111,7 @@ func main() {
 		glog.Error(err.Error())
 	}
 	
-	cmd.Args = append(cmd.Args, input)
+	cmd.AddArg(input)
 	
 	err = msgServerClient.Send(libnet.JSON {
 		cmd,
@@ -130,14 +130,14 @@ func main() {
 		glog.Error(err.Error())
 	}
 	
-	cmd.Args = append(cmd.Args, input)
+	cmd.AddArg(input)
 	
 	fmt.Println("input clientID :")
 	if _, err = fmt.Scanf("%s\n", &input); err != nil {
 		glog.Error(err.Error())
 	}
 	
-	cmd.Args = append(cmd.Args, input)
+	cmd.AddArg(input)
 	
 	err = msgServerClient.Send(libnet.JSON {
 		cmd,
@@ -155,14 +155,14 @@ func main() {
 		glog.Error(err.Error())
 	}
 	
-	cmd.Args = append(cmd.Args, input)
+	cmd.AddArg(input)
 
 	fmt.Println("input topic msg :")
 	if _, err = fmt.Scanf("%s\n", &input); err != nil {
 		glog.Error(err.Error())
 	}
 	
-	cmd.Args = append(cmd.Args, input)
+	cmd.AddArg(input)
 	
 	err = msgServerClient.Send(libnet.JSON {
 		cmd,

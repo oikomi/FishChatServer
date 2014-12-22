@@ -106,8 +106,8 @@ func (self *Router)subscribeChannels() error {
 			return err
 		}
 		cmd := protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
-		cmd.Args = append(cmd.Args, protocol.SYSCTRL_SEND)
-		cmd.Args = append(cmd.Args, self.cfg.UUID)
+		cmd.AddArg(protocol.SYSCTRL_SEND)
+		cmd.AddArg(self.cfg.UUID)
 		
 		err = msgServerClient.Send(libnet.JSON {
 			cmd,
@@ -118,8 +118,8 @@ func (self *Router)subscribeChannels() error {
 		}
 		
 		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
-		cmd.Args = append(cmd.Args, protocol.SYSCTRL_TOPIC_SYNC)
-		cmd.Args = append(cmd.Args, self.cfg.UUID)
+		cmd.AddArg(protocol.SYSCTRL_TOPIC_SYNC)
+		cmd.AddArg(self.cfg.UUID)
 		
 		err = msgServerClient.Send(libnet.JSON {
 			cmd,

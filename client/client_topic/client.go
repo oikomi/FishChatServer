@@ -59,8 +59,8 @@ func (self *Client)locateTopicAddr(c protocol.CmdSimple) {
 	self.AddTopicClient(topicName, msgServerClient)
 	
 	cmd := protocol.NewCmdSimple(protocol.JOIN_TOPIC_CMD)
-	cmd.Args = append(cmd.Args, topicName)
-	cmd.Args = append(cmd.Args, gClientID)
+	cmd.AddArg(topicName)
+	cmd.AddArg(gClientID)
 	
 	err = msgServerClient.Send(libnet.JSON {
 		cmd,
@@ -79,10 +79,8 @@ func (self *Client)parseProtocol(cmd []byte) error {
 		glog.Error("error:", err)
 		return err
 	}
-	
-	glog.Info(c.CmdName)
 
-	switch c.CmdName {
+	switch c.GetCmdName() {
 		case protocol.LOCATE_TOPIC_MSG_ADDR_CMD:
 			self.locateTopicAddr(c)
 
