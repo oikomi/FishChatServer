@@ -38,7 +38,7 @@ type ChannelState struct {
 	ClientIDlist  []string
 }
 
-func NewChannelState(channelName string, channel *libnet.Channel) *ChannelState{
+func NewChannelState(channelName string, channel *libnet.Channel) *ChannelState {
 	return &ChannelState {
 		ChannelName  : channelName,
 		Channel      : channel,
