@@ -1,6 +1,6 @@
 {
 	"TransportProtocols" : "tcp",
-	"Listen"             : "127.0.0.1:18000",
+	"Listen"             : "0.0.0.0:18000",
 	"LogFile"            : "manager.log",
 	"UUID"               : "18000",
 	"MsgServerList"      : [

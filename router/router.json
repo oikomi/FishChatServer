@@ -1,6 +1,6 @@
 {
 	"TransportProtocols" : "tcp",
-	"Listen"             : "127.0.0.1:20000",
+	"Listen"             : "0.0.0.0:20000",
 	"LogFile"            : "router.log",
 	"UUID"               : "20000",
 	"MsgServerList"      : [

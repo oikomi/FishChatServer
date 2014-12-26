@@ -1,5 +1,5 @@
 {
-	"LocalIP"                  : "127.0.0.1:19000",
+	"LocalIP"                  : "0.0.0.0:19000",
 	"TransportProtocols"       : "tcp",
 	"Listen"                   : "127.0.0.1:19000",
 	"LogFile"                  : "msg_server.log",
