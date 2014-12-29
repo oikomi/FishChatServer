@@ -32,6 +32,10 @@ Todo
 ======
 FishChatServer完全采用Golang开发(https://golang.org/)
 
+音视频方案
+---------------------
+音视频采用nginx-rtmp架构,借助ffmpeg技术,客户端输出rtmp流,服务器输出hls流
+
 协议
 ---------------------
 ### 1. client to MsgServer
