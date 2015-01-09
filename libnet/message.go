@@ -6,103 +6,39 @@ import (
 	"encoding/xml"
 )
 
-// Message.
-type Message interface {
-	// Get a recommend buffer size.
-	RecommendBufferSize() int
-
-	// Write the message to the packet buffer and returns the new buffer like append() function.
-	WriteBuffer(buffer *OutBuffer) error
-}
-
-// Binary message
-type Binary []byte
-
-// Implement the Message interface.
-func (bin Binary) RecommendBufferSize() int {
-	return len(bin)
-}
-
-// Implement the Message interface.
-func (bin Binary) WriteBuffer(buffer *OutBuffer) error {
-	buffer.Append([]byte(bin)...)
-	return nil
-}
-
-// JSON message
-type JSON struct {
-	V interface{}
-}
-
-// Implement the Message interface.
-func (j JSON) RecommendBufferSize() int {
-	return 1024
-}
-
-// Implement the Message interface.
-func (j JSON) WriteBuffer(buffer *OutBuffer) error {
-	return json.NewEncoder(buffer).Encode(j.V)
-}
-
-// GOB message
-type GOB struct {
-	V interface{}
-}
-
-// Implement the Message interface.
-func (g GOB) RecommendBufferSize() int {
-	return 1024
-}
-
-// Implement the Message interface.
-func (g GOB) WriteBuffer(buffer *OutBuffer) error {
-	return gob.NewEncoder(buffer).Encode(g.V)
-}
-
-// XML message
-type XML struct {
-	V interface{}
-}
-
-// Implement the Message interface.
-func (x XML) RecommendBufferSize() int {
-	return 1024
-}
-
-// Implement the Message interface.
-func (x XML) WriteBuffer(buffer *OutBuffer) error {
-	return xml.NewEncoder(buffer).Encode(x.V)
-}
-
-// A simple send queue. Can used for buffered send.
-// For example, sometimes you have many Session.Send() call during a request processing.
-// You can use the send queue to buffer those messages then call Session.Send() once after request processing done.
-// The send queue type implemented Message interface. So you can pass it as the Session.Send() method argument.
-type SendQueue struct {
-	messages []Message
-}
-
-// Push a message into send queue but not send it immediately.
-func (q *SendQueue) Push(message Message) {
-	q.messages = append(q.messages, message)
-}
-
-// Implement the Message interface.
-func (q *SendQueue) RecommendBufferSize() int {
-	size := 0
-	for _, message := range q.messages {
-		size += message.RecommendBufferSize()
+// Convert to bytes message.
+func Bytes(v []byte) Encoder {
+	return func(buffer *OutBuffer) error {
+		buffer.WriteBytes(v)
+		return nil
 	}
-	return size
 }
 
-// Implement the Message interface.
-func (q *SendQueue) WriteBuffer(buffer *OutBuffer) error {
-	var err error
-	for _, message := range q.messages {
-		if err = message.WriteBuffer(buffer); err != nil {
-			return err
-		}
+// Convert to string message.
+func String(v string) Encoder {
+	return func(buffer *OutBuffer) error {
+		buffer.WriteString(v)
+		return nil
 	}
-	return nil
+}
+
+// Create a json message.
+func Json(v interface{}) Encoder {
+	return func(buffer *OutBuffer) error {
+		return json.NewEncoder(buffer).Encode(v)
+	}
+}
+
+// Create a gob message.
+func Gob(v interface{}) Encoder {
+	return func(buffer *OutBuffer) error {
+		return gob.NewEncoder(buffer).Encode(v)
+	}
+}
+
+// Create a xml message.
+func Xml(v interface{}) Encoder {
+	return func(buffer *OutBuffer) error {
+		return xml.NewEncoder(buffer).Encode(v)
+	}
 }

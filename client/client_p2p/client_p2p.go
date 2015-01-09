@@ -45,9 +45,7 @@ func main() {
 		return
 	}
 
-	p := libnet.PacketN(2, libnet.BigEndian)
-
-	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer, p)
+	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer)
 	if err != nil {
 		panic(err)
 	}
@@ -57,23 +55,22 @@ func main() {
 	if _, err := fmt.Scanf("%s\n", &input); err != nil {
 		glog.Error(err.Error())
 	}
-	
-	inMsg, err := gatewayClient.Read()
+	var c protocol.CmdSimple
+	err = gatewayClient.ProcessOnce(func(msg *libnet.InBuffer) error {
+		glog.Info(string(msg.Data))
+		err = json.Unmarshal(msg.Data, &c)
+		if err != nil {
+			glog.Error("error:", err)
+		}
+		return nil
+	})
 	if err != nil {
 		glog.Error(err.Error())
 	}
-	glog.Info(string(inMsg.Data))
 
-	var c protocol.CmdSimple
-	
-	err = json.Unmarshal(inMsg.Data, &c)
-	if err != nil {
-		glog.Error("error:", err)
-	}
+	gatewayClient.Close()
 
-	gatewayClient.Close(nil)
-
-	msgServerClient, err := libnet.Dial("tcp", string(c.GetArgs()[0]), p)
+	msgServerClient, err := libnet.Dial("tcp", string(c.GetArgs()[0]))
 	if err != nil {
 		panic(err)
 	}
@@ -82,9 +79,7 @@ func main() {
 	cmd := protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
 	cmd.AddArg(input)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}
@@ -115,17 +110,16 @@ func main() {
 	
 	cmd.AddArg(input)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}
 	
-	defer msgServerClient.Close(nil)
+	defer msgServerClient.Close()
 	
-	msgServerClient.Handle(func(msg *libnet.InBuffer) {
+	msgServerClient.Process(func(msg *libnet.InBuffer) error {
 		glog.Info(string(msg.Data))
+		return nil
 	})
 	
 	glog.Flush()

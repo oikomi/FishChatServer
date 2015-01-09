@@ -49,9 +49,7 @@ func main() {
 	
 	c := NewClient(&cfg)
 
-	p := libnet.PacketN(2, libnet.BigEndian)
-
-	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer, p)
+	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer)
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +62,12 @@ func main() {
 	
 	gClientID = input
 	
-	inMsg, err := gatewayClient.Read()
+	var inMsg *libnet.InBuffer
+	err = gatewayClient.ProcessOnce(func(msg *libnet.InBuffer) error {
+		glog.Info(string(msg.Data))
+		inMsg = msg
+		return nil
+	})
 	if err != nil {
 		glog.Error(err.Error())
 	}
@@ -77,9 +80,9 @@ func main() {
 		glog.Error("error:", err)
 	}
 
-	gatewayClient.Close(nil)
+	gatewayClient.Close()
 
-	msgServerClient, err := libnet.Dial("tcp", string(cc.GetArgs()[0]), p)
+	msgServerClient, err := libnet.Dial("tcp", string(cc.GetArgs()[0]))
 	if err != nil {
 		panic(err)
 	}
@@ -88,18 +91,18 @@ func main() {
 	cmd := protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
 	cmd.AddArg(input)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}
 	
 	go heartBeat(cfg, msgServerClient)
 	
-	go msgServerClient.Handle(func(msg *libnet.InBuffer) {
+	go msgServerClient.Process(func(msg *libnet.InBuffer) error {
 		glog.Info(string(msg.Data))
 		c.parseProtocol(msg.Data)
+		
+		return nil
 	})
 	
 	glog.Info("test.. send create topic...")
@@ -113,13 +116,10 @@ func main() {
 	
 	cmd.AddArg(input)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}
-	
 	
 	glog.Info("test.. send join topic...")
 	
@@ -139,9 +139,7 @@ func main() {
 	
 	cmd.AddArg(input)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}
@@ -164,14 +162,12 @@ func main() {
 	
 	cmd.AddArg(input)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}
 
-	defer msgServerClient.Close(nil)
+	defer msgServerClient.Close()
 	
 	glog.Flush()
 }

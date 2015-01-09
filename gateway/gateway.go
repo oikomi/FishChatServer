@@ -67,16 +67,16 @@ func main() {
 		return
 	}
 	
-	p := libnet.PacketN(2, libnet.BigEndian)
+	//p := libnet.PacketN(2, libnet.BigEndian)
 	
-	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
+	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
 		glog.Error(err.Error())
 		return
 	}
 	glog.Info("gateway server start at ", server.Listener().Addr().String())
 
-	server.Handle(func(session *libnet.Session) {
+	server.Serve(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
 		msgServer := common.SelectServer(cfg.MsgServerList, cfg.MsgServerNum)
 
@@ -86,14 +86,12 @@ func main() {
 		glog.Info(resp)
 		
 		if session != nil {
-			session.Send(libnet.JSON {
-				resp,
-			})
+			session.Send(libnet.Json(resp))
 			if err != nil {
 				glog.Error(err.Error())
 			}
 		}
-		session.Close(nil)
+		session.Close()
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | close")
 	})
 }

@@ -56,8 +56,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 }
 
 func (self *Manager)connectMsgServer(ms string) (*libnet.Session, error) {
-	p := libnet.PacketN(2, libnet.BigEndian)
-	client, err := libnet.Dial("tcp", ms, p)
+	client, err := libnet.Dial("tcp", ms)
 	if err != nil {
 		glog.Error(err.Error())
 		panic(err)
@@ -103,10 +102,12 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 }
 
 func (self *Manager)handleMsgServerClient(msc *libnet.Session) {
-	msc.Handle(func(msg *libnet.InBuffer) {
+	msc.Process(func(msg *libnet.InBuffer) error {
 		glog.Info("msg_server", msc.Conn().RemoteAddr().String(),"say:", string(msg.Data))
 		
 		self.parseProtocol(msg.Data, msc)
+		
+		return nil
 	})
 }
 
@@ -123,9 +124,7 @@ func (self *Manager)subscribeChannels() error {
 		cmd.AddArg(protocol.SYSCTRL_CLIENT_STATUS)
 		cmd.AddArg(self.cfg.UUID)
 		
-		err = msgServerClient.Send(libnet.JSON {
-			cmd,
-		})
+		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
 			glog.Error(err.Error())
 			return err
@@ -135,9 +134,7 @@ func (self *Manager)subscribeChannels() error {
 		cmd.AddArg(protocol.SYSCTRL_TOPIC_STATUS)
 		cmd.AddArg(self.cfg.UUID)
 		
-		err = msgServerClient.Send(libnet.JSON {
-			cmd,
-		})
+		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
 			glog.Error(err.Error())
 			return err

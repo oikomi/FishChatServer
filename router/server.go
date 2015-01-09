@@ -52,8 +52,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 }
 
 func (self *Router)connectMsgServer(ms string) (*libnet.Session, error) {
-	p := libnet.PacketN(2, libnet.BigEndian)
-	client, err := libnet.Dial("tcp", ms, p)
+	client, err := libnet.Dial("tcp", ms)
 	if err != nil {
 		glog.Error(err.Error())
 		panic(err)
@@ -63,13 +62,14 @@ func (self *Router)connectMsgServer(ms string) (*libnet.Session, error) {
 }
 
 func (self *Router)handleMsgServerClient(msc *libnet.Session) {
-	msc.Handle(func(msg *libnet.InBuffer) {
+	msc.Process(func(msg *libnet.InBuffer) error {
 		glog.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
 		var c protocol.CmdInternal
 		pp := NewProtoProc(self)
 		err := json.Unmarshal(msg.Data, &c)
 		if err != nil {
 			glog.Error("error:", err)
+			return err
 		}
 		switch c.GetCmdName() {
 			case protocol.SEND_MESSAGE_P2P_CMD:
@@ -94,6 +94,7 @@ func (self *Router)handleMsgServerClient(msc *libnet.Session) {
 				}
 				
 			}
+		return nil
 	})
 }
 
@@ -109,9 +110,7 @@ func (self *Router)subscribeChannels() error {
 		cmd.AddArg(protocol.SYSCTRL_SEND)
 		cmd.AddArg(self.cfg.UUID)
 		
-		err = msgServerClient.Send(libnet.JSON {
-			cmd,
-		})
+		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
 			glog.Error(err.Error())
 			return err
@@ -121,9 +120,7 @@ func (self *Router)subscribeChannels() error {
 		cmd.AddArg(protocol.SYSCTRL_TOPIC_SYNC)
 		cmd.AddArg(self.cfg.UUID)
 		
-		err = msgServerClient.Send(libnet.JSON {
-			cmd,
-		})
+		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
 			glog.Error(err.Error())
 			return err

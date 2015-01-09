@@ -43,17 +43,15 @@ func (self *Client)locateTopicAddr(c protocol.CmdSimple) {
 	glog.Info("locateTopicAddr")
 	serverAddr := c.GetArgs()[0]
 	topicName := c.GetArgs()[1]
-	
-	p := libnet.PacketN(2, libnet.BigEndian)
-	
-	msgServerClient, err := libnet.Dial("tcp", serverAddr, p)
+
+	msgServerClient, err := libnet.Dial("tcp", serverAddr)
 	if err != nil {
 		panic(err)
 	}
 	
-	go msgServerClient.Handle(func(msg *libnet.InBuffer) {
+	go msgServerClient.Process(func(msg *libnet.InBuffer) error {
 		glog.Info(string(msg.Data))
-		
+		return nil
 	})
 	
 	self.AddTopicClient(topicName, msgServerClient)
@@ -62,9 +60,7 @@ func (self *Client)locateTopicAddr(c protocol.CmdSimple) {
 	cmd.AddArg(topicName)
 	cmd.AddArg(gClientID)
 	
-	err = msgServerClient.Send(libnet.JSON {
-		cmd,
-	})
+	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
 		glog.Error(err.Error())
 	}

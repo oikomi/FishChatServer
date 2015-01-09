@@ -58,11 +58,13 @@ func version() {
 var InputConfFile = flag.String("conf_file", "msg_server.json", "input conf file name")   
 
 func handleSession(ms *MsgServer, session *libnet.Session) {
-	session.Handle(func(msg *libnet.InBuffer) {
+	session.Process(func(msg *libnet.InBuffer) error {
 		err := ms.parseProtocol(msg.Data, session)
 		if err != nil {
 			glog.Error(err.Error())
 		}
+		
+		return nil
 	})
 }
 
@@ -88,10 +90,8 @@ func main() {
 		})
 
 	ms := NewMsgServer(cfg, rs)
-	
-	p := libnet.PacketN(2, libnet.BigEndian)
-	
-	ms.server, err = libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
+
+	ms.server, err = libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +101,7 @@ func main() {
 
 	go ms.scanDeadSession()
 
-	ms.server.Handle(func(session *libnet.Session) {
+	ms.server.Serve(func(session *libnet.Session) {
 		glog.Info("a new client ", session.Conn().RemoteAddr().String(), " | come in")
 		go handleSession(ms, session)
 	})

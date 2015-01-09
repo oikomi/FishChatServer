@@ -1,7 +1,7 @@
 {
-	"LocalIP"                  : "0.0.0.0:19001",
+	"LocalIP"                  : "127.0.0.1:19001",
 	"TransportProtocols"       : "tcp",
-	"Listen"                   : "127.0.0.1:19001",
+	"Listen"                   : "0.0.0.0:19001",
 	"LogFile"                  : "msg_server.log",
 	"ScanDeadSessionTimeout"   : 50,
 	"Expire"                   : 100,

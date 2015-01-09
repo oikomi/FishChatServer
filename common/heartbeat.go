@@ -64,9 +64,7 @@ func (self *HeartBeat) Beat() {
 			go func() {
 				cmd := protocol.NewCmdSimple(protocol.SEND_PING_CMD)
 				cmd.AddArg(protocol.PING)
-				err := self.session.Send(libnet.JSON {
-					cmd,
-				})
+				err := self.session.Send(libnet.Json(cmd))
 				if err != nil {
 					glog.Error(err.Error())
 				}

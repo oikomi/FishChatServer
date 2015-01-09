@@ -2,44 +2,56 @@ package libnet
 
 import "github.com/oikomi/FishChatServer/syncs"
 
-// The session collection use to fetch session and send broadcast.
-type SessionCollection interface {
-	Protocol() Protocol
-	FetchSession(func(*Session))
+// Broadcaster.
+type Broadcaster struct {
+	protocol ProtocolState
+	fetcher  func(func(*Session))
+}
+
+// Broadcast work.
+type BroadcastWork struct {
+	Session *Session
+	AsyncWork
+}
+
+// Create a broadcaster.
+func NewBroadcaster(protocol ProtocolState, fetcher func(func(*Session))) *Broadcaster {
+	return &Broadcaster{
+		protocol: protocol,
+		fetcher:  fetcher,
+	}
 }
 
 // Broadcast to sessions. The message only encoded once
-// so the performance better then send message one by one.
-func Broadcast(sessions SessionCollection, message Message) error {
-	var buffer = &OutBuffer{}
-	if err := sessions.Protocol().Packet(message, buffer); err != nil {
-		return err
+// so the performance is better than send message one by one.
+func (b *Broadcaster) Broadcast(encoder Encoder) ([]BroadcastWork, error) {
+	buffer := newOutBuffer()
+	b.protocol.PrepareOutBuffer(buffer, 1024)
+	if err := encoder(buffer); err != nil {
+		buffer.free()
+		return nil, err
 	}
-	sessions.FetchSession(func(session *Session) {
-		session.TrySendPacket(buffer, 0)
+	buffer.isBroadcast = true
+	works := make([]BroadcastWork, 0, 10)
+	b.fetcher(func(session *Session) {
+		buffer.broadcastUse()
+		works = append(works, BroadcastWork{
+			session,
+			session.asyncSendBuffer(buffer),
+		})
 	})
-	return nil
-}
-
-// Broadcast to sessions. The message only encoded once
-// so the performance better then send message one by one.
-func MustBroadcast(sessions SessionCollection, message Message) error {
-	var buffer = &OutBuffer{}
-	if err := sessions.Protocol().Packet(message, buffer); err != nil {
-		return err
-	}
-	sessions.FetchSession(func(session *Session) {
-		session.SendPacket(buffer)
-	})
-	return nil
+	return works, nil
 }
 
 // The channel type. Used to maintain a group of session.
 // Normally used for broadcast classify purpose.
 type Channel struct {
-	mutex    syncs.RWMutex
-	protocol Protocol
-	sessions map[uint64]channelSession
+	mutex       syncs.RWMutex
+	sessions    map[uint64]channelSession
+	broadcaster *Broadcaster
+
+	// channel state
+	State interface{}
 }
 
 type channelSession struct {
@@ -49,10 +61,17 @@ type channelSession struct {
 
 // Create a channel instance.
 func NewChannel(protocol Protocol) *Channel {
-	return &Channel{
-		protocol: protocol,
+	channel := &Channel{
 		sessions: make(map[uint64]channelSession),
 	}
+	channel.broadcaster = NewBroadcaster(protocol.New(channel), channel.Fetch)
+	return channel
+}
+
+// Broadcast to channel. The message only encoded once
+// so the performance is better than send message one by one.
+func (channel *Channel) Broadcast(encoder Encoder) ([]BroadcastWork, error) {
+	return channel.broadcaster.Broadcast(encoder)
 }
 
 // How mush sessions in this channel.
@@ -68,13 +87,10 @@ func (channel *Channel) Join(session *Session, kickCallback func()) {
 	channel.mutex.Lock()
 	defer channel.mutex.Unlock()
 
-	session.AddCloseEventListener(channel)
+	session.AddCloseCallback(channel, func() {
+		channel.Exit(session)
+	})
 	channel.sessions[session.Id()] = channelSession{session, kickCallback}
-}
-
-// Implement the SessionCloseEventListener interface.
-func (channel *Channel) OnSessionClose(session *Session) {
-	channel.Exit(session)
 }
 
 // Exit the channel.
@@ -82,7 +98,7 @@ func (channel *Channel) Exit(session *Session) {
 	channel.mutex.Lock()
 	defer channel.mutex.Unlock()
 
-	session.RemoveCloseEventListener(channel)
+	session.RemoveCloseCallback(channel)
 	delete(channel.sessions, session.Id())
 }
 
@@ -99,15 +115,8 @@ func (channel *Channel) Kick(sessionId uint64) {
 	}
 }
 
-// Get channel protocol.
-// Implement SessionCollection interface.
-func (channel *Channel) Protocol() Protocol {
-	return channel.protocol
-}
-
 // Fetch the sessions. NOTE: Invoke Kick() or Exit() in fetch callback will dead lock.
-// Implement SessionCollection interface.
-func (channel *Channel) FetchSession(callback func(*Session)) {
+func (channel *Channel) Fetch(callback func(*Session)) {
 	channel.mutex.RLock()
 	defer channel.mutex.RUnlock()
 

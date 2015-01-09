@@ -64,10 +64,8 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
-	
-	p := libnet.PacketN(2, libnet.BigEndian)
-	
-	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen, p)
+
+	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
 		glog.Error(err.Error())
 	}
@@ -76,7 +74,7 @@ func main() {
 	sm := NewManager(cfg)
 	go sm.subscribeChannels()
 	
-	server.Handle(func(session *libnet.Session) {
+	server.Serve(func(session *libnet.Session) {
 	
 	})
 }
