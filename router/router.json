@@ -8,10 +8,10 @@
 			"127.0.0.1:19001"
 	],
 	"Redis"              : { 
-			"Addr" : "127.0.0.1", 
-			"Port" : ":6379",
+			"Addr"           : "127.0.0.1", 
+			"Port"           : ":6379",
 			"ConnectTimeout" : 2000,
-			"ReadTimeout" : 1000,
-			"WriteTimeout" : 1000
+			"ReadTimeout"    : 1000,
+			"WriteTimeout"   : 1000
 	}
 }
