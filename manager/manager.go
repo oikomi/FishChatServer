@@ -49,7 +49,7 @@ func init() {
 const VERSION string = "0.10"
 
 func version() {
-	fmt.Printf("manager version %s Copyright (c) 2014 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
+	fmt.Printf("manager version %s Copyright (c) 2014-2015 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
 }
 
 var InputConfFile = flag.String("conf_file", "manager.json", "input conf file name")
