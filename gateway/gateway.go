@@ -20,8 +20,6 @@ import (
 	"flag"
 	"github.com/golang/glog"
 	"github.com/oikomi/FishChatServer/libnet"
-	"github.com/oikomi/FishChatServer/common"
-	"github.com/oikomi/FishChatServer/protocol"
 )
 
 /*
@@ -54,7 +52,18 @@ func init() {
 	flag.Set("log_dir", "false")
 }
 
-var InputConfFile = flag.String("conf_file", "gateway.json", "input conf file name")   
+var InputConfFile = flag.String("conf_file", "gateway.json", "input conf file name") 
+
+func handleSession(gw *Gateway, session *libnet.Session) {
+	session.Process(func(msg *libnet.InBuffer) error {
+		err := gw.parseProtocol(msg.Data, session)
+		if err != nil {
+			glog.Error(err.Error())
+		}
+		
+		return nil
+	})
+}  
 
 func main() {
 	version()
@@ -66,30 +75,19 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
+	
+	gw := NewGateway(cfg)
 
-	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen)
+	gw.server, err = libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
 		glog.Error(err.Error())
 		return
 	}
-	glog.Info("gateway server start at ", server.Listener().Addr().String())
+	glog.Info("gateway server start at ", gw.server.Listener().Addr().String())
 
-	server.Serve(func(session *libnet.Session) {
+	gw.server.Serve(func(session *libnet.Session) {
 		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
-		msgServer := common.SelectServer(cfg.MsgServerList, cfg.MsgServerNum)
-
-		resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
-		resp.AddArg(msgServer)
 		
-		glog.Info(resp)
-		
-		if session != nil {
-			err = session.Send(libnet.Json(resp))
-			if err != nil {
-				glog.Error(err.Error())
-			}
-			session.Close()
-			glog.Info("client ", session.Conn().RemoteAddr().String(), " | close")
-		}
+		go handleSession(gw, session)
 	})
 }

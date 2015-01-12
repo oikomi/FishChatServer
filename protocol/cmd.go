@@ -16,6 +16,7 @@
 package protocol
 
 const (
+	REQ_MSG_SERVER_CMD                    = "REQ_MSG_SERVER"
 	//SELECT_MSG_SERVER_FOR_CLIENT msg_server_ip
 	SELECT_MSG_SERVER_FOR_CLIENT_CMD      = "SELECT_MSG_SERVER_FOR_CLIENT"
 )
