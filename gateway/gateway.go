@@ -46,7 +46,7 @@ func BuildTime() string {
 const VERSION string = "0.10"
 
 func version() {
-	fmt.Printf("gateway version %s Copyright (c) 2014 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
+	fmt.Printf("gateway version %s Copyright (c) 2014-2015 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
 }
 
 func init() {
@@ -66,9 +66,7 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
-	
-	//p := libnet.PacketN(2, libnet.BigEndian)
-	
+
 	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
 		glog.Error(err.Error())
@@ -90,8 +88,8 @@ func main() {
 			if err != nil {
 				glog.Error(err.Error())
 			}
+			session.Close()
+			glog.Info("client ", session.Conn().RemoteAddr().String(), " | close")
 		}
-		session.Close()
-		glog.Info("client ", session.Conn().RemoteAddr().String(), " | close")
 	})
 }

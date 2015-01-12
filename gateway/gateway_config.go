@@ -22,7 +22,7 @@ import (
 )
 
 type GatewayConfig struct {
-	configfile         string
+	configFile         string
 	TransportProtocols string
 	Listen             string
 	LogFile            string
@@ -30,14 +30,14 @@ type GatewayConfig struct {
 	MsgServerNum       int
 }
 
-func NewGatewayConfig(configfile string) *GatewayConfig {
+func NewGatewayConfig(configFile string) *GatewayConfig {
 	return &GatewayConfig {
-		configfile : configfile,
+		configFile : configFile,
 	}
 }
 
 func (self *GatewayConfig)LoadConfig() error {
-	file, err := os.Open(self.configfile)
+	file, err := os.Open(self.configFile)
 	if err != nil {
 		glog.Error(err.Error())
 		return err
