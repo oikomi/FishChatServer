@@ -50,6 +50,14 @@ func main() {
 		panic(err)
 	}
 	
+	glog.Info("req msg_server...")
+	cmd := protocol.NewCmdSimple(protocol.REQ_MSG_SERVER_CMD)
+	
+	err = gatewayClient.Send(libnet.Json(cmd))
+	if err != nil {
+		glog.Error(err.Error())
+	}
+	
 	fmt.Println("input id :")
 	var input string
 	if _, err := fmt.Scanf("%s\n", &input); err != nil {
@@ -76,7 +84,7 @@ func main() {
 	}
 	
 	glog.Info("test.. send id...")
-	cmd := protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
+	cmd = protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
 	cmd.AddArg(input)
 	
 	err = msgServerClient.Send(libnet.Json(cmd))

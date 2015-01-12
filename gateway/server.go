@@ -56,6 +56,5 @@ func (self *Gateway)parseProtocol(cmd []byte, session *libnet.Session) error {
 		}
 
 	return err
-
 }
 
