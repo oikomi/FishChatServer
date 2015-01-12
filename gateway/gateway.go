@@ -84,7 +84,7 @@ func main() {
 		glog.Info(resp)
 		
 		if session != nil {
-			session.Send(libnet.Json(resp))
+			err = session.Send(libnet.Json(resp))
 			if err != nil {
 				glog.Error(err.Error())
 			}
