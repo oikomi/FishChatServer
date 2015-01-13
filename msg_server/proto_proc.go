@@ -108,8 +108,11 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	self.msgServer.sessions[cmd.GetArgs()[0]] = session
 	self.msgServer.sessions[cmd.GetArgs()[0]].State = base.NewSessionState(true, cmd.GetArgs()[0])
 	
-	self.procOfflineMsg(session, ID)
-	
+	err = self.procOfflineMsg(session, ID)
+	if err != nil {
+		glog.Error(err.Error())
+		return err
+	}
 	return nil
 }
 
