@@ -221,33 +221,6 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 }
 
 
-func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procSendMessageTopic")
-	var err error
-	topicName := cmd.GetArgs()[0]
-	send2Msg := cmd.GetArgs()[1]
-	glog.Info(send2Msg)
-	glog.Info(topicName)
-
-	if self.msgServer.topics[topicName] == nil {
-		glog.Warning(topicName + " is not exist")
-	} else {
-		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
-		resp.AddArg(send2Msg)
-		resp.AddArg(session.State.(*base.SessionState).ClientID)
-
-		_, err = self.msgServer.topics[topicName].Channel.Broadcast(libnet.Json(resp))
-		if err != nil {
-			glog.Error(err.Error())
-			return err
-		}
-	}
-	
-	return err
-}
-
-
-
 func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procCreateTopic")
 	var err error
@@ -367,4 +340,30 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	}
 	
 	return nil
+}
+
+func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Session) error {
+	glog.Info("procSendMessageTopic")
+	var err error
+	topicName := cmd.GetArgs()[0]
+	send2Msg := cmd.GetArgs()[1]
+	glog.Info(send2Msg)
+	glog.Info(topicName)
+
+	if self.msgServer.topics[topicName] == nil {
+		glog.Warning(topicName + " is not exist")
+	} else {
+		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
+		resp.AddArg(topicName)
+		resp.AddArg(send2Msg)
+		resp.AddArg(session.State.(*base.SessionState).ClientID)
+
+		_, err = self.msgServer.topics[topicName].Channel.Broadcast(libnet.Json(resp))
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
+	}
+	
+	return err
 }

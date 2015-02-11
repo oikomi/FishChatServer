@@ -144,7 +144,7 @@ func main() {
 		glog.Error(err.Error())
 	}
 	
-	//var c protocol.CmdSimple
+
 	err = msgServerClient.ProcessOnce(func(msg *libnet.InBuffer) error {
 		glog.Info(string(msg.Data))
 		err = json.Unmarshal(msg.Data, &c)
@@ -163,33 +163,101 @@ func main() {
 	fmt.Println("topicMsgServerAddrstring :" + topicMsgServerAddrstring)
 	fmt.Println("topicName :" + topicName)
 	
-	cmd = protocol.NewCmdSimple(protocol.SEND_MESSAGE_TOPIC_CMD)
+	
+	if _, f := msgServerMap[topicMsgServerAddrstring]; f == false {
+		fmt.Println("to another server")
+		newMsgServerClient, err := libnet.Dial("tcp", topicMsgServerAddrstring)
+		if err != nil {
+			panic(err)
+		}
+		
+		glog.Info("test.. send id...")
+		cmd = protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
+		cmd.AddArg(input)
+		
+		err = newMsgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			glog.Error(err.Error())
+		}
+		
+		go heartBeat(cfg, newMsgServerClient)
+		
+		cmd = protocol.NewCmdSimple(protocol.JOIN_TOPIC_CMD)
+	
+		fmt.Println("JOIN_TOPIC_CMD | input topic name :")
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			glog.Error(err.Error())
+		}
+		
+		cmd.AddArg(input)
+		fmt.Println("JOIN_TOPIC_CMD | input your ID :")
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			glog.Error(err.Error())
+		}
+		
+		cmd.AddArg(input)
+		
+		err = newMsgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			glog.Error(err.Error())
+		}
+		
+		msgServerMap[topicMsgServerAddrstring] = newMsgServerClient
+		
+		cmd = protocol.NewCmdSimple(protocol.SEND_MESSAGE_TOPIC_CMD)
 
-	fmt.Println("SEND_MESSAGE_TOPIC_CMD | input topic name :")
-	if _, err := fmt.Scanf("%s\n", &input); err != nil {
-		glog.Error(err.Error())
+		fmt.Println("SEND_MESSAGE_TOPIC_CMD | input topic name :")
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			glog.Error(err.Error())
+		}
+		
+		cmd.AddArg(input)
+		fmt.Println("SEND_MESSAGE_TOPIC_CMD | input message :")
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			glog.Error(err.Error())
+		}
+		
+		cmd.AddArg(input)
+		
+		err = newMsgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			glog.Error(err.Error())
+		}
+		
+		newMsgServerClient.Process(func(msg *libnet.InBuffer) error {
+			glog.Info(string(msg.Data))
+			return nil
+		})
+	} else {
+	
+	
+		cmd = protocol.NewCmdSimple(protocol.SEND_MESSAGE_TOPIC_CMD)
+
+		fmt.Println("SEND_MESSAGE_TOPIC_CMD | input topic name :")
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			glog.Error(err.Error())
+		}
+		
+		cmd.AddArg(input)
+		fmt.Println("SEND_MESSAGE_TOPIC_CMD | input message :")
+		if _, err := fmt.Scanf("%s\n", &input); err != nil {
+			glog.Error(err.Error())
+		}
+		
+		cmd.AddArg(input)
+		
+		err = msgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			glog.Error(err.Error())
+		}
+		
+		
+		defer msgServerClient.Close()
+		
+		msgServerClient.Process(func(msg *libnet.InBuffer) error {
+			glog.Info(string(msg.Data))
+			return nil
+		})
 	}
-	
-	cmd.AddArg(input)
-	fmt.Println("SEND_MESSAGE_TOPIC_CMD | input message :")
-	if _, err := fmt.Scanf("%s\n", &input); err != nil {
-		glog.Error(err.Error())
-	}
-	
-	cmd.AddArg(input)
-	
-	err = msgServerClient.Send(libnet.Json(cmd))
-	if err != nil {
-		glog.Error(err.Error())
-	}
-	
-	
-	defer msgServerClient.Close()
-	
-	msgServerClient.Process(func(msg *libnet.InBuffer) error {
-		glog.Info(string(msg.Data))
-		return nil
-	})
-	
 	glog.Flush()
 }
