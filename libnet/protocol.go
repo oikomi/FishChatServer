@@ -158,6 +158,7 @@ func (p *simpleProtocol) Read(reader io.Reader, buffer *InBuffer) error {
 		return err
 	}
 	size := p.decodeHead(buffer.Data)
+
 	if p.MaxPacketSize > 0 && size > p.MaxPacketSize {
 		return PacketTooLargeError
 	}
@@ -166,8 +167,10 @@ func (p *simpleProtocol) Read(reader io.Reader, buffer *InBuffer) error {
 	if size == 0 {
 		return nil
 	}
+	
 	if _, err := io.ReadFull(reader, buffer.Data); err != nil {
 		return err
 	}
+	
 	return nil
 }

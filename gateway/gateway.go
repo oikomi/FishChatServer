@@ -55,7 +55,9 @@ func init() {
 var InputConfFile = flag.String("conf_file", "gateway.json", "input conf file name") 
 
 func handleSession(gw *Gateway, session *libnet.Session) {
+	glog.Info("handleSession")
 	session.Process(func(msg *libnet.InBuffer) error {
+		glog.Info(string(msg.Data))
 		err := gw.parseProtocol(msg.Data, session)
 		if err != nil {
 			glog.Error(err.Error())

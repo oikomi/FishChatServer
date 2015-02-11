@@ -20,5 +20,6 @@ import (
 )
 
 var (
-	NOTOPIC = errors.New("NO TOPIC")
+	NOTOPIC         = errors.New("NO TOPIC")
+	CMD_NOT_CORRECT = errors.New("CMD NOT CORRECT")
 )

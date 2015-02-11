@@ -41,6 +41,19 @@ func NewProtoProc(msgServer *MsgServer) *ProtoProc {
 	}
 }
 
+func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Session) {
+	glog.Info("procSubscribeChannel")
+	channelName := cmd.GetArgs()[0]
+	cUUID := cmd.GetArgs()[1]
+	glog.Info(channelName)
+	if self.msgServer.channels[channelName] != nil {
+		self.msgServer.channels[channelName].Channel.Join(session, nil)
+		self.msgServer.channels[channelName].ClientIDlist = append(self.msgServer.channels[channelName].ClientIDlist, cUUID)
+	} else {
+		glog.Warning(channelName + " is not exist")
+	}
+}
+
 func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procPing")
 	cid := session.State.(*base.SessionState).ClientID
@@ -217,7 +230,7 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 	glog.Info(topicName)
 
 	if self.msgServer.topics[topicName] == nil {
-		
+		glog.Warning(topicName + " is not exist")
 	} else {
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
 		resp.AddArg(send2Msg)
@@ -228,28 +241,20 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 			glog.Error(err.Error())
 			return err
 		}
-
 	}
 	
 	return err
 }
 
-func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Session) {
-	glog.Info("procSubscribeChannel")
-	channelName := cmd.GetArgs()[0]
-	cUUID := cmd.GetArgs()[1]
-	glog.Info(channelName)
-	if self.msgServer.channels[channelName] != nil {
-		self.msgServer.channels[channelName].Channel.Join(session, nil)
-		self.msgServer.channels[channelName].ClientIDlist = append(self.msgServer.channels[channelName].ClientIDlist, cUUID)
-	} else {
-		glog.Warning(channelName + " is not exist")
-	}
-}
+
 
 func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procCreateTopic")
 	var err error
+	
+	if len(cmd.GetArgs()) != 1 {
+		return CMD_NOT_CORRECT
+	}
 	topicName := cmd.GetArgs()[0]
 	
 	topicStoreData := storage.NewTopicStoreData(topicName, session.State.(*base.SessionState).ClientID, 
@@ -294,6 +299,9 @@ func (self *ProtoProc)findTopicMsgAddr(topicName string) (*storage.TopicStoreDat
 func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	glog.Info("procJoinTopic")
 	var err error
+	if len(cmd.GetArgs()) != 2 {
+		return CMD_NOT_CORRECT
+	}
 	topicName := cmd.GetArgs()[0]
 	clientID := cmd.GetArgs()[1]
 	
@@ -317,6 +325,22 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		}
 		
 		return err
+	} else {
+		t, err := self.findTopicMsgAddr(topicName)
+		if err != nil {
+			glog.Warningf("no topicName : %s", topicName)
+			return err
+		}
+		resp := protocol.NewCmdSimple(protocol.LOCATE_TOPIC_MSG_ADDR_CMD)
+		resp.AddArg(t.MsgServerAddr)
+		resp.AddArg(topicName)
+		
+		err = session.Send(libnet.Json(resp))
+		
+		if err != nil {
+			glog.Error(err.Error())
+			return err
+		}
 	}
 	
 	m := storage.NewMember(clientID)
