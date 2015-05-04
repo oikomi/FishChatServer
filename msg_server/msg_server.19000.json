@@ -3,8 +3,8 @@
 	"TransportProtocols"       : "tcp",
 	"Listen"                   : "0.0.0.0:19000",
 	"LogFile"                  : "msg_server.log",
-	"ScanDeadSessionTimeout"   : 50,
-	"Expire"                   : 100,
+	"ScanDeadSessionTimeout"   : 5000,
+	"Expire"                   : 10000,
 	
 	"SessionManagerServerList" : [
 		"127.0.0.1:18000"
