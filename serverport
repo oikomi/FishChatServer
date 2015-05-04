@@ -5,3 +5,5 @@ session_manager 18000
 msg_server 19000
 
 router 20000
+
+monitor 21000
