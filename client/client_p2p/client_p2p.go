@@ -45,12 +45,14 @@ func main() {
 		return
 	}
 
+	glog.Info("req GatewayServer...")
+
 	gatewayClient, err := libnet.Dial("tcp", cfg.GatewayServer)
 	if err != nil {
 		panic(err)
 	}
 	
-	glog.Info("req msg_server...")
+	//glog.Info("...")
 	cmd := protocol.NewCmdSimple(protocol.REQ_MSG_SERVER_CMD)
 	
 	err = gatewayClient.Send(libnet.Json(cmd))

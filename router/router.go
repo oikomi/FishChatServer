@@ -49,7 +49,7 @@ func init() {
 }
 
 func version() {
-	fmt.Printf("router version %s Copyright (c) 2014-2015 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
+	fmt.Printf("router version %s Copyright (c) 2014-2015 Harold Miao (miaohong@miaohong.org)  \n", VERSION)
 }
 
 var InputConfFile = flag.String("conf_file", "router.json", "input conf file name")   
@@ -73,6 +73,7 @@ func main() {
 	glog.Info("server start: ", server.Listener().Addr().String())
 	
 	r := NewRouter(cfg)
+	//TODO not use go
 	go r.subscribeChannels()
 	server.Serve(func(session *libnet.Session) {
 	

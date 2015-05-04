@@ -52,7 +52,7 @@ func init() {
 }
 
 func version() {
-	fmt.Printf("msg_server version %s Copyright (c) 2014 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
+	fmt.Printf("msg_server version %s Copyright (c) 2014 Harold Miao (miaohong@miaohong.org)  \n", VERSION)
 }
 
 var InputConfFile = flag.String("conf_file", "msg_server.json", "input conf file name")   
@@ -95,7 +95,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	glog.Info("server start: ", ms.server.Listener().Addr().String())
+	glog.Info("msg_server running at  ", ms.server.Listener().Addr().String())
 	
 	ms.createChannels()
 

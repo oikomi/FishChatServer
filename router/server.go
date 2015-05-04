@@ -99,7 +99,7 @@ func (self *Router)handleMsgServerClient(msc *libnet.Session) {
 }
 
 func (self *Router)subscribeChannels() error {
-	glog.Info("subscribeChannels")
+	glog.Info("route start to subscribeChannels")
 	for _, ms := range self.cfg.MsgServerList {
 		msgServerClient, err := self.connectMsgServer(ms)
 		if err != nil {

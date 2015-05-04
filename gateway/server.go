@@ -52,7 +52,11 @@ func (self *Gateway)parseProtocol(cmd []byte, session *libnet.Session) error {
 
 	switch c.GetCmdName() {
 		case protocol.REQ_MSG_SERVER_CMD:
-			pp.procReqMsgServer(&c, session)
+			err = pp.procReqMsgServer(&c, session)
+			if err != nil {
+				glog.Error("error:", err)
+				return err
+			}
 		}
 
 	return err

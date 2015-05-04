@@ -39,14 +39,14 @@ func NewProtoProc(gateway *Gateway) *ProtoProc {
 }
 
 func (self *ProtoProc)procReqMsgServer(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procReqMsgServer")
+	//glog.Info("procReqMsgServer")
 	var err error
 	msgServer := common.SelectServer(self.gateway.cfg.MsgServerList, self.gateway.cfg.MsgServerNum)
 
 	resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
 	resp.AddArg(msgServer)
 	
-	glog.Info(resp)
+	glog.Info("Resp | ", resp)
 	
 	if session != nil {
 		err = session.Send(libnet.Json(resp))

@@ -52,6 +52,8 @@ func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Ses
 	} else {
 		glog.Warning(channelName + " is not exist")
 	}
+
+	glog.Info(self.msgServer.channels)
 }
 
 func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error {

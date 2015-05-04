@@ -41,10 +41,10 @@ func BuildTime() string {
 	return buildTime
 }
 
-const VERSION string = "0.10"
+const VERSION string = "0.24"
 
 func version() {
-	fmt.Printf("gateway version %s Copyright (c) 2014-2015 Harold Miao (miaohonghit@gmail.com)  \n", VERSION)
+	fmt.Printf("gateway version %s Copyright (c) 2014-2015 Harold Miao (miaohong@miaohong.org)  \n", VERSION)
 }
 
 func init() {
@@ -55,7 +55,7 @@ func init() {
 var InputConfFile = flag.String("conf_file", "gateway.json", "input conf file name") 
 
 func handleSession(gw *Gateway, session *libnet.Session) {
-	glog.Info("handleSession")
+	//glog.Info("handleSession")
 	session.Process(func(msg *libnet.InBuffer) error {
 		glog.Info(string(msg.Data))
 		err := gw.parseProtocol(msg.Data, session)
@@ -85,10 +85,10 @@ func main() {
 		glog.Error(err.Error())
 		return
 	}
-	glog.Info("gateway server start at ", gw.server.Listener().Addr().String())
+	glog.Info("gateway server running at ", gw.server.Listener().Addr().String())
 
 	gw.server.Serve(func(session *libnet.Session) {
-		glog.Info("client ", session.Conn().RemoteAddr().String(), " | in")
+		glog.Info("client ", session.Conn().RemoteAddr().String(), " | come in")
 		
 		go handleSession(gw, session)
 	})
