@@ -8,6 +8,10 @@ cd gateway
 go build
 cd ..
 
+cd monitor
+go build
+cd ..
+
 cd msg_server
 go build
 cd ..
