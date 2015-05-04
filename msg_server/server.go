@@ -79,7 +79,7 @@ func (self *MsgServer)sendMonitorData() error {
 		for{
 			resp.SessionNum = (uint64)(len(self.sessions))
 	
-			glog.Info(resp)
+			//glog.Info(resp)
 			mb.Beat(self.channels[protocol.SYSCTRL_MONITOR].Channel, resp)
 		} 
 		// _, err := self.channels[protocol.SYSCTRL_MONITOR].Channel.Broadcast(libnet.Json(resp))

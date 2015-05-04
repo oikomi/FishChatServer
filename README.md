@@ -28,6 +28,24 @@ Todo
 ![](./docs/pics/fishchat.png)
 
 
+部署
+======
+FishChatServer采用分布式可伸缩部署方式。如果没有多机条件，可以单击部署：
+
+建议：
+单机测试部署  gateway一台  msg_server两台  route一台  manager一台  monitor一台
+
+./gateway
+
+./msg_server -conf_file=msg_server.19001.json
+./msg_server -conf_file=msg_server.19000.json
+
+./route
+./manager
+./monitor
+
+> **NOTE:** route、manager和monitor一定要在msg_server启动之后启动，因为他们都订阅了msg_server的channel 
+
 技术细节
 ======
 FishChatServer完全采用Golang开发(https://golang.org/)
