@@ -64,21 +64,14 @@ func (self *Monitor)connectMsgServer(ms string) (*libnet.Session, error) {
 func (self *Monitor)handleMsgServerClient(msc *libnet.Session) {
 	msc.Process(func(msg *libnet.InBuffer) error {
 		glog.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
-		var c protocol.CmdInternal
-		pp := NewProtoProc(self)
+		var c protocol.CmdMonitor
+		
 		err := json.Unmarshal(msg.Data, &c)
 		if err != nil {
 			glog.Error("error:", err)
 			return err
 		}
-		switch c.GetCmdName() {
-			case protocol.SEND_MESSAGE_P2P_CMD:
-				err := pp.procSendMsgP2P(c, msc)
-				if err != nil {
-					glog.Warning(err.Error())
-				}
-				
-			}
+
 		return nil
 	})
 }

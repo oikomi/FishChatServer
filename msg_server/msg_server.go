@@ -101,6 +101,8 @@ func main() {
 
 	go ms.scanDeadSession()
 
+	go ms.sendMonitorData()
+
 	ms.server.Serve(func(session *libnet.Session) {
 		glog.Info("a new client ", session.Conn().RemoteAddr().String(), " | come in")
 		go handleSession(ms, session)

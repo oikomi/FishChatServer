@@ -5,6 +5,8 @@
 	"LogFile"                  : "msg_server.log",
 	"ScanDeadSessionTimeout"   : 5000,
 	"Expire"                   : 10000,
+
+	"MonitorBeatTime"          : 5,
 	
 	"SessionManagerServerList" : [
 		"127.0.0.1:18000"

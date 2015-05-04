@@ -30,6 +30,7 @@ type MsgServerConfig struct {
 	LogFile                  string
 	ScanDeadSessionTimeout   time.Duration
 	Expire                   time.Duration
+	MonitorBeatTime          time.Duration
 	SessionManagerServerList []string
 	Redis struct { 
 		Addr string 

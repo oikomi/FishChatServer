@@ -65,6 +65,33 @@ func (self *MsgServer)createChannels() {
 	}
 }
 
+func (self *MsgServer)sendMonitorData() error {
+	glog.Info("sendMonitorData")
+	resp := protocol.NewCmdMonitor()
+
+	// resp.SessionNum = (uint64)(len(self.sessions))
+	
+	// glog.Info(resp)
+
+	mb := NewMonitorBeat("monitor", self.cfg.MonitorBeatTime, 40, 10)
+	
+	if self.channels[protocol.SYSCTRL_MONITOR] != nil {
+		for{
+			resp.SessionNum = (uint64)(len(self.sessions))
+	
+			glog.Info(resp)
+			mb.Beat(self.channels[protocol.SYSCTRL_MONITOR].Channel, resp)
+		} 
+		// _, err := self.channels[protocol.SYSCTRL_MONITOR].Channel.Broadcast(libnet.Json(resp))
+		// if err != nil {
+		// 	glog.Error(err.Error())
+		// 	return err
+		// }
+	}
+
+	return nil
+}
+
 func (self *MsgServer)scanDeadSession() {
 	glog.Info("scanDeadSession")
 	timer := time.NewTicker(self.cfg.ScanDeadSessionTimeout * time.Second)

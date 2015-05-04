@@ -142,6 +142,19 @@ func (self CmdInternal)GetAnyData() interface{} {
 	return self.AnyData
 }
 
+
+
+
+type CmdMonitor struct {
+	SessionNum uint64
+}
+
+func NewCmdMonitor() *CmdMonitor {
+	return &CmdMonitor {
+
+	}
+}
+
 type ClientIDCmd struct {
 	CmdName  string
 	ClientID string
