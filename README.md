@@ -37,11 +37,11 @@ FishChatServer采用分布式可伸缩部署方式。如果没有多机条件，
 
 *   gateway一台
 *   msg_server两台
-*   route一台
+*   router一台
 *   manager一台
 *   monitor一台
 
-> **NOTE:**  FishChatServer依赖redis,请先启动redis,让它监听在默认端口
+> **NOTE:**  FishChatServer依赖**redis**,请先启动redis,让它监听在默认端口
 
 > **NOTE:**  可以通过修改各文件夹下面的json配置文件配置服务器参数
 
@@ -51,13 +51,13 @@ FishChatServer采用分布式可伸缩部署方式。如果没有多机条件，
 
 ./msg_server -conf_file=msg_server.19000.json
 
-./route
+./router
 
 ./manager
 
 ./monitor
 
-> **NOTE:** route、manager和monitor一定要在msg_server启动之后启动，因为他们都订阅了msg_server的channel 
+> **NOTE:** router、manager和monitor一定要在msg_server启动之后启动，因为他们都订阅了msg_server的channel 
 
 技术细节
 ======
