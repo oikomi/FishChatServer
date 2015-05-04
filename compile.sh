@@ -1,8 +1,8 @@
 #!/bin/sh
 
-cd client
-./client.sh
-cd ..
+#cd client
+#./client.sh
+#cd ..
 
 cd gateway
 go build

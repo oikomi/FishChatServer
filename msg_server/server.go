@@ -104,7 +104,11 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 
 	switch c.GetCmdName() {
 		case protocol.SEND_PING_CMD:
-			pp.procPing(&c, session)
+			err = pp.procPing(&c, session)
+			if err != nil {
+				glog.Error("error:", err)
+				return err
+			}
 		case protocol.SUBSCRIBE_CHANNEL_CMD:
 			pp.procSubscribeChannel(&c, session)
 		case protocol.SEND_CLIENT_ID_CMD:
@@ -114,13 +118,13 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 				return err
 			}
 		case protocol.SEND_MESSAGE_P2P_CMD:
-			pp.procSendMessageP2P(&c, session)
+			err = pp.procSendMessageP2P(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err
 			}
 		case protocol.ROUTE_MESSAGE_P2P_CMD:
-			pp.procRouteMessageP2P(&c, session)
+			err = pp.procRouteMessageP2P(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err
