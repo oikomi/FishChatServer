@@ -28,6 +28,18 @@ Todo
 ![](./docs/pics/fishchat.png)
 
 
+关键服务器详解
+======
+gateway server主要是接受client请求，进行通用的功能设置，目前这块只做了分配msg_server的功能
+
+在gateway server的配置文件中最重要的是配置msg_server列表
+<pre><code>"MsgServerList"      : [
+		"192.168.159.169:19000",
+		"192.168.159.169:19001"
+	],
+</code></pre>
+
+
 部署
 ======
 FishChatServer采用分布式可伸缩部署方式。如果没有多机条件，可以单机部署：
