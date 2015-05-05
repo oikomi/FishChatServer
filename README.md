@@ -59,19 +59,9 @@ FishChatServer采用分布式可伸缩部署方式。如果没有多机条件，
 
 
 按上面的默认启动方式，查看系统的监听端口如下
-tcp6       0      0 :::21000                :::*                    LISTEN      9968/./monitor
+![](./docs/pics/listen_port.png)
 
-tcp6       0      0 :::17000                :::*                    LISTEN      9965/./gateway
-
-tcp6       0      0 :::6379                 :::*                    LISTEN      31562/./redis-serve
-
-tcp6       0      0 :::18000                :::*                    LISTEN      9956/./manager
-
-tcp6       0      0 :::19000                :::*                    LISTEN      9949/./msg_server
-
-tcp6       0      0 :::19001                :::*                    LISTEN      9952/./msg_server
-
-tcp6       0      0 :::20000                :::*                    LISTEN      9961/./router
+当然你可以修改各文件夹下面的json配置文件修改配置参数
 
 
 > **NOTE:** router、manager和monitor一定要在msg_server启动之后启动，因为他们都订阅了msg_server的channel 
