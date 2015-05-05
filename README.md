@@ -30,7 +30,7 @@ Todo
 
 关键服务器详解
 ======
-# gateway
+### gateway
 gateway server主要是接受client请求，进行通用的功能设置，目前这块只做了分配msg_server的功能，后面可根据需要进行扩展
 
 在gateway server的配置文件中最重要的是配置msg_server列表
@@ -40,7 +40,7 @@ gateway server主要是接受client请求，进行通用的功能设置，目前
 	],
 </code></pre>
 
-# msg_server
+### msg_server
 msg_server是消息的主体，维护着客户端连接和keeplive,同时要注意router、manager和monitor都订阅了msg_server的channel
 <pre><code>
 	SYSCTRL_CLIENT_STATUS = "/sysctrl/client-status"
@@ -51,13 +51,13 @@ msg_server是消息的主体，维护着客户端连接和keeplive,同时要注�
 </code></pre>
 这些channel保证了msg_server在事件触发时会广播通知后面的router、manager和monitor服务
 
-# router
+### router
 router顾名思义是做了msg_server之间的消息转发
 
-# manager
+### manager
 manager主要是管理client信息存储、离线消息存储等等，通过它和redis联系
 
-# monitor
+### monitor
 monitor主要是收集监控各服务器状态信息，目前monitor是可选项，可按需要启动它
 
 部署
