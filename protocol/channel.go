@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,5 @@ const (
 	SYSCTRL_TOPIC_STATUS  = "/sysctrl/topic-status"
 	SYSCTRL_TOPIC_SYNC    = "/sysctrl/topic-sync"
 	SYSCTRL_SEND          = "/sysctrl/send"
-
-
 	SYSCTRL_MONITOR       = "/sysctrl/monitor"
 )

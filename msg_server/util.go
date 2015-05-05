@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -90,6 +90,7 @@ func (self *MonitorBeat) Receive() {
 	}
 }
 
+// TODO : no use
 func getHostIP() {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

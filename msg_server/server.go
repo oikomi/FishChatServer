@@ -157,11 +157,19 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 				return err
 			}
 		case protocol.CREATE_TOPIC_CMD:
-			pp.procCreateTopic(&c, session)
+			err = pp.procCreateTopic(&c, session)
+			if err != nil {
+				glog.Error("error:", err)
+				return err
+			}
 		case protocol.JOIN_TOPIC_CMD:
-			pp.procJoinTopic(&c, session)
+			err = pp.procJoinTopic(&c, session)
+			if err != nil {
+				glog.Error("error:", err)
+				return err
+			}
 		case protocol.SEND_MESSAGE_TOPIC_CMD:
-			pp.procSendMessageTopic(&c, session)
+			err = pp.procSendMessageTopic(&c, session)
 			if err != nil {
 				glog.Error("error:", err)
 				return err

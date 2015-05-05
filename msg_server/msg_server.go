@@ -79,7 +79,7 @@ func main() {
 		return
 	}
 	
-	rs := storage.NewRedisStore(&storage.RedisStoreOptions{
+	rs := storage.NewRedisStore(&storage.RedisStoreOptions {
 			Network        : "tcp",
 			Address        : cfg.Redis.Port,
 			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
