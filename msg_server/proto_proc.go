@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package main
 import (
 	"flag"
 	"strconv"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/protocol"
@@ -42,22 +42,22 @@ func NewProtoProc(msgServer *MsgServer) *ProtoProc {
 }
 
 func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Session) {
-	glog.Info("procSubscribeChannel")
+	log.Info("procSubscribeChannel")
 	channelName := cmd.GetArgs()[0]
 	cUUID := cmd.GetArgs()[1]
-	glog.Info(channelName)
+	log.Info(channelName)
 	if self.msgServer.channels[channelName] != nil {
 		self.msgServer.channels[channelName].Channel.Join(session, nil)
 		self.msgServer.channels[channelName].ClientIDlist = append(self.msgServer.channels[channelName].ClientIDlist, cUUID)
 	} else {
-		glog.Warning(channelName + " is not exist")
+		log.Warning(channelName + " is not exist")
 	}
 
-	glog.Info(self.msgServer.channels)
+	log.Info(self.msgServer.channels)
 }
 
 func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procPing")
+	log.Info("procPing")
 	cid := session.State.(*base.SessionState).ClientID
 	self.msgServer.scanSessionMutex.Lock()
 	defer self.msgServer.scanSessionMutex.Unlock()
@@ -74,7 +74,7 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 	} else {
 		omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgStore, ID)
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		for  _, v := range omrd.MsgList {
@@ -85,7 +85,7 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 			if self.msgServer.sessions[ID] != nil {
 				self.msgServer.sessions[ID].Send(libnet.Json(resp))
 				if err != nil {
-					glog.Error(err.Error())
+					log.Error(err.Error())
 					return err
 				}
 			} 
@@ -99,23 +99,23 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 }
 
 func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procClientID")
+	log.Info("procClientID")
 	var err error
 	ID := cmd.GetArgs()[0]
 	sessionStoreData := storage.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
 		self.msgServer.cfg.LocalIP, strconv.FormatUint(session.Id(), 10))
 		
-	glog.Info(sessionStoreData)
+	log.Info(sessionStoreData)
 	args := make([]string, 0)
 	args = append(args, cmd.GetArgs()[0])
 	CCmd := protocol.NewCmdInternal(protocol.STORE_SESSION_CMD, args, sessionStoreData)
 	
-	glog.Info(CCmd)
+	log.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS] != nil {
 		_, err = self.msgServer.channels[protocol.SYSCTRL_CLIENT_STATUS].Channel.Broadcast(libnet.Json(CCmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 	}
@@ -125,28 +125,28 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	
 	err = self.procOfflineMsg(session, ID)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return err
 	}
 	return nil
 }
 
 func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procSendMessageP2P")
+	log.Info("procSendMessageP2P")
 	var err error
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
 	fromID := cmd.GetArgs()[2]
 	store_session, err := common.GetSessionFromCID(self.msgServer.sessionStore, send2ID)
 	if err != nil {
-		glog.Warningf("no ID : %s", send2ID)
+		log.Warningf("no ID : %s", send2ID)
 		
 		return err
 	}
 	
 	if self.msgServer.sessions[send2ID] == nil {
 		//offline
-		glog.Info(send2ID + " | is offline")
+		log.Info(send2ID + " | is offline")
 		exist, err := self.msgServer.offlineMsgStore.IsKeyExist(send2ID)
 		if exist.(int64) == 0 {
 			tmp := storage.NewOfflineMsgStoreData(send2ID)
@@ -154,26 +154,26 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 			
 			self.msgServer.offlineMsgStore.Set(tmp)
 			if err != nil {
-				glog.Error(err.Error())
+				log.Error(err.Error())
 				return err
 			}
 		} else {
 			omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgStore, send2ID)
 			if err != nil {
-				glog.Error(err.Error())
+				log.Error(err.Error())
 				return err
 			}
 			omrd.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID))
 			self.msgServer.offlineMsgStore.Set(omrd)
 			if err != nil {
-				glog.Error(err.Error())
+				log.Error(err.Error())
 				return err
 			}
 		}
 	}
 	
 	if store_session.MsgServerAddr == self.msgServer.cfg.LocalIP {
-		glog.Info("in the same server")
+		log.Info("in the same server")
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 		resp.AddArg(send2Msg)
 		resp.AddArg(fromID)
@@ -181,14 +181,14 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		if self.msgServer.sessions[send2ID] != nil {
 			self.msgServer.sessions[send2ID].Send(libnet.Json(resp))
 			if err != nil {
-				glog.Error(err.Error())
+				log.Error(err.Error())
 			}
 		} 
 	} else {
 		if self.msgServer.channels[protocol.SYSCTRL_SEND] != nil {
 			_, err = self.msgServer.channels[protocol.SYSCTRL_SEND].Channel.Broadcast(libnet.Json(cmd))
 			if err != nil {
-				glog.Error(err.Error())
+				log.Error(err.Error())
 				return err
 			}
 		}
@@ -198,13 +198,13 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 }
 
 func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procRouteMessageP2P")
+	log.Info("procRouteMessageP2P")
 	var err error
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
 	_, err = common.GetSessionFromCID(self.msgServer.sessionStore, send2ID)
 	if err != nil {
-		glog.Warningf("no ID : %s", send2ID)
+		log.Warningf("no ID : %s", send2ID)
 		
 		return err
 	}
@@ -215,7 +215,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 	if self.msgServer.sessions[send2ID] != nil {
 		self.msgServer.sessions[send2ID].Send(libnet.Json(resp))
 		if err != nil {
-			glog.Fatalln(err.Error())
+			log.Fatalln(err.Error())
 		}
 	}
 
@@ -224,7 +224,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 
 
 func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procCreateTopic")
+	log.Info("procCreateTopic")
 	var err error
 	
 	if len(cmd.GetArgs()) != 1 {
@@ -244,19 +244,19 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	self.msgServer.topics[topicName].Channel.Join(session, nil)
 	
 
-	glog.Info(topicStoreData)
+	log.Info(topicStoreData)
 	args := make([]string, 0)
 	args = append(args, topicName)
 	CCmd := protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, topicStoreData)
 	m := storage.NewMember(session.State.(*base.SessionState).ClientID)
 	CCmd.AnyData.(*storage.TopicStoreData).MemberList = append(CCmd.AnyData.(*storage.TopicStoreData).MemberList, m)
 	
-	glog.Info(CCmd)
+	log.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS] != nil {
 		_, err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(libnet.Json(CCmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 	}
@@ -265,14 +265,14 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 }
 
 func (self *ProtoProc)findTopicMsgAddr(topicName string) (*storage.TopicStoreData, error) {
-	glog.Info("findTopicMsgAddr")
+	log.Info("findTopicMsgAddr")
 	t, err := common.GetTopicFromTopicName(self.msgServer.topicStore, topicName)
 	
 	return t, err
 }
 
 func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procJoinTopic")
+	log.Info("procJoinTopic")
 	var err error
 	if len(cmd.GetArgs()) != 2 {
 		return CMD_NOT_CORRECT
@@ -281,10 +281,10 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	clientID := cmd.GetArgs()[1]
 	
 	if self.msgServer.topics[topicName] == nil {
-		glog.Warning("no topic in this server :" + topicName)
+		log.Warning("no topic in this server :" + topicName)
 		t, err := self.findTopicMsgAddr(topicName)
 		if err != nil {
-			glog.Warningf("no topicName : %s", topicName)
+			log.Warningf("no topicName : %s", topicName)
 			return err
 		}
 		
@@ -295,7 +295,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		err = session.Send(libnet.Json(resp))
 		
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		
@@ -303,7 +303,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	} else {
 		t, err := self.findTopicMsgAddr(topicName)
 		if err != nil {
-			glog.Warningf("no topicName : %s", topicName)
+			log.Warningf("no topicName : %s", topicName)
 			return err
 		}
 		resp := protocol.NewCmdSimple(protocol.LOCATE_TOPIC_MSG_ADDR_CMD)
@@ -313,7 +313,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		err = session.Send(libnet.Json(resp))
 		
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 	}
@@ -331,12 +331,12 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	args = append(args, topicName)
 	CCmd := protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, self.msgServer.topics[topicName].TSD)
 	
-	glog.Info(CCmd)
+	log.Info(CCmd)
 	
 	if self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS] != nil {
 		_, err = self.msgServer.channels[protocol.SYSCTRL_TOPIC_STATUS].Channel.Broadcast(libnet.Json(CCmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 	}
@@ -345,15 +345,15 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 }
 
 func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procSendMessageTopic")
+	log.Info("procSendMessageTopic")
 	var err error
 	topicName := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
-	glog.Info(send2Msg)
-	glog.Info(topicName)
+	log.Info(send2Msg)
+	log.Info(topicName)
 
 	if self.msgServer.topics[topicName] == nil {
-		glog.Warning(topicName + " is not exist")
+		log.Warning(topicName + " is not exist")
 	} else {
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_TOPIC_CMD)
 		resp.AddArg(topicName)
@@ -362,7 +362,7 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 
 		_, err = self.msgServer.topics[topicName].Channel.Broadcast(libnet.Json(resp))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 	}

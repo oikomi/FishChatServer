@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package main
 import (
 	"time"
 	"encoding/json"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/storage"
@@ -58,7 +58,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 func (self *Manager)connectMsgServer(ms string) (*libnet.Session, error) {
 	client, err := libnet.Dial("tcp", ms)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		panic(err)
 	}
 
@@ -70,21 +70,21 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 	
 	err := json.Unmarshal(cmd, &c)
 	if err != nil {
-		glog.Error("error:", err)
+		log.Error("error:", err)
 		return err
 	}
 	
 	pp := NewProtoProc(self)
 	
-	glog.Info(c)
-	glog.Info(c.CmdName)
+	log.Info(c)
+	log.Info(c.CmdName)
 
 	switch c.CmdName {
 		case protocol.STORE_SESSION_CMD:
 			var ssc SessionStoreCmd
 			err := json.Unmarshal(cmd, &ssc)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 			pp.procStoreSession(ssc, session)
@@ -92,7 +92,7 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 			var tsc TopicStoreCmd
 			err := json.Unmarshal(cmd, &tsc)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 			pp.procStoreTopic(tsc, session)
@@ -103,7 +103,7 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 
 func (self *Manager)handleMsgServerClient(msc *libnet.Session) {
 	msc.Process(func(msg *libnet.InBuffer) error {
-		glog.Info("msg_server", msc.Conn().RemoteAddr().String(),"say:", string(msg.Data))
+		log.Info("msg_server", msc.Conn().RemoteAddr().String(),"say:", string(msg.Data))
 		
 		self.parseProtocol(msg.Data, msc)
 		
@@ -112,12 +112,12 @@ func (self *Manager)handleMsgServerClient(msc *libnet.Session) {
 }
 
 func (self *Manager)subscribeChannels() error {
-	glog.Info("subscribeChannels")
+	log.Info("subscribeChannels")
 	var msgServerClientList []*libnet.Session
 	for _, ms := range self.cfg.MsgServerList {
 		msgServerClient, err := self.connectMsgServer(ms)
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		cmd := protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
@@ -126,7 +126,7 @@ func (self *Manager)subscribeChannels() error {
 		
 		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		
@@ -136,7 +136,7 @@ func (self *Manager)subscribeChannels() error {
 		
 		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		

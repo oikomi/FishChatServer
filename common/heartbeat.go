@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package common
 import (
 	"sync"
 	"time"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 )
@@ -66,7 +66,7 @@ func (self *HeartBeat) Beat() {
 				cmd.AddArg(protocol.PING)
 				err := self.session.Send(libnet.Json(cmd))
 				if err != nil {
-					glog.Error(err.Error())
+					log.Error(err.Error())
 				}
 			}()
 		//case <-ttl:

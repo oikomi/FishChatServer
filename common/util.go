@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package common
 import (
 	"time"
 	"math/rand"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/storage"
 )
@@ -48,11 +48,11 @@ func GetSessionFromCID(sessionStore  *storage.SessionStore, ID string) (*storage
 	session ,err := sessionStore.Get(ID)
 	
 	if err != nil {
-		glog.Warningf("no ID : %s", ID)
+		log.Warningf("no ID : %s", ID)
 		return nil, err
 	}
 	if session != nil {
-		glog.Info(session)
+		log.Info(session)
 	}
 	
 	return session, nil
@@ -62,7 +62,7 @@ func DelSessionFromCID(sessionStore *storage.SessionStore, ID string) error {
 	err := sessionStore.Delete(ID)
 	
 	if err != nil {
-		glog.Warningf("no ID : %s", ID)
+		log.Warningf("no ID : %s", ID)
 		return err
 	}
 
@@ -73,11 +73,11 @@ func GetTopicFromTopicName(topicStore *storage.TopicStore, topicName string) (*s
 	topic ,err := topicStore.Get(topicName)
 	
 	if err != nil {
-		glog.Warningf("no topicName : %s", topicName)
+		log.Warningf("no topicName : %s", topicName)
 		return nil, err
 	}
 	if topic != nil {
-		glog.Info(topic)
+		log.Info(topic)
 	}
 	
 	return topic, nil
@@ -87,11 +87,11 @@ func GetOfflineMsgFromOwnerName(offlineMsgStore *storage.OfflineMsgStore, ownerN
 	o ,err := offlineMsgStore.Get(ownerName)
 	
 	if err != nil {
-		glog.Warningf("no ownerName : %s", ownerName)
+		log.Warningf("no ownerName : %s", ownerName)
 		return nil, err
 	}
 	if o != nil {
-		glog.Info(o)
+		log.Info(o)
 	}
 	
 	return o, nil

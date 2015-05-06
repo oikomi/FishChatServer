@@ -20,7 +20,7 @@ import (
 	"net"
 	"sync"
 	"time"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 )
@@ -65,7 +65,7 @@ func (self *MonitorBeat) Beat(c *libnet.Channel, data *protocol.CmdMonitor) {
 			go func() {
 				_, err := c.Broadcast(libnet.Json(data))
 				if err != nil {
-					glog.Error(err.Error())
+					log.Error(err.Error())
 					//return err
 				}
 			}()

@@ -18,7 +18,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 )
 
@@ -61,16 +61,16 @@ func main() {
 	cfg := NewMonitorConfig(*InputConfFile)
 	err := cfg.LoadConfig()
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
 	
 	server, err := libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
-	glog.Info("server start: ", server.Listener().Addr().String())
+	log.Info("server start: ", server.Listener().Addr().String())
 	
 	m := NewMonitor(cfg)
 	//TODO not use go

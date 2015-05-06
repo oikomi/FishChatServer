@@ -19,7 +19,7 @@ import (
 	"os"
 	"encoding/json"
 	"time"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 )
 
 type ManagerConfig struct {
@@ -47,7 +47,7 @@ func NewManagerConfig(configfile string) *ManagerConfig {
 func (self *ManagerConfig)LoadConfig() error {
 	file, err := os.Open(self.configfile)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return err
 	}
 	defer file.Close()

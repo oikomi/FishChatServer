@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package main
 import (
 	"flag"
 	"encoding/json"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 )
@@ -44,7 +44,7 @@ func (self *Gateway)parseProtocol(cmd []byte, session *libnet.Session) error {
 	var c protocol.CmdSimple
 	err := json.Unmarshal(cmd, &c)
 	if err != nil {
-		glog.Error("error:", err)
+		log.Error("error:", err)
 		return err
 	}
 	
@@ -54,7 +54,7 @@ func (self *Gateway)parseProtocol(cmd []byte, session *libnet.Session) error {
 		case protocol.REQ_MSG_SERVER_CMD:
 			err = pp.procReqMsgServer(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		}

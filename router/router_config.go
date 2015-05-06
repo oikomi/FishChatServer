@@ -18,7 +18,7 @@ package main
 import (
 	"os"
 	"encoding/json"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"time"
 )
 
@@ -47,7 +47,7 @@ func NewRouterConfig(configfile string) *RouterConfig {
 func (self *RouterConfig)LoadConfig() error {
 	file, err := os.Open(self.configfile)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return err
 	}
 	defer file.Close()
@@ -55,6 +55,7 @@ func (self *RouterConfig)LoadConfig() error {
 	dec := json.NewDecoder(file)
 	err = dec.Decode(&self)
 	if err != nil {
+		log.Error(err.Error())
 		return err
 	}
 	return nil

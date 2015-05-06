@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import (
 	"os"
 	"encoding/json"
 	"time"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 )
 
 type MsgServerConfig struct {
@@ -50,7 +50,7 @@ func NewMsgServerConfig(configfile string) *MsgServerConfig {
 func (self *MsgServerConfig)LoadConfig() error {
 	file, err := os.Open(self.configfile)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return err
 	}
 	defer file.Close()

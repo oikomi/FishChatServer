@@ -19,7 +19,7 @@ import (
 	"sync"
 	"time"
 	"encoding/json"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
@@ -54,7 +54,7 @@ func NewMonitor(cfg *MonitorConfig) *Monitor {
 func (self *Monitor)connectMsgServer(ms string) (*libnet.Session, error) {
 	client, err := libnet.Dial("tcp", ms)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		panic(err)
 	}
 
@@ -63,12 +63,12 @@ func (self *Monitor)connectMsgServer(ms string) (*libnet.Session, error) {
 
 func (self *Monitor)handleMsgServerClient(msc *libnet.Session) {
 	msc.Process(func(msg *libnet.InBuffer) error {
-		glog.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
+		log.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
 		var c protocol.CmdMonitor
 		
 		err := json.Unmarshal(msg.Data, &c)
 		if err != nil {
-			glog.Error("error:", err)
+			log.Error("error:", err)
 			return err
 		}
 
@@ -77,11 +77,11 @@ func (self *Monitor)handleMsgServerClient(msc *libnet.Session) {
 }
 
 func (self *Monitor)subscribeChannels() error {
-	glog.Info("monitor start to subscribeChannels")
+	log.Info("monitor start to subscribeChannels")
 	for _, ms := range self.cfg.MsgServerList {
 		msgServerClient, err := self.connectMsgServer(ms)
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		cmd := protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
@@ -90,7 +90,7 @@ func (self *Monitor)subscribeChannels() error {
 		
 		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 		

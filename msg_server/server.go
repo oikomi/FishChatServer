@@ -20,7 +20,7 @@ import (
 	"flag"
 	"sync"
 	"encoding/json"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/protocol"
@@ -58,7 +58,7 @@ func NewMsgServer(cfg *MsgServerConfig, rs *storage.RedisStore) *MsgServer {
 }
 
 func (self *MsgServer)createChannels() {
-	glog.Info("createChannels")
+	log.Info("createChannels")
 	for _, c := range base.ChannleList {
 		channel := libnet.NewChannel(self.server.Protocol())
 		self.channels[c] = base.NewChannelState(c, channel)
@@ -66,12 +66,12 @@ func (self *MsgServer)createChannels() {
 }
 
 func (self *MsgServer)sendMonitorData() error {
-	glog.Info("sendMonitorData")
+	log.Info("sendMonitorData")
 	resp := protocol.NewCmdMonitor()
 
 	// resp.SessionNum = (uint64)(len(self.sessions))
 	
-	// glog.Info(resp)
+	// log.Info(resp)
 
 	mb := NewMonitorBeat("monitor", self.cfg.MonitorBeatTime, 40, 10)
 	
@@ -79,7 +79,7 @@ func (self *MsgServer)sendMonitorData() error {
 		for{
 			resp.SessionNum = (uint64)(len(self.sessions))
 	
-			//glog.Info(resp)
+			//log.Info(resp)
 			mb.Beat(self.channels[protocol.SYSCTRL_MONITOR].Channel, resp)
 		} 
 		// _, err := self.channels[protocol.SYSCTRL_MONITOR].Channel.Broadcast(libnet.Json(resp))
@@ -93,19 +93,19 @@ func (self *MsgServer)sendMonitorData() error {
 }
 
 func (self *MsgServer)scanDeadSession() {
-	glog.Info("scanDeadSession")
+	log.Info("scanDeadSession")
 	timer := time.NewTicker(self.cfg.ScanDeadSessionTimeout * time.Second)
 	ttl := time.After(self.cfg.Expire * time.Second)
 	for {
 		select {
 		case <-timer.C:
-			glog.Info("scanDeadSession timeout")
+			log.Info("scanDeadSession timeout")
 			go func() {
 				for id, s := range self.sessions {
 					self.scanSessionMutex.Lock()
 					//defer self.scanSessionMutex.Unlock()
 					if (s.State).(*base.SessionState).Alive == false {
-						glog.Info("delete" + id)
+						log.Info("delete" + id)
 						delete(self.sessions, id)
 					} else {
 						s.State.(*base.SessionState).Alive = false
@@ -123,7 +123,7 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 	var c protocol.CmdSimple
 	err := json.Unmarshal(cmd, &c)
 	if err != nil {
-		glog.Error("error:", err)
+		log.Error("error:", err)
 		return err
 	}
 	
@@ -133,7 +133,7 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 		case protocol.SEND_PING_CMD:
 			err = pp.procPing(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		case protocol.SUBSCRIBE_CHANNEL_CMD:
@@ -141,37 +141,37 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 		case protocol.SEND_CLIENT_ID_CMD:
 			err = pp.procClientID(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		case protocol.SEND_MESSAGE_P2P_CMD:
 			err = pp.procSendMessageP2P(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		case protocol.ROUTE_MESSAGE_P2P_CMD:
 			err = pp.procRouteMessageP2P(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		case protocol.CREATE_TOPIC_CMD:
 			err = pp.procCreateTopic(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		case protocol.JOIN_TOPIC_CMD:
 			err = pp.procJoinTopic(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		case protocol.SEND_MESSAGE_TOPIC_CMD:
 			err = pp.procSendMessageTopic(&c, session)
 			if err != nil {
-				glog.Error("error:", err)
+				log.Error("error:", err)
 				return err
 			}
 		}

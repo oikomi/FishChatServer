@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"time"
 	"flag"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/storage"
@@ -61,7 +61,7 @@ func handleSession(ms *MsgServer, session *libnet.Session) {
 	session.Process(func(msg *libnet.InBuffer) error {
 		err := ms.parseProtocol(msg.Data, session)
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 		}
 		
 		return nil
@@ -75,7 +75,7 @@ func main() {
 	cfg := NewMsgServerConfig(*InputConfFile)
 	err := cfg.LoadConfig()
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
 	
@@ -95,7 +95,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	glog.Info("msg_server running at  ", ms.server.Listener().Addr().String())
+	log.Info("msg_server running at  ", ms.server.Listener().Addr().String())
 	
 	ms.createChannels()
 
@@ -104,7 +104,7 @@ func main() {
 	go ms.sendMonitorData()
 
 	ms.server.Serve(func(session *libnet.Session) {
-		glog.Info("a new client ", session.Conn().RemoteAddr().String(), " | come in")
+		log.Info("a new client ", session.Conn().RemoteAddr().String(), " | come in")
 		go handleSession(ms, session)
 	})
 }

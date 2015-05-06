@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"flag"
 	"encoding/json"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/common"
@@ -41,7 +41,7 @@ func main() {
 	flag.Parse()
 	cfg, err := LoadConfig(*InputConfFile)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
 
@@ -52,30 +52,30 @@ func main() {
 		panic(err)
 	}
 	
-	//glog.Info("...")
 	cmd := protocol.NewCmdSimple(protocol.REQ_MSG_SERVER_CMD)
 	
 	err = gatewayClient.Send(libnet.Json(cmd))
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 	}
 	
-	fmt.Println("input id :")
+	fmt.Println("input my id :")
+	var myID string
 	var input string
-	if _, err := fmt.Scanf("%s\n", &input); err != nil {
-		glog.Error(err.Error())
+	if _, err := fmt.Scanf("%s\n", &myID); err != nil {
+		log.Error(err.Error())
 	}
 	var c protocol.CmdSimple
 	err = gatewayClient.ProcessOnce(func(msg *libnet.InBuffer) error {
-		glog.Info(string(msg.Data))
+		log.Info(string(msg.Data))
 		err = json.Unmarshal(msg.Data, &c)
 		if err != nil {
-			glog.Error("error:", err)
+			log.Error("error:", err)
 		}
 		return nil
 	})
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 	}
 
 	gatewayClient.Close()
@@ -89,23 +89,23 @@ func main() {
 	
 	fmt.Println("send your id...")
 	cmd = protocol.NewCmdSimple(protocol.SEND_CLIENT_ID_CMD)
-	cmd.AddArg(input)
+	cmd.AddArg(myID)
 	
 	err = msgServerClient.Send(libnet.Json(cmd))
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 	}
 	
 	go heartBeat(cfg, msgServerClient)
 	
-	//glog.Info("the msg you want to send...")
+	//log.Info("the msg you want to send...")
 
 
 	go msgServerClient.Process(func(msg *libnet.InBuffer) error {
-		//glog.Info(string(msg.Data))
+		//log.Info(string(msg.Data))
 		err = json.Unmarshal(msg.Data, &c)
 		if err != nil {
-			glog.Error("error:", err)
+			log.Error("error:", err)
 		}
 		fmt.Println(c.GetArgs()[1] + "  says : " + c.GetArgs()[0])
 
@@ -117,37 +117,32 @@ func main() {
 		
 		fmt.Println("send the id you want to talk :")
 		if _, err = fmt.Scanf("%s\n", &input); err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 		}
 		
 		cmd.AddArg(input)
 		
 		fmt.Println("input msg :")
 		if _, err = fmt.Scanf("%s\n", &input); err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 		}
 		
 		cmd.AddArg(input)
 		
-		fmt.Println("input my ID :")
-		if _, err = fmt.Scanf("%s\n", &input); err != nil {
-			glog.Error(err.Error())
-		}
-		
-		cmd.AddArg(input)
+		cmd.AddArg(myID)
 		
 		err = msgServerClient.Send(libnet.Json(cmd))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 		}
 	}
 	
 	defer msgServerClient.Close()
 	
 	// msgServerClient.Process(func(msg *libnet.InBuffer) error {
-	// 	glog.Info(string(msg.Data))
+	// 	log.Info(string(msg.Data))
 	// 	return nil
 	// })
 	
-	glog.Flush()
+	log.Flush()
 }

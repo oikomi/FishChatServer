@@ -17,7 +17,7 @@ package main
 
 import (
 	"flag"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/common"
@@ -39,26 +39,26 @@ func NewProtoProc(r *Router) *ProtoProc {
 }
 
 func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procSendMsgP2P")
+	log.Info("procSendMsgP2P")
 	var err error
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
-	glog.Info(send2Msg)
+	log.Info(send2Msg)
 	self.Router.readMutex.Lock()
 	defer self.Router.readMutex.Unlock()
 	store_session, err := common.GetSessionFromCID(self.Router.sessionStore, send2ID)
 	if err != nil {
-		glog.Warningf("no ID : %s", send2ID)
+		log.Warningf("no ID : %s", send2ID)
 		
 		return err
 	}
-	glog.Info(store_session.MsgServerAddr)
+	log.Info(store_session.MsgServerAddr)
 	
 	cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
 	
 	err = self.Router.msgServerClientMap[store_session.MsgServerAddr].Send(libnet.Json(cmd))
 	if err != nil {
-		glog.Error("error:", err)
+		log.Error("error:", err)
 		return err
 	}
 	
@@ -66,7 +66,7 @@ func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) 
 }
 
 func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procCreateTopic")
+	log.Info("procCreateTopic")
 	topicName := cmd.GetArgs()[0]
 	serverAddr := cmd.GetAnyData().(string)
 	self.Router.topicServerMap[topicName] = serverAddr
@@ -75,14 +75,14 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 }
 
 func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procJoinTopic")
+	log.Info("procJoinTopic")
 	
 	return nil
 }
 
 
 func (self *ProtoProc)procSendMsgTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	glog.Info("procSendMsgTopic")
+	log.Info("procSendMsgTopic")
 	//var err error
 	//topicName := string(cmd.Args[0])
 	//send2Msg := string(cmd.Args[1])

@@ -42,8 +42,7 @@ gateway server主要是接受client请求，进行通用的功能设置，目前
 
 ### msg_server
 msg_server是消息的主体，维护着客户端连接和keeplive,同时要注意router、manager和monitor都订阅了msg_server的channel
-<pre><code>
-	SYSCTRL_CLIENT_STATUS = "/sysctrl/client-status"
+<pre><code>SYSCTRL_CLIENT_STATUS = "/sysctrl/client-status"
 	SYSCTRL_TOPIC_STATUS  = "/sysctrl/topic-status"
 	SYSCTRL_TOPIC_SYNC    = "/sysctrl/topic-sync"
 	SYSCTRL_SEND          = "/sysctrl/send"
@@ -55,14 +54,14 @@ msg_server是消息的主体，维护着客户端连接和keeplive,同时要注�
 router顾名思义是做了msg_server之间的消息转发
 
 ### manager
-manager主要是管理client信息存储、离线消息存储等等，通过它和redis联系
+manager主要是管理client信息存储、topic信息存储、离线消息存储等等，通过它和redis联系
 
 ### monitor
 monitor主要是收集监控各服务器状态信息，目前monitor是可选项，可按需要启动它
 
 部署
 ======
-FishChatServer采用分布式可伸缩部署方式。如果没有多机条件，可以单机部署：
+FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可以动态增减)。如果没有多机条件，可以单机部署：
 
 建议：
 单机测试部署 
@@ -104,7 +103,7 @@ FishChatServer完全采用Golang开发(https://golang.org/)
 
 音视频方案
 ---------------------
-音视频采用nginx-rtmp架构,借助ffmpeg技术,客户端输出rtmp流,服务器输出hls流
+音视频采用nginx-rtmp架构,借助ffmpeg技术,客户端推送rtmp流,服务器输出hls流
 
 协议
 ---------------------
@@ -126,7 +125,7 @@ FishChatServer完全采用Golang开发(https://golang.org/)
 Copyright & License
 ===================
 
-Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
+Copyright 2014-2015 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

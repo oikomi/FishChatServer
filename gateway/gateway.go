@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Hong Miao. All Rights Reserved.
+// Copyright 2014 Hong Miao (miaohong@miaohong.org). All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package main
 import (
 	"fmt"
 	"flag"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 )
 
@@ -57,10 +57,10 @@ var InputConfFile = flag.String("conf_file", "gateway.json", "input conf file na
 func handleSession(gw *Gateway, session *libnet.Session) {
 	//glog.Info("handleSession")
 	session.Process(func(msg *libnet.InBuffer) error {
-		glog.Info(string(msg.Data))
+		//glog.Info(string(msg.Data))
 		err := gw.parseProtocol(msg.Data, session)
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 		}
 		
 		return nil
@@ -74,7 +74,7 @@ func main() {
 	cfg := NewGatewayConfig(*InputConfFile)
 	err := cfg.LoadConfig()
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
 	
@@ -82,13 +82,13 @@ func main() {
 
 	gw.server, err = libnet.Listen(cfg.TransportProtocols, cfg.Listen)
 	if err != nil {
-		glog.Error(err.Error())
+		log.Error(err.Error())
 		return
 	}
-	glog.Info("gateway server running at ", gw.server.Listener().Addr().String())
+	log.Info("gateway server running at ", gw.server.Listener().Addr().String())
 
 	gw.server.Serve(func(session *libnet.Session) {
-		glog.Info("client ", session.Conn().RemoteAddr().String(), " | come in")
+		log.Info("client ", session.Conn().RemoteAddr().String(), " | come in")
 		
 		go handleSession(gw, session)
 	})

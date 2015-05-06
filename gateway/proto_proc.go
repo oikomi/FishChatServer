@@ -17,7 +17,7 @@ package main
 
 import (
 	"flag"
-	"github.com/golang/glog"
+	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/common"
 	"github.com/oikomi/FishChatServer/protocol"
@@ -39,22 +39,22 @@ func NewProtoProc(gateway *Gateway) *ProtoProc {
 }
 
 func (self *ProtoProc)procReqMsgServer(cmd protocol.Cmd, session *libnet.Session) error {
-	//glog.Info("procReqMsgServer")
+	//log.Info("procReqMsgServer")
 	var err error
 	msgServer := common.SelectServer(self.gateway.cfg.MsgServerList, self.gateway.cfg.MsgServerNum)
 
 	resp := protocol.NewCmdSimple(protocol.SELECT_MSG_SERVER_FOR_CLIENT_CMD)
 	resp.AddArg(msgServer)
 	
-	glog.Info("Resp | ", resp)
+	log.Info("Resp | ", resp)
 	
 	if session != nil {
 		err = session.Send(libnet.Json(resp))
 		if err != nil {
-			glog.Error(err.Error())
+			log.Error(err.Error())
 		}
 		session.Close()
-		glog.Info("client ", session.Conn().RemoteAddr().String(), " | close")
+		log.Info("client ", session.Conn().RemoteAddr().String(), " | close")
 	}
 	return nil
 }
