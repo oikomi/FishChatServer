@@ -40,7 +40,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 		msgServerClientMap : make(map[string]*libnet.Session),
 		sessionStore       : storage.NewSessionStore(storage.NewRedisStore(&storage.RedisStoreOptions {
 					Network :   "tcp",
-					Address :   cfg.Redis.Port,
+					Address :   cfg.Redis.Addr + cfg.Redis.Port,
 					ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
 					ReadTimeout : time.Duration(cfg.Redis.ReadTimeout)*time.Millisecond,
 					WriteTimeout : time.Duration(cfg.Redis.WriteTimeout)*time.Millisecond,
