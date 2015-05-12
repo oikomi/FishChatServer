@@ -57,7 +57,7 @@ func (self *ProtoProc)procSubscribeChannel(cmd protocol.Cmd, session *libnet.Ses
 }
 
 func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error {
-	log.Info("procPing")
+	//log.Info("procPing")
 	cid := session.State.(*base.SessionState).ClientID
 	self.msgServer.scanSessionMutex.Lock()
 	defer self.msgServer.scanSessionMutex.Unlock()

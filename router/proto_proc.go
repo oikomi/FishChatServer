@@ -74,13 +74,14 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	return nil
 }
 
+//Note: router do not process topic
 func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	log.Info("procJoinTopic")
 	
 	return nil
 }
 
-
+//Note: router do not process topic
 func (self *ProtoProc)procSendMsgTopic(cmd protocol.Cmd, session *libnet.Session) error {
 	log.Info("procSendMsgTopic")
 	//var err error

@@ -3,8 +3,8 @@
 	"TransportProtocols"       : "tcp",
 	"Listen"                   : "0.0.0.0:19001",
 	"LogFile"                  : "msg_server.log",
-	"ScanDeadSessionTimeout"   : 5000,
-	"Expire"                   : 10000,
+	"ScanDeadSessionTimeout"   : 50,
+	"Expire"                   : 100,
 
 	"MonitorBeatTime"          : 5,
 	

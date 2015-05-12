@@ -64,7 +64,7 @@ func main() {
 		log.Error(err.Error())
 	}
 	
-	fmt.Println("input id :")
+	fmt.Println("input my id :")
 	var input string
 	if _, err := fmt.Scanf("%s\n", &input); err != nil {
 		log.Error(err.Error())
@@ -229,8 +229,6 @@ func main() {
 			return nil
 		})
 	} else {
-	
-	
 		cmd = protocol.NewCmdSimple(protocol.SEND_MESSAGE_TOPIC_CMD)
 
 		fmt.Println("SEND_MESSAGE_TOPIC_CMD | input topic name :")
