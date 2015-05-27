@@ -23,6 +23,8 @@ import (
 type ChannelMap map[string]*ChannelState
 type SessionMap map[string]*libnet.Session
 
+type AckMap map[string]map[string]bool
+
 const COMM_PREFIX = "IM"
 
 var ChannleList []string

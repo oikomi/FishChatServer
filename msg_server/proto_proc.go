@@ -172,6 +172,15 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		}
 	}
 	
+	uuid := common.NewV4().String()
+	
+	log.Info("uuid : ", uuid)
+	
+	uuidTmpMap := make(map[string]bool)
+	uuidTmpMap[uuid] = false
+	
+	self.msgServer.p2pAckStatus[fromID] = uuidTmpMap
+	
 	if store_session.MsgServerAddr == self.msgServer.cfg.LocalIP {
 		log.Info("in the same server")
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
@@ -366,6 +375,21 @@ func (self *ProtoProc)procSendMessageTopic(cmd protocol.Cmd, session *libnet.Ses
 			return err
 		}
 	}
+	
+	return err
+}
+
+
+// not a good idea
+func (self *ProtoProc)procP2pAck(cmd protocol.Cmd, session *libnet.Session) error {
+	log.Info("procP2pAck")
+	var err error
+	clientID := cmd.GetArgs()[0]
+	uuid := cmd.GetArgs()[1]
+	self.msgServer.p2pAckMutex.Lock()
+	defer self.msgServer.p2pAckMutex.Unlock()
+	
+	self.msgServer.p2pAckStatus[clientID][uuid] = true
 	
 	return err
 }

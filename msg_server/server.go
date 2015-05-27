@@ -41,7 +41,9 @@ type MsgServer struct {
 	sessionStore      *storage.SessionStore
 	topicStore        *storage.TopicStore
 	offlineMsgStore   *storage.OfflineMsgStore
+	p2pAckStatus      base.AckMap
 	scanSessionMutex  sync.Mutex
+	p2pAckMutex       sync.Mutex
 }
 
 func NewMsgServer(cfg *MsgServerConfig, rs *storage.RedisStore) *MsgServer {
@@ -54,6 +56,7 @@ func NewMsgServer(cfg *MsgServerConfig, rs *storage.RedisStore) *MsgServer {
 		sessionStore       : storage.NewSessionStore(rs),
 		topicStore         : storage.NewTopicStore(rs),
 		offlineMsgStore    : storage.NewOfflineMsgStore(rs),
+		p2pAckStatus       : make(base.AckMap),
 	}
 }
 
@@ -170,6 +173,14 @@ func (self *MsgServer)parseProtocol(cmd []byte, session *libnet.Session) error {
 			}
 		case protocol.SEND_MESSAGE_TOPIC_CMD:
 			err = pp.procSendMessageTopic(&c, session)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
+
+		// p2p ack
+		case protocol.P2P_ACK_CMD:
+			err = pp.procP2pAck(&c, session)
 			if err != nil {
 				log.Error("error:", err)
 				return err

@@ -44,6 +44,10 @@ const (
 )
 
 const (
+	P2P_ACK_CMD       = "P2P_ACK"
+)
+
+const (
 	STORE_SESSION_CMD       = "STORE_SESSION"
 	STORE_TOPIC_CMD         = "STORE_TOPIC"
 )
