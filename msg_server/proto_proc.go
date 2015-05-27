@@ -389,7 +389,12 @@ func (self *ProtoProc)procP2pAck(cmd protocol.Cmd, session *libnet.Session) erro
 	self.msgServer.p2pAckMutex.Lock()
 	defer self.msgServer.p2pAckMutex.Unlock()
 	
-	self.msgServer.p2pAckStatus[clientID][uuid] = true
+	//self.msgServer.p2pAckStatus[clientID][uuid] = true
+	
+	m, ok := self.msgServer.p2pAckStatus[clientID]
+	if ok {
+		m[uuid] = true
+	}
 	
 	return err
 }
