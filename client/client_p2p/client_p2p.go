@@ -102,8 +102,9 @@ func main() {
 
 
 	go msgServerClient.Process(func(msg *libnet.InBuffer) error {
-		//log.Info(string(msg.Data))
+		log.Info(string(msg.Data))
 		err = json.Unmarshal(msg.Data, &c)
+		fmt.Println("my uuid is : ", c.GetArgs()[2])
 		if err != nil {
 			log.Error("error:", err)
 		}

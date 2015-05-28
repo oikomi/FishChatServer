@@ -36,12 +36,14 @@ func NewOfflineMsgStore(RS *RedisStore) *OfflineMsgStore {
 type OfflineMsgData struct {
 	Msg        string
 	FromID     string
+	Uuid       string
 }
 
-func NewOfflineMsgData(msg string, fromID string) *OfflineMsgData {
+func NewOfflineMsgData(msg string, fromID string, uuid string) *OfflineMsgData {
 	return &OfflineMsgData {
 		Msg : msg,
 		FromID : fromID,
+		Uuid   : uuid,
 	}
 }
 

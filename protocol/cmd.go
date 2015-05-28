@@ -32,7 +32,7 @@ const (
 	SUBSCRIBE_CHANNEL_CMD                 = "SUBSCRIBE_CHANNEL"
 	//SEND_MESSAGE_P2P send2ID send2msg
 	SEND_MESSAGE_P2P_CMD                  = "SEND_MESSAGE_P2P"
-	//RESP_MESSAGE_P2P  msg fromID
+	//RESP_MESSAGE_P2P  msg fromID uuid
 	RESP_MESSAGE_P2P_CMD                  = "RESP_MESSAGE_P2P"
 	ROUTE_MESSAGE_P2P_CMD                 = "ROUTE_MESSAGE_P2P"
 	CREATE_TOPIC_CMD                      = "CREATE_TOPIC"

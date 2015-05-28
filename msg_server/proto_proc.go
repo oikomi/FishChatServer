@@ -81,6 +81,7 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 			resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 			resp.AddArg(v.Msg)
 			resp.AddArg(v.FromID)
+			resp.AddArg(v.Uuid)
 			
 			if self.msgServer.sessions[ID] != nil {
 				self.msgServer.sessions[ID].Send(libnet.Json(resp))
@@ -144,13 +145,22 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		return err
 	}
 	
+	uuid := common.NewV4().String()
+	
+	log.Info("uuid : ", uuid)
+	
+	uuidTmpMap := make(map[string]bool)
+	uuidTmpMap[uuid] = false
+	
+	self.msgServer.p2pAckStatus[fromID] = uuidTmpMap
+	
 	if self.msgServer.sessions[send2ID] == nil {
 		//offline
 		log.Info(send2ID + " | is offline")
 		exist, err := self.msgServer.offlineMsgStore.IsKeyExist(send2ID)
 		if exist.(int64) == 0 {
 			tmp := storage.NewOfflineMsgStoreData(send2ID)
-			tmp.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID))
+			tmp.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID, uuid))
 			
 			self.msgServer.offlineMsgStore.Set(tmp)
 			if err != nil {
@@ -163,7 +173,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 				log.Error(err.Error())
 				return err
 			}
-			omrd.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID))
+			omrd.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID, uuid))
 			self.msgServer.offlineMsgStore.Set(omrd)
 			if err != nil {
 				log.Error(err.Error())
@@ -171,21 +181,14 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 			}
 		}
 	}
-	
-	uuid := common.NewV4().String()
-	
-	log.Info("uuid : ", uuid)
-	
-	uuidTmpMap := make(map[string]bool)
-	uuidTmpMap[uuid] = false
-	
-	self.msgServer.p2pAckStatus[fromID] = uuidTmpMap
-	
+		
 	if store_session.MsgServerAddr == self.msgServer.cfg.LocalIP {
 		log.Info("in the same server")
 		resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 		resp.AddArg(send2Msg)
 		resp.AddArg(fromID)
+		// add uuid
+		resp.AddArg(uuid)
 		
 		if self.msgServer.sessions[send2ID] != nil {
 			self.msgServer.sessions[send2ID].Send(libnet.Json(resp))
@@ -195,6 +198,8 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		} 
 	} else {
 		if self.msgServer.channels[protocol.SYSCTRL_SEND] != nil {
+			//add uuid
+			cmd.AddArg(uuid)
 			_, err = self.msgServer.channels[protocol.SYSCTRL_SEND].Channel.Broadcast(libnet.Json(cmd))
 			if err != nil {
 				log.Error(err.Error())
@@ -211,6 +216,8 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 	var err error
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
+	fromID := cmd.GetArgs()[2]
+	uuid := cmd.GetArgs()[3]
 	_, err = common.GetSessionFromCID(self.msgServer.sessionStore, send2ID)
 	if err != nil {
 		log.Warningf("no ID : %s", send2ID)
@@ -220,6 +227,9 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 
 	resp := protocol.NewCmdSimple(protocol.RESP_MESSAGE_P2P_CMD)
 	resp.AddArg(send2Msg)
+	resp.AddArg(fromID)
+	// add uuid
+	resp.AddArg(uuid)
 	
 	if self.msgServer.sessions[send2ID] != nil {
 		self.msgServer.sessions[send2ID].Send(libnet.Json(resp))
