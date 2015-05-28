@@ -6,6 +6,8 @@ FishChatServer
 FishChat(鱼传 - `鱼传尺素`) - FishChat是一款优秀的即时通讯软件(IM), 它集合了市面上已有产品的优点, 并具备**智能硬件网关管理(代码不是很成熟, 暂不公开)**. 我们的目标是：让智能硬件“聊”起来！
 > **NOTE:** 鱼传取自古乐府《饮马长城窟行》`客从远方来, 遗我双鲤鱼. 呼儿烹鲤鱼, 中有尺素书.` 
 
+FishChat的访谈 : http://www.oschina.net/question/2306979_236368
+
 FishChat Android客户端见 https://github.com/oikomi/FishChatAndroid (紧张开发中, not usable yet)
 
 Status
