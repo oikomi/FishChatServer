@@ -44,6 +44,7 @@ const (
 )
 
 const (
+	//P2P_ACK clientID uuid
 	P2P_ACK_CMD       = "P2P_ACK"
 )
 

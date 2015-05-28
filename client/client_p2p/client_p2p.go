@@ -104,10 +104,21 @@ func main() {
 	go msgServerClient.Process(func(msg *libnet.InBuffer) error {
 		log.Info(string(msg.Data))
 		err = json.Unmarshal(msg.Data, &c)
-		fmt.Println("my uuid is : ", c.GetArgs()[2])
 		if err != nil {
 			log.Error("error:", err)
 		}
+		
+		fmt.Println("my uuid is : ", c.GetArgs()[2])
+
+		cmd = protocol.NewCmdSimple(protocol.P2P_ACK_CMD)
+		cmd.AddArg(myID)
+		cmd.AddArg(c.GetArgs()[2])
+		
+		err = msgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			log.Error(err.Error())
+		}
+		
 		fmt.Println(c.GetArgs()[1] + "  says : " + c.GetArgs()[0])
 
 		return nil
