@@ -23,7 +23,7 @@ import (
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/common"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 func init() {
@@ -103,7 +103,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	log.Info("procClientID")
 	var err error
 	ID := cmd.GetArgs()[0]
-	sessionStoreData := storage.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
+	sessionStoreData := redis_store.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
 		self.msgServer.cfg.LocalIP, strconv.FormatUint(session.Id(), 10))
 		
 	log.Info(sessionStoreData)
@@ -159,8 +159,8 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		log.Info(send2ID + " | is offline")
 		exist, err := self.msgServer.offlineMsgStore.IsKeyExist(send2ID)
 		if exist.(int64) == 0 {
-			tmp := storage.NewOfflineMsgStoreData(send2ID)
-			tmp.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID, uuid))
+			tmp := redis_store.NewOfflineMsgStoreData(send2ID)
+			tmp.AddMsg(redis_store.NewOfflineMsgData(send2Msg, fromID, uuid))
 			
 			self.msgServer.offlineMsgStore.Set(tmp)
 			if err != nil {
@@ -173,7 +173,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 				log.Error(err.Error())
 				return err
 			}
-			omrd.AddMsg(storage.NewOfflineMsgData(send2Msg, fromID, uuid))
+			omrd.AddMsg(redis_store.NewOfflineMsgData(send2Msg, fromID, uuid))
 			self.msgServer.offlineMsgStore.Set(omrd)
 			if err != nil {
 				log.Error(err.Error())
@@ -251,7 +251,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	}
 	topicName := cmd.GetArgs()[0]
 	
-	topicStoreData := storage.NewTopicStoreData(topicName, session.State.(*base.SessionState).ClientID, 
+	topicStoreData := redis_store.NewTopicStoreData(topicName, session.State.(*base.SessionState).ClientID, 
 		self.msgServer.cfg.LocalIP)
 
 	t := protocol.NewTopic(topicName, self.msgServer.cfg.LocalIP, session.State.(*base.SessionState).ClientID, session)
@@ -267,8 +267,8 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	args := make([]string, 0)
 	args = append(args, topicName)
 	CCmd := protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, topicStoreData)
-	m := storage.NewMember(session.State.(*base.SessionState).ClientID)
-	CCmd.AnyData.(*storage.TopicStoreData).MemberList = append(CCmd.AnyData.(*storage.TopicStoreData).MemberList, m)
+	m := redis_store.NewMember(session.State.(*base.SessionState).ClientID)
+	CCmd.AnyData.(*redis_store.TopicStoreData).MemberList = append(CCmd.AnyData.(*redis_store.TopicStoreData).MemberList, m)
 	
 	log.Info(CCmd)
 	
@@ -283,7 +283,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	return nil
 }
 
-func (self *ProtoProc)findTopicMsgAddr(topicName string) (*storage.TopicStoreData, error) {
+func (self *ProtoProc)findTopicMsgAddr(topicName string) (*redis_store.TopicStoreData, error) {
 	log.Info("findTopicMsgAddr")
 	t, err := common.GetTopicFromTopicName(self.msgServer.topicStore, topicName)
 	
@@ -337,7 +337,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		}
 	}
 	
-	m := storage.NewMember(clientID)
+	m := redis_store.NewMember(clientID)
 
 	self.msgServer.topics[topicName].ClientIDList = append(self.msgServer.topics[topicName].ClientIDList, 
 		clientID)

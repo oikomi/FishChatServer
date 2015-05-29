@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package redis_store
 
 const (
 	SESSION_UNIQ_PREFIX      = "session"

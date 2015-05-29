@@ -20,7 +20,7 @@ import (
 	"math/rand"
 	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 const KeyPrefix string = base.COMM_PREFIX
@@ -29,7 +29,7 @@ var DefaultRedisConnectTimeout uint32 = 2000
 var DefaultRedisReadTimeout    uint32 = 1000
 var DefaultRedisWriteTimeout   uint32 = 1000
 
-var DefaultRedisOptions storage.RedisStoreOptions = storage.RedisStoreOptions {
+var DefaultRedisOptions redis_store.RedisStoreOptions = redis_store.RedisStoreOptions {
 	Network        : "tcp",
 	Address        : ":6379",
 	ConnectTimeout : time.Duration(DefaultRedisConnectTimeout)*time.Millisecond,
@@ -44,7 +44,7 @@ func SelectServer(serverList []string, serverNum int) string {
 	return serverList[rand.Intn(serverNum)]
 }
 
-func GetSessionFromCID(sessionStore  *storage.SessionStore, ID string) (*storage.SessionStoreData, error) {
+func GetSessionFromCID(sessionStore  *redis_store.SessionStore, ID string) (*redis_store.SessionStoreData, error) {
 	session ,err := sessionStore.Get(ID)
 	
 	if err != nil {
@@ -58,7 +58,7 @@ func GetSessionFromCID(sessionStore  *storage.SessionStore, ID string) (*storage
 	return session, nil
 }
 
-func DelSessionFromCID(sessionStore *storage.SessionStore, ID string) error {
+func DelSessionFromCID(sessionStore *redis_store.SessionStore, ID string) error {
 	err := sessionStore.Delete(ID)
 	
 	if err != nil {
@@ -69,7 +69,7 @@ func DelSessionFromCID(sessionStore *storage.SessionStore, ID string) error {
 	return nil
 }
 
-func GetTopicFromTopicName(topicStore *storage.TopicStore, topicName string) (*storage.TopicStoreData, error) {
+func GetTopicFromTopicName(topicStore *redis_store.TopicStore, topicName string) (*redis_store.TopicStoreData, error) {
 	topic ,err := topicStore.Get(topicName)
 	
 	if err != nil {
@@ -83,7 +83,7 @@ func GetTopicFromTopicName(topicStore *storage.TopicStore, topicName string) (*s
 	return topic, nil
 }
 
-func GetOfflineMsgFromOwnerName(offlineMsgStore *storage.OfflineMsgStore, ownerName string) (*storage.OfflineMsgStoreData, error) {
+func GetOfflineMsgFromOwnerName(offlineMsgStore *redis_store.OfflineMsgStore, ownerName string) (*redis_store.OfflineMsgStoreData, error) {
 	o ,err := offlineMsgStore.Get(ownerName)
 	
 	if err != nil {

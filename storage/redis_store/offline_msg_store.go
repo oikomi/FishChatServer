@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package redis_store
 
 import (
 	"sync"
@@ -22,55 +22,64 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type SessionStore struct {
+type OfflineMsgStore struct {
 	RS       *RedisStore
 	rwMutex  sync.Mutex
 }
 
-func NewSessionStore(RS *RedisStore) *SessionStore {
-	return &SessionStore {
+func NewOfflineMsgStore(RS *RedisStore) *OfflineMsgStore {
+	return &OfflineMsgStore {
 		RS    : RS,
 	}
 }
 
-type SessionStoreData struct {
-	ClientID      string
-	ClientAddr    string
-	MsgServerAddr string
-	ID            string
-	MaxAge        time.Duration
+type OfflineMsgData struct {
+	Msg        string
+	FromID     string
+	Uuid       string
 }
 
-func NewSessionStoreData(ClientID string, ClientAddr string, MsgServerAddr string, ID string) *SessionStoreData {
-	return &SessionStoreData {
-		ClientID      : ClientID,
-		ClientAddr    : ClientAddr,
-		MsgServerAddr : MsgServerAddr,
-		ID            : ID,
+func NewOfflineMsgData(msg string, fromID string, uuid string) *OfflineMsgData {
+	return &OfflineMsgData {
+		Msg : msg,
+		FromID : fromID,
+		Uuid   : uuid,
 	}
 }
 
-func (self *SessionStoreData)checkClientID(clientID string) bool {
-	return true
+type OfflineMsgStoreData struct {
+	OwnerName     string
+	MsgList       []*OfflineMsgData
+	MaxAge        time.Duration
 }
 
-func (self *SessionStoreData)StoreKey() string {
-	return self.ClientID
+func (self *OfflineMsgStoreData) AddMsg(d *OfflineMsgData) {
+	self.MsgList = append(self.MsgList, d)
+}
+
+func (self *OfflineMsgStoreData) ClearMsg() {
+	self.MsgList = self.MsgList[:0]
+}
+
+func NewOfflineMsgStoreData(ownerName string) *OfflineMsgStoreData {
+	return &OfflineMsgStoreData {
+		OwnerName : ownerName,
+	}
 }
 
 // Get the session from the store.
-func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
+func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := k + SESSION_UNIQ_PREFIX
+	key := k + OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + k + SESSION_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + k + OFFLINE_MSG_UNIQ_PREFIX
 	}
 	b, err := redis.Bytes(self.RS.conn.Do("GET", key))
 	if err != nil {
 		return nil, err
 	}
-	var sess SessionStoreData
+	var sess OfflineMsgStoreData
 	err = json.Unmarshal(b, &sess)
 	if err != nil {
 		return nil, err
@@ -79,16 +88,16 @@ func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
 }
 
 // Save the session into the store.
-func (self *SessionStore) Set(sess *SessionStoreData) error {
+func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	b, err := json.Marshal(sess)
 	if err != nil {
 		return err
 	}
-	key := sess.ClientID + SESSION_UNIQ_PREFIX
+	key := sess.OwnerName + OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + sess.ClientID + SESSION_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + sess.OwnerName + OFFLINE_MSG_UNIQ_PREFIX
 	}
 	ttl := sess.MaxAge
 	if ttl == 0 {
@@ -106,12 +115,12 @@ func (self *SessionStore) Set(sess *SessionStoreData) error {
 }
 
 // Delete the session from the store.
-func (self *SessionStore) Delete(id string) error {
+func (self *OfflineMsgStore) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := id + SESSION_UNIQ_PREFIX
+	key := id + OFFLINE_MSG_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + id + SESSION_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + id + OFFLINE_MSG_UNIQ_PREFIX
 	}
 	_, err := self.RS.conn.Do("DEL", key)
 	if err != nil {
@@ -119,9 +128,10 @@ func (self *SessionStore) Delete(id string) error {
 	}
 	return nil
 }
+
 // Clear all sessions from the store. Requires the use of a key
 // prefix in the store options, otherwise the method refuses to delete all keys.
-func (self *SessionStore) Clear() error {
+func (self *OfflineMsgStore) Clear() error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -140,10 +150,11 @@ func (self *SessionStore) Clear() error {
 	}
 	return nil
 }
+
 // Get the number of session keys in the store. Requires the use of a
 // key prefix in the store options, otherwise returns -1 (cannot tell
 // session keys from other keys).
-func (self *SessionStore) Len() int {
+func (self *OfflineMsgStore) Len() int {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -152,11 +163,29 @@ func (self *SessionStore) Len() int {
 	}
 	return len(vals)
 }
-func (self *SessionStore) getSessionKeys() ([]interface{}, error) {
+
+func (self *OfflineMsgStore) getSessionKeys() ([]interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	if self.RS.opts.KeyPrefix != "" {
 		return redis.Values(self.RS.conn.Do("KEYS", self.RS.opts.KeyPrefix+":*"))
 	}
 	return nil, ErrNoKeyPrefix
+}
+
+func (self *OfflineMsgStore) IsKeyExist(k string) (interface{}, error) {
+	self.rwMutex.Lock()
+	defer self.rwMutex.Unlock()
+	
+	key := k + OFFLINE_MSG_UNIQ_PREFIX
+	if self.RS.opts.KeyPrefix != "" {
+		key = self.RS.opts.KeyPrefix + ":" + k + OFFLINE_MSG_UNIQ_PREFIX
+	}
+	
+	v, err := self.RS.conn.Do("EXISTS", key)
+	if err != nil {
+		return v, err
+	}
+
+	return v, err
 }

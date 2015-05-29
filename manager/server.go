@@ -21,20 +21,20 @@ import (
 	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 	"github.com/oikomi/FishChatServer/protocol"
 )
 
 type Manager struct {
 	cfg          *ManagerConfig
-	sessionStore *storage.SessionStore
-	topicStore   *storage.TopicStore
+	sessionStore *redis_store.SessionStore
+	topicStore   *redis_store.TopicStore
 }   
 
 func NewManager(cfg *ManagerConfig) *Manager {
 	return &Manager {
 		cfg : cfg,
-		sessionStore       : storage.NewSessionStore(storage.NewRedisStore(&storage.RedisStoreOptions {
+		sessionStore       : redis_store.NewSessionStore(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
 			Network        : "tcp",
 			Address        : cfg.Redis.Addr + cfg.Redis.Port,
 			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
@@ -43,7 +43,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			Database       : 1,
 			KeyPrefix      : base.COMM_PREFIX,
 		})),
-		topicStore         : storage.NewTopicStore(storage.NewRedisStore(&storage.RedisStoreOptions {
+		topicStore         : redis_store.NewTopicStore(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
 			Network        : "tcp",
 			Address        : cfg.Redis.Addr + cfg.Redis.Port,
 			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,

@@ -22,7 +22,7 @@ import (
 	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 /*
@@ -79,7 +79,7 @@ func main() {
 		return
 	}
 	
-	rs := storage.NewRedisStore(&storage.RedisStoreOptions {
+	rs := redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
 			Network        : "tcp",
 			Address        : cfg.Redis.Port,
 			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,

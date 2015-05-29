@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package redis_store
 
 import (
 	"sync"
@@ -22,65 +22,55 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type TopicStore struct {
+type SessionStore struct {
 	RS       *RedisStore
 	rwMutex  sync.Mutex
 }
 
-func NewTopicStore(RS *RedisStore) *TopicStore {
-	return &TopicStore {
+func NewSessionStore(RS *RedisStore) *SessionStore {
+	return &SessionStore {
 		RS    : RS,
 	}
 }
 
-type TopicStoreData struct {
-	TopicName     string
-	CreaterID     string
-	MemberList    []*Member
+type SessionStoreData struct {
+	ClientID      string
+	ClientAddr    string
 	MsgServerAddr string
+	ID            string
 	MaxAge        time.Duration
 }
 
-type Member struct {
-	ID   string
-}
-
-func NewMember(ID string) *Member {
-	return &Member {
-		ID : ID,
-	}
-}
-
-func NewTopicStoreData(TopicName string, CreaterID string, MsgServerAddr string) *TopicStoreData {
-	return &TopicStoreData {
-		TopicName     : TopicName,
-		CreaterID     : CreaterID,
-		MemberList    : make([]*Member, 0),
+func NewSessionStoreData(ClientID string, ClientAddr string, MsgServerAddr string, ID string) *SessionStoreData {
+	return &SessionStoreData {
+		ClientID      : ClientID,
+		ClientAddr    : ClientAddr,
 		MsgServerAddr : MsgServerAddr,
+		ID            : ID,
 	}
 }
 
-func (self *TopicStoreData)StoreKey() string {
-	return self.TopicName
+func (self *SessionStoreData)checkClientID(clientID string) bool {
+	return true
 }
 
-func (self *TopicStoreData)AddMember(m *Member) {
-	self.MemberList = append(self.MemberList, m)
+func (self *SessionStoreData)StoreKey() string {
+	return self.ClientID
 }
 
 // Get the session from the store.
-func (self *TopicStore) Get(k string) (*TopicStoreData, error) {
+func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := k + TOPIC_UNIQ_PREFIX
+	key := k + SESSION_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + k + TOPIC_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + k + SESSION_UNIQ_PREFIX
 	}
 	b, err := redis.Bytes(self.RS.conn.Do("GET", key))
 	if err != nil {
 		return nil, err
 	}
-	var sess TopicStoreData
+	var sess SessionStoreData
 	err = json.Unmarshal(b, &sess)
 	if err != nil {
 		return nil, err
@@ -89,16 +79,16 @@ func (self *TopicStore) Get(k string) (*TopicStoreData, error) {
 }
 
 // Save the session into the store.
-func (self *TopicStore) Set(sess *TopicStoreData) error {
+func (self *SessionStore) Set(sess *SessionStoreData) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	b, err := json.Marshal(sess)
 	if err != nil {
 		return err
 	}
-	key := sess.TopicName + TOPIC_UNIQ_PREFIX
+	key := sess.ClientID + SESSION_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + sess.TopicName + TOPIC_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + sess.ClientID + SESSION_UNIQ_PREFIX
 	}
 	ttl := sess.MaxAge
 	if ttl == 0 {
@@ -116,12 +106,12 @@ func (self *TopicStore) Set(sess *TopicStoreData) error {
 }
 
 // Delete the session from the store.
-func (self *TopicStore) Delete(id string) error {
+func (self *SessionStore) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
-	key := id + TOPIC_UNIQ_PREFIX
+	key := id + SESSION_UNIQ_PREFIX
 	if self.RS.opts.KeyPrefix != "" {
-		key = self.RS.opts.KeyPrefix + ":" + id + TOPIC_UNIQ_PREFIX
+		key = self.RS.opts.KeyPrefix + ":" + id + SESSION_UNIQ_PREFIX
 	}
 	_, err := self.RS.conn.Do("DEL", key)
 	if err != nil {
@@ -129,10 +119,9 @@ func (self *TopicStore) Delete(id string) error {
 	}
 	return nil
 }
-
 // Clear all sessions from the store. Requires the use of a key
 // prefix in the store options, otherwise the method refuses to delete all keys.
-func (self *TopicStore) Clear() error {
+func (self *SessionStore) Clear() error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -154,7 +143,7 @@ func (self *TopicStore) Clear() error {
 // Get the number of session keys in the store. Requires the use of a
 // key prefix in the store options, otherwise returns -1 (cannot tell
 // session keys from other keys).
-func (self *TopicStore) Len() int {
+func (self *SessionStore) Len() int {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -163,7 +152,7 @@ func (self *TopicStore) Len() int {
 	}
 	return len(vals)
 }
-func (self *TopicStore) getSessionKeys() ([]interface{}, error) {
+func (self *SessionStore) getSessionKeys() ([]interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	if self.RS.opts.KeyPrefix != "" {

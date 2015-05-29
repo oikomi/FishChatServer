@@ -16,13 +16,13 @@
 package main
 
 import (
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 type TopicStoreCmd struct {
 	CmdName string
 	Args    []string
-	AnyData *storage.TopicStoreData
+	AnyData *redis_store.TopicStoreData
 }
 
 func (self TopicStoreCmd)GetCmdName() string {

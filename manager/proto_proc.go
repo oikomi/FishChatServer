@@ -20,7 +20,7 @@ import (
 	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 func init() {
@@ -42,7 +42,7 @@ func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *libnet.Session
 	log.Info("procStoreSession")
 	var err error
 	log.Info(cmd.GetAnyData())
-	err = self.Manager.sessionStore.Set(cmd.GetAnyData().(*storage.SessionStoreData))
+	err = self.Manager.sessionStore.Set(cmd.GetAnyData().(*redis_store.SessionStoreData))
 	if err != nil {
 		log.Error("error:", err)
 	}
@@ -55,7 +55,7 @@ func (self *ProtoProc)procStoreTopic(cmd protocol.Cmd, session *libnet.Session) 
 	log.Info("procStoreTopic")
 	var err error
 	log.Info(cmd.GetAnyData())
-	err = self.Manager.topicStore.Set(cmd.GetAnyData().(*storage.TopicStoreData))
+	err = self.Manager.topicStore.Set(cmd.GetAnyData().(*redis_store.TopicStoreData))
 	if err != nil {
 		log.Error("error:", err)
 	}

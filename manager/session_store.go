@@ -16,13 +16,13 @@
 package main
 
 import (
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 type SessionStoreCmd struct {
 	CmdName string
 	Args    []string
-	AnyData *storage.SessionStoreData
+	AnyData *redis_store.SessionStoreData
 }
 
 func (self SessionStoreCmd)GetCmdName() string {

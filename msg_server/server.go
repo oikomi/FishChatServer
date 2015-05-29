@@ -24,7 +24,7 @@ import (
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/protocol"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 func init() {
@@ -38,24 +38,24 @@ type MsgServer struct {
 	channels          base.ChannelMap
 	topics            protocol.TopicMap
 	server            *libnet.Server
-	sessionStore      *storage.SessionStore
-	topicStore        *storage.TopicStore
-	offlineMsgStore   *storage.OfflineMsgStore
+	sessionStore      *redis_store.SessionStore
+	topicStore        *redis_store.TopicStore
+	offlineMsgStore   *redis_store.OfflineMsgStore
 	p2pAckStatus      base.AckMap
 	scanSessionMutex  sync.Mutex
 	p2pAckMutex       sync.Mutex
 }
 
-func NewMsgServer(cfg *MsgServerConfig, rs *storage.RedisStore) *MsgServer {
+func NewMsgServer(cfg *MsgServerConfig, rs *redis_store.RedisStore) *MsgServer {
 	return &MsgServer {
 		cfg                : cfg,
 		sessions           : make(base.SessionMap),
 		channels           : make(base.ChannelMap),
 		topics             : make(protocol.TopicMap),
 		server             : new(libnet.Server),
-		sessionStore       : storage.NewSessionStore(rs),
-		topicStore         : storage.NewTopicStore(rs),
-		offlineMsgStore    : storage.NewOfflineMsgStore(rs),
+		sessionStore       : redis_store.NewSessionStore(rs),
+		topicStore         : redis_store.NewTopicStore(rs),
+		offlineMsgStore    : redis_store.NewOfflineMsgStore(rs),
 		p2pAckStatus       : make(base.AckMap),
 	}
 }

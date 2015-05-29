@@ -17,7 +17,7 @@ package protocol
 
 import (
 	"github.com/oikomi/FishChatServer/libnet"
-	"github.com/oikomi/FishChatServer/storage"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
 type TopicMap   map[string]*Topic
@@ -28,7 +28,7 @@ type Topic struct {
 	Channel       *libnet.Channel
 	TA            *TopicAttribute
 	ClientIDList  []string
-	TSD           *storage.TopicStoreData
+	TSD           *redis_store.TopicStoreData
 }
 
 func NewTopic(topicName string, msgAddr string, CreaterID string, CreaterSession *libnet.Session) *Topic {
@@ -41,7 +41,7 @@ func NewTopic(topicName string, msgAddr string, CreaterID string, CreaterSession
 	}
 }
 
-func (self *Topic)AddMember(m *storage.Member) {
+func (self *Topic)AddMember(m *redis_store.Member) {
 	self.TSD.MemberList = append(self.TSD.MemberList, m)
 }
 
