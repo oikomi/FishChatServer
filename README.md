@@ -77,6 +77,8 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 
 > **NOTE:**  FishChatServer依赖**redis**,请先启动redis,让它监听在默认端口
 
+注意FishChatServer的持久化存储采用了MongoDB(http://www.mongodb.org/), 需要启动mongo
+
 > **NOTE:**  可以通过修改各文件夹下面的json配置文件配置服务器参数
 
 ./gateway

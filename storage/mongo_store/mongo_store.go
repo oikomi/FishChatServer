@@ -28,7 +28,7 @@ type MongoStore struct {
 	session     *mgo.Session
 }
 
-func NewRedisStore(url string) *MongoStore {
+func NewMongoStore(url string) *MongoStore {
 	session, err := mgo.Dial(url)
 	if err != nil {
 		panic(err)
