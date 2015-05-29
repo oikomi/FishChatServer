@@ -102,7 +102,7 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 
 技术细节
 ======
-FishChatServer完全采用Golang开发(https://golang.org/)
+FishChatServer的消息系统完全采用Golang开发(https://golang.org/)
 
 音视频方案
 ---------------------
@@ -112,13 +112,13 @@ FishChatServer完全采用Golang开发(https://golang.org/)
 ---------------------
 ## 1. client to gateway
 
-#### REQ_MSG_SERVER_CMD
+##### REQ_MSG_SERVER_CMD
 
 **format:** *REQ_MSG_SERVER*
 
 client use this cmd to get a msg_server addr from gateway
 
-#### SELECT_MSG_SERVER_FOR_CLIENT_CMD
+##### SELECT_MSG_SERVER_FOR_CLIENT_CMD
 
 **format:** *SELECT_MSG_SERVER_FOR_CLIENT msg_server_ip*
 
@@ -127,31 +127,31 @@ gateway return msg_server addr to client
 
 ## 2. client to msg_server
 
-#### SEND_PING_CMD
+##### SEND_PING_CMD
 
 **format:** *SEND_PING*
 
 client use this cmd to keep alive status in msg_server.
 
-#### SEND_CLIENT_ID_CMD
+##### SEND_CLIENT_ID_CMD
 
 **format:** *SEND_CLIENT_ID CLIENT_ID*
 
 client use this cmd to send unique ID to msg_server.
 
-#### LOCATE_TOPIC_MSG_ADDR_CMD
+##### LOCATE_TOPIC_MSG_ADDR_CMD
 
 **format:** *LOCATE_TOPIC_MSG_ADDR MsgServerAddr topic_name*
 
 send the msg_server addr that having the topic you want.
 
-#### CREATE_TOPIC_CMD
+##### CREATE_TOPIC_CMD
 
 **format:** *CREATE_TOPIC topic_name*
 
 client use this cmd to CREATE TOPIC.
 
-#### JOIN_TOPIC_CMD
+##### JOIN_TOPIC_CMD
 
 **format:** *JOIN_TOPIC topic_name ID*
 
@@ -160,13 +160,13 @@ client use this cmd to JOIN TOPIC.
 
 ## 2. router,manager,monitor to msg_server
 
-#### SUBSCRIBE_CHANNEL_CMD
+##### SUBSCRIBE_CHANNEL_CMD
 
 **format:** *SUBSCRIBE_CHANNEL channelName*
 
 router,manager,monitor use this cmd to SUBSCRIBE channel from msg_server.
 
-#### ROUTE_MESSAGE_P2P_CMD
+##### ROUTE_MESSAGE_P2P_CMD
 
 **format:** *ROUTE_MESSAGE_P2P send2ID send2Msg*
 
