@@ -109,7 +109,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	log.Info(sessionStoreData)
 	args := make([]string, 0)
 	args = append(args, cmd.GetArgs()[0])
-	CCmd := protocol.NewCmdInternal(protocol.STORE_SESSION_CMD, args, sessionStoreData)
+	CCmd := protocol.NewCmdInternal(protocol.CACHE_SESSION_CMD, args, sessionStoreData)
 	
 	log.Info(CCmd)
 	
@@ -266,7 +266,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	log.Info(topicStoreData)
 	args := make([]string, 0)
 	args = append(args, topicName)
-	CCmd := protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, topicStoreData)
+	CCmd := protocol.NewCmdInternal(protocol.CACHE_TOPIC_CMD, args, topicStoreData)
 	m := redis_store.NewMember(session.State.(*base.SessionState).ClientID)
 	CCmd.AnyData.(*redis_store.TopicStoreData).MemberList = append(CCmd.AnyData.(*redis_store.TopicStoreData).MemberList, m)
 	
@@ -348,7 +348,7 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 	
 	args := make([]string, 0)
 	args = append(args, topicName)
-	CCmd := protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, self.msgServer.topics[topicName].TSD)
+	CCmd := protocol.NewCmdInternal(protocol.CACHE_TOPIC_CMD, args, self.msgServer.topics[topicName].TSD)
 	
 	log.Info(CCmd)
 	

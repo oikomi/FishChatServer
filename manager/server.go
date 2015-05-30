@@ -83,22 +83,49 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 	log.Info(c.CmdName)
 
 	switch c.CmdName {
-		case protocol.STORE_SESSION_CMD:
+		case protocol.CACHE_SESSION_CMD:
 			var ssc SessionStoreCmd
 			err := json.Unmarshal(cmd, &ssc)
 			if err != nil {
 				log.Error("error:", err)
 				return err
 			}
-			pp.procStoreSession(ssc, session)
-		case protocol.STORE_TOPIC_CMD:
+			err = pp.procCacheSession(ssc, session)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
+			
+		case protocol.CACHE_TOPIC_CMD:
 			var tsc TopicStoreCmd
 			err := json.Unmarshal(cmd, &tsc)
 			if err != nil {
 				log.Error("error:", err)
 				return err
 			}
-			pp.procStoreTopic(tsc, session)
+			err = pp.procCacheTopic(tsc, session)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
+		
+		
+		case protocol.STORE_SESSION_CMD:
+			var ssc SessionStoreCmd
+			err := pp.procStoreSession(ssc, session)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
+		
+
+		case protocol.STORE_TOPIC_CMD:
+			var tsc TopicStoreCmd
+			err := pp.procStoreTopic(tsc, session)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
 		}
 
 	return err
@@ -135,6 +162,16 @@ func (self *Manager)subscribeChannels() error {
 		
 		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
 		cmd.AddArg(protocol.SYSCTRL_TOPIC_STATUS)
+		cmd.AddArg(self.cfg.UUID)
+		
+		err = msgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+
+		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
+		cmd.AddArg(protocol.STORE_CLIENT_INFO)
 		cmd.AddArg(self.cfg.UUID)
 		
 		err = msgServerClient.Send(libnet.Json(cmd))

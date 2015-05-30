@@ -49,6 +49,11 @@ const (
 )
 
 const (
+	CACHE_SESSION_CMD       = "CACHE_SESSION"
+	CACHE_TOPIC_CMD         = "CACHE_TOPIC"
+)
+
+const (
 	STORE_SESSION_CMD       = "STORE_SESSION"
 	STORE_TOPIC_CMD         = "STORE_TOPIC"
 )

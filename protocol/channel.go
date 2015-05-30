@@ -22,3 +22,7 @@ const (
 	SYSCTRL_SEND          = "/sysctrl/send"
 	SYSCTRL_MONITOR       = "/sysctrl/monitor"
 )
+
+const (
+	STORE_CLIENT_INFO     = "/store/client-info" 
+)

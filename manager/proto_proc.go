@@ -38,12 +38,13 @@ func NewProtoProc(m *Manager) *ProtoProc {
 	}
 }
 
-func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *libnet.Session) error {
-	log.Info("procStoreSession")
+func (self *ProtoProc)procCacheSession(cmd protocol.Cmd, session *libnet.Session) error {
+	log.Info("procCacheSession")
 	var err error
 	log.Info(cmd.GetAnyData())
 	err = self.Manager.sessionStore.Set(cmd.GetAnyData().(*redis_store.SessionStoreData))
 	if err != nil {
+		return err
 		log.Error("error:", err)
 	}
 	log.Info("set sesion id success")
@@ -51,15 +52,31 @@ func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *libnet.Session
 	return nil
 }
 
-func (self *ProtoProc)procStoreTopic(cmd protocol.Cmd, session *libnet.Session) error {
-	log.Info("procStoreTopic")
+func (self *ProtoProc)procCacheTopic(cmd protocol.Cmd, session *libnet.Session) error {
+	log.Info("procCacheTopic")
 	var err error
 	log.Info(cmd.GetAnyData())
 	err = self.Manager.topicStore.Set(cmd.GetAnyData().(*redis_store.TopicStoreData))
 	if err != nil {
+		return err
 		log.Error("error:", err)
 	}
 	log.Info("set sesion id success")
+	
+	return nil
+}
+
+
+func (self *ProtoProc)procStoreSession(cmd protocol.Cmd, session *libnet.Session) error {
+	log.Info("procStoreSession")
+
+	
+	return nil
+}
+
+func (self *ProtoProc)procStoreTopic(cmd protocol.Cmd, session *libnet.Session) error {
+	log.Info("procStoreTopic")
+
 	
 	return nil
 }
