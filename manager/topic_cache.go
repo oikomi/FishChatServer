@@ -19,34 +19,34 @@ import (
 	"github.com/oikomi/FishChatServer/storage/redis_store"
 )
 
-type TopicStoreCmd struct {
+type TopicCacheCmd struct {
 	CmdName string
 	Args    []string
 	AnyData *redis_store.TopicStoreData
 }
 
-func (self TopicStoreCmd)GetCmdName() string {
+func (self TopicCacheCmd)GetCmdName() string {
 	return self.CmdName
 }
 
-func (self TopicStoreCmd)ChangeCmdName(newName string) {
+func (self TopicCacheCmd)ChangeCmdName(newName string) {
 	self.CmdName = newName
 }
 
-func (self TopicStoreCmd)GetArgs() []string {
+func (self TopicCacheCmd)GetArgs() []string {
 	return self.Args
 }
 
-func (self TopicStoreCmd)AddArg(arg string) {
+func (self TopicCacheCmd)AddArg(arg string) {
 	self.Args = append(self.Args, arg)
 }
 
-func (self TopicStoreCmd)ParseCmd(msglist []string) {
+func (self TopicCacheCmd)ParseCmd(msglist []string) {
 	self.CmdName = msglist[1]
 	self.Args = msglist[2:]
 }
 
-func (self TopicStoreCmd)GetAnyData() interface{} {
+func (self TopicCacheCmd)GetAnyData() interface{} {
 	return self.AnyData
 }
 

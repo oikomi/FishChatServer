@@ -69,9 +69,11 @@ func (self *Manager)connectMsgServer(ms string) (*libnet.Session, error) {
 }
 
 func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
+	var err error
 	var c protocol.CmdInternal
+	//var cType interface{}
 	
-	err := json.Unmarshal(cmd, &c)
+	err = json.Unmarshal(cmd, &c)
 	if err != nil {
 		log.Error("error:", err)
 		return err
@@ -84,26 +86,26 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 
 	switch c.CmdName {
 		case protocol.CACHE_SESSION_CMD:
-			var ssc SessionStoreCmd
-			err := json.Unmarshal(cmd, &ssc)
+			var scc SessionCacheCmd
+			err = json.Unmarshal(cmd, &scc)
 			if err != nil {
 				log.Error("error:", err)
 				return err
 			}
-			err = pp.procCacheSession(ssc, session)
+			err = pp.procCacheSession(scc, session)
 			if err != nil {
 				log.Error("error:", err)
 				return err
 			}
 			
 		case protocol.CACHE_TOPIC_CMD:
-			var tsc TopicStoreCmd
-			err := json.Unmarshal(cmd, &tsc)
+			var tcc TopicCacheCmd
+			err = json.Unmarshal(cmd, &tcc)
 			if err != nil {
 				log.Error("error:", err)
 				return err
 			}
-			err = pp.procCacheTopic(tsc, session)
+			err = pp.procCacheTopic(tcc, session)
 			if err != nil {
 				log.Error("error:", err)
 				return err
@@ -111,8 +113,14 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 		
 		
 		case protocol.STORE_SESSION_CMD:
-			var ssc SessionStoreCmd
-			err := pp.procStoreSession(ssc, session)
+			var ssd SessionStoreCmd
+			err = json.Unmarshal(cmd, &ssd)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
+
+			err := pp.procStoreSession(ssd.GetAnyData(), session)
 			if err != nil {
 				log.Error("error:", err)
 				return err
@@ -120,8 +128,7 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 		
 
 		case protocol.STORE_TOPIC_CMD:
-			var tsc TopicStoreCmd
-			err := pp.procStoreTopic(tsc, session)
+			err = pp.procStoreTopic(c.GetAnyData(), session)
 			if err != nil {
 				log.Error("error:", err)
 				return err

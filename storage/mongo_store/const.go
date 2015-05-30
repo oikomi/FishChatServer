@@ -15,9 +15,7 @@
 
 package mongo_store
 
-type SessionStoreData struct {
-	ClientID       string
-	ClientAddr     string
-	MsgServerAddr  string
-	Alive          bool
-}
+const (
+	DATA_BASE_NAME            =  "im"
+	CLIENT_INFO_COLLECTION    =  "client_info"
+)

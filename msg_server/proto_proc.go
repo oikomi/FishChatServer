@@ -24,6 +24,7 @@ import (
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/common"
 	"github.com/oikomi/FishChatServer/storage/redis_store"
+	"github.com/oikomi/FishChatServer/storage/mongo_store"
 )
 
 func init() {
@@ -103,13 +104,14 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	log.Info("procClientID")
 	var err error
 	ID := cmd.GetArgs()[0]
-	sessionStoreData := redis_store.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
+	// for cache data
+	sessionCacheData := redis_store.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
 		self.msgServer.cfg.LocalIP, strconv.FormatUint(session.Id(), 10))
 		
-	log.Info(sessionStoreData)
+	log.Info(sessionCacheData)
 	args := make([]string, 0)
 	args = append(args, cmd.GetArgs()[0])
-	CCmd := protocol.NewCmdInternal(protocol.CACHE_SESSION_CMD, args, sessionStoreData)
+	CCmd := protocol.NewCmdInternal(protocol.CACHE_SESSION_CMD, args, sessionCacheData)
 	
 	log.Info(CCmd)
 	
@@ -120,6 +122,25 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 			return err
 		}
 	}
+	
+	// for store data
+	sessionStoreData := mongo_store.SessionStoreData{ID, session.Conn().RemoteAddr().String(), 
+		self.msgServer.cfg.LocalIP, false}
+		
+	log.Info(sessionStoreData)
+	args = make([]string, 0)
+	args = append(args, cmd.GetArgs()[0])
+	CCmd = protocol.NewCmdInternal(protocol.STORE_SESSION_CMD, args, sessionStoreData)
+	
+	log.Info(CCmd)
+	
+	if self.msgServer.channels[protocol.STORE_CLIENT_INFO] != nil {
+		_, err = self.msgServer.channels[protocol.STORE_CLIENT_INFO].Channel.Broadcast(libnet.Json(CCmd))
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+	}	
 
 	self.msgServer.sessions[cmd.GetArgs()[0]] = session
 	self.msgServer.sessions[cmd.GetArgs()[0]].State = base.NewSessionState(true, cmd.GetArgs()[0])
