@@ -30,11 +30,17 @@ type ManagerConfig struct {
 	UUID               string
 	MsgServerList      []string
 	Redis struct { 
-		Addr string 
-		Port string
+		Addr           string 
+		Port           string
 		ConnectTimeout time.Duration
-		ReadTimeout time.Duration
-		WriteTimeout time.Duration
+		ReadTimeout    time.Duration
+		WriteTimeout   time.Duration
+	} 
+	Mongo struct { 
+		Addr           string 
+		Port           string
+		User           string
+		Password       string
 	} 
 }
 

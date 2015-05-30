@@ -14,5 +14,13 @@
 			"ConnectTimeout" : 2000,
 			"ReadTimeout" : 1000,
 			"WriteTimeout" : 1000
+	},
+	
+	"Mongo"              : { 
+			"Addr"      : "127.0.0.1", 
+			"Port"      : ":27017",
+			"User"      : "",
+			"Password"  : ""
+
 	}
 }

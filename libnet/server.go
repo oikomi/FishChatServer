@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net"
 	"sync/atomic"
-	"github.com/oikomi/FishChatServer/syncs"
+	"github.com/oikomi/FishChatServer/libnet/syncs"
 )
 
 // Errors

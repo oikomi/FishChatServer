@@ -21,14 +21,16 @@ import (
 	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/libnet"
-	"github.com/oikomi/FishChatServer/storage/redis_store"
 	"github.com/oikomi/FishChatServer/protocol"
+	"github.com/oikomi/FishChatServer/storage/redis_store"
+	"github.com/oikomi/FishChatServer/storage/mongo_store"
 )
 
 type Manager struct {
 	cfg          *ManagerConfig
 	sessionStore *redis_store.SessionStore
 	topicStore   *redis_store.TopicStore
+	mongoStore   *mongo_store.MongoStore
 }   
 
 func NewManager(cfg *ManagerConfig) *Manager {
@@ -52,6 +54,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			Database       : 1,
 			KeyPrefix      : base.COMM_PREFIX,
 		})),
+		mongoStore         : mongo_store.NewMongoStore(cfg.Mongo.Addr, cfg.Mongo.Port, cfg.Mongo.User, cfg.Mongo.Password),
 	}
 }
 

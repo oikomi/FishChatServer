@@ -1,6 +1,6 @@
 package libnet
 
-import "github.com/oikomi/FishChatServer/syncs"
+import "github.com/oikomi/FishChatServer/libnet/syncs"
 
 // Broadcaster.
 type Broadcaster struct {

@@ -16,7 +16,9 @@
 package mongo_store
 
 import (
+	"time"
 	"gopkg.in/mgo.v2"
+	"github.com/oikomi/FishChatServer/log"
 )
 
 type MongoStoreOptions struct {
@@ -24,18 +26,33 @@ type MongoStoreOptions struct {
 }
 
 type MongoStore struct {
-	opts        *MongoStoreOptions
-	session     *mgo.Session
+	opts            *MongoStoreOptions
+	session         *mgo.Session
+	
+	
 }
 
-func NewMongoStore(url string) *MongoStore {
-	session, err := mgo.Dial(url)
+func NewMongoStore(ip string, port string, user string, password string) *MongoStore {
+	var url string
+	if user == "" && password == "" {
+		url = ip + port
+	} else {
+		url = user + ":" + password + "@" + ip + port
+	}
+	
+	log.Info("connect to mongo : " , url)
+	maxWait := time.Duration(5 * time.Second)
+	session, err := mgo.DialWithTimeout(url, maxWait)
 	if err != nil {
 		panic(err)
 	}
 	return &MongoStore {
 		session : session,
 	}
+}
+
+func (self *MongoStore)Init() {
+	
 }
 
 func (self *MongoStore)Close() {
