@@ -62,6 +62,16 @@ manager主要是管理client信息存储、topic信息存储、离线消息存�
 ### monitor
 monitor主要是收集监控各服务器状态信息，目前monitor是可选项，可按需要启动它
 
+依赖
+======
+FishChatServer采用了redis和MongoDB分别做cache和持久化存储，需要安装两者的驱动：
+
+<pre><code>
+go get gopkg.in/mgo.v2
+go get github.com/garyburd/redigo
+</code></pre>
+
+
 部署
 ======
 FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可以动态增减)。如果没有多机条件，可以单机部署：
@@ -69,9 +79,6 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 建议：
 单机测试部署(建议配置) 
 
-go get gopkg.in/mgo.v2
-
-go get github.com/garyburd/redigo
 
 *   gateway一台
 *   msg_server两台
