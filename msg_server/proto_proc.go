@@ -105,7 +105,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	var err error
 	ID := cmd.GetArgs()[0]
 	// for cache data
-	sessionCacheData := redis_store.NewSessionStoreData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
+	sessionCacheData := redis_store.NewSessionCacheData(cmd.GetArgs()[0], session.Conn().RemoteAddr().String(), 
 		self.msgServer.cfg.LocalIP, strconv.FormatUint(session.Id(), 10))
 		
 	log.Info(sessionCacheData)

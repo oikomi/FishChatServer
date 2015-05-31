@@ -22,7 +22,7 @@ import (
 type SessionCacheCmd struct {
 	CmdName string
 	Args    []string
-	AnyData *redis_store.SessionStoreData
+	AnyData *redis_store.SessionCacheData
 }
 
 func (self SessionCacheCmd)GetCmdName() string {

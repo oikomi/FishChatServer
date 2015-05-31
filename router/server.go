@@ -29,7 +29,7 @@ import (
 type Router struct {
 	cfg                 *RouterConfig
 	msgServerClientMap  map[string]*libnet.Session
-	sessionStore        *redis_store.SessionStore
+	sessionStore        *redis_store.SessionCache
 	topicServerMap      map[string]string
 	readMutex           sync.Mutex
 }   
@@ -38,7 +38,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 	return &Router {
 		cfg                : cfg,
 		msgServerClientMap : make(map[string]*libnet.Session),
-		sessionStore       : redis_store.NewSessionStore(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
+		sessionStore       : redis_store.NewSessionCache(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
 					Network :   "tcp",
 					Address :   cfg.Redis.Addr + cfg.Redis.Port,
 					ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,

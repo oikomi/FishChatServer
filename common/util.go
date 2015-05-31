@@ -44,7 +44,7 @@ func SelectServer(serverList []string, serverNum int) string {
 	return serverList[rand.Intn(serverNum)]
 }
 
-func GetSessionFromCID(sessionStore  *redis_store.SessionStore, ID string) (*redis_store.SessionStoreData, error) {
+func GetSessionFromCID(sessionStore  *redis_store.SessionCache, ID string) (*redis_store.SessionCacheData, error) {
 	session ,err := sessionStore.Get(ID)
 	
 	if err != nil {
@@ -58,7 +58,7 @@ func GetSessionFromCID(sessionStore  *redis_store.SessionStore, ID string) (*red
 	return session, nil
 }
 
-func DelSessionFromCID(sessionStore *redis_store.SessionStore, ID string) error {
+func DelSessionFromCID(sessionStore *redis_store.SessionCache, ID string) error {
 	err := sessionStore.Delete(ID)
 	
 	if err != nil {

@@ -43,7 +43,7 @@ func (self *ProtoProc)procCacheSession(cmd protocol.Cmd, session *libnet.Session
 	log.Info("procCacheSession")
 	var err error
 	log.Info(cmd.GetAnyData())
-	err = self.Manager.sessionStore.Set(cmd.GetAnyData().(*redis_store.SessionStoreData))
+	err = self.Manager.sessionStore.Set(cmd.GetAnyData().(*redis_store.SessionCacheData))
 	if err != nil {
 		return err
 		log.Error("error:", err)

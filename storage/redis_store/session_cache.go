@@ -22,18 +22,18 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type SessionStore struct {
+type SessionCache struct {
 	RS       *RedisStore
 	rwMutex  sync.Mutex
 }
 
-func NewSessionStore(RS *RedisStore) *SessionStore {
-	return &SessionStore {
+func NewSessionCache(RS *RedisStore) *SessionCache {
+	return &SessionCache {
 		RS    : RS,
 	}
 }
 
-type SessionStoreData struct {
+type SessionCacheData struct {
 	ClientID      string
 	ClientAddr    string
 	MsgServerAddr string
@@ -41,8 +41,8 @@ type SessionStoreData struct {
 	MaxAge        time.Duration
 }
 
-func NewSessionStoreData(ClientID string, ClientAddr string, MsgServerAddr string, ID string) *SessionStoreData {
-	return &SessionStoreData {
+func NewSessionCacheData(ClientID string, ClientAddr string, MsgServerAddr string, ID string) *SessionCacheData {
+	return &SessionCacheData {
 		ClientID      : ClientID,
 		ClientAddr    : ClientAddr,
 		MsgServerAddr : MsgServerAddr,
@@ -50,16 +50,16 @@ func NewSessionStoreData(ClientID string, ClientAddr string, MsgServerAddr strin
 	}
 }
 
-func (self *SessionStoreData)checkClientID(clientID string) bool {
+func (self *SessionCacheData)checkClientID(clientID string) bool {
 	return true
 }
 
-func (self *SessionStoreData)StoreKey() string {
+func (self *SessionCacheData)StoreKey() string {
 	return self.ClientID
 }
 
 // Get the session from the store.
-func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
+func (self *SessionCache) Get(k string) (*SessionCacheData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	key := k + SESSION_UNIQ_PREFIX
@@ -70,7 +70,7 @@ func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
 	if err != nil {
 		return nil, err
 	}
-	var sess SessionStoreData
+	var sess SessionCacheData
 	err = json.Unmarshal(b, &sess)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (self *SessionStore) Get(k string) (*SessionStoreData, error) {
 }
 
 // Save the session into the store.
-func (self *SessionStore) Set(sess *SessionStoreData) error {
+func (self *SessionCache) Set(sess *SessionCacheData) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	b, err := json.Marshal(sess)
@@ -106,7 +106,7 @@ func (self *SessionStore) Set(sess *SessionStoreData) error {
 }
 
 // Delete the session from the store.
-func (self *SessionStore) Delete(id string) error {
+func (self *SessionCache) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	key := id + SESSION_UNIQ_PREFIX
@@ -121,7 +121,7 @@ func (self *SessionStore) Delete(id string) error {
 }
 // Clear all sessions from the store. Requires the use of a key
 // prefix in the store options, otherwise the method refuses to delete all keys.
-func (self *SessionStore) Clear() error {
+func (self *SessionCache) Clear() error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -143,7 +143,7 @@ func (self *SessionStore) Clear() error {
 // Get the number of session keys in the store. Requires the use of a
 // key prefix in the store options, otherwise returns -1 (cannot tell
 // session keys from other keys).
-func (self *SessionStore) Len() int {
+func (self *SessionCache) Len() int {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -152,7 +152,7 @@ func (self *SessionStore) Len() int {
 	}
 	return len(vals)
 }
-func (self *SessionStore) getSessionKeys() ([]interface{}, error) {
+func (self *SessionCache) getSessionKeys() ([]interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	if self.RS.opts.KeyPrefix != "" {
