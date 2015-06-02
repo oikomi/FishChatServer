@@ -44,8 +44,8 @@ func SelectServer(serverList []string, serverNum int) string {
 	return serverList[rand.Intn(serverNum)]
 }
 
-func GetSessionFromCID(sessionStore  *redis_store.SessionCache, ID string) (*redis_store.SessionCacheData, error) {
-	session ,err := sessionStore.Get(ID)
+func GetSessionFromCID(sessionCache  *redis_store.SessionCache, ID string) (*redis_store.SessionCacheData, error) {
+	session ,err := sessionCache.Get(ID)
 	
 	if err != nil {
 		log.Warningf("no ID : %s", ID)
@@ -58,8 +58,8 @@ func GetSessionFromCID(sessionStore  *redis_store.SessionCache, ID string) (*red
 	return session, nil
 }
 
-func DelSessionFromCID(sessionStore *redis_store.SessionCache, ID string) error {
-	err := sessionStore.Delete(ID)
+func DelSessionFromCID(sessionCache *redis_store.SessionCache, ID string) error {
+	err := sessionCache.Delete(ID)
 	
 	if err != nil {
 		log.Warningf("no ID : %s", ID)
@@ -69,8 +69,8 @@ func DelSessionFromCID(sessionStore *redis_store.SessionCache, ID string) error 
 	return nil
 }
 
-func GetTopicFromTopicName(topicStore *redis_store.TopicCache, topicName string) (*redis_store.TopicCacheData, error) {
-	topic ,err := topicStore.Get(topicName)
+func GetTopicFromTopicName(topicCache *redis_store.TopicCache, topicName string) (*redis_store.TopicCacheData, error) {
+	topic ,err := topicCache.Get(topicName)
 	
 	if err != nil {
 		log.Warningf("no topicName : %s", topicName)
@@ -83,8 +83,8 @@ func GetTopicFromTopicName(topicStore *redis_store.TopicCache, topicName string)
 	return topic, nil
 }
 
-func GetOfflineMsgFromOwnerName(offlineMsgStore *redis_store.OfflineMsgStore, ownerName string) (*redis_store.OfflineMsgStoreData, error) {
-	o ,err := offlineMsgStore.Get(ownerName)
+func GetOfflineMsgFromOwnerName(offlineMsgCache *redis_store.OfflineMsgCache, ownerName string) (*redis_store.OfflineMsgCacheData, error) {
+	o ,err := offlineMsgCache.Get(ownerName)
 	
 	if err != nil {
 		log.Warningf("no ownerName : %s", ownerName)

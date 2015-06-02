@@ -180,7 +180,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 		log.Info(send2ID + " | is offline")
 		exist, err := self.msgServer.offlineMsgCache.IsKeyExist(send2ID)
 		if exist.(int64) == 0 {
-			tmp := redis_store.NewOfflineMsgStoreData(send2ID)
+			tmp := redis_store.NewOfflineMsgCacheData(send2ID)
 			tmp.AddMsg(redis_store.NewOfflineMsgData(send2Msg, fromID, uuid))
 			
 			self.msgServer.offlineMsgCache.Set(tmp)

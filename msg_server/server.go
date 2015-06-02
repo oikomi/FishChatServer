@@ -40,7 +40,7 @@ type MsgServer struct {
 	server            *libnet.Server
 	sessionCache      *redis_store.SessionCache
 	topicCache        *redis_store.TopicCache
-	offlineMsgCache   *redis_store.OfflineMsgStore
+	offlineMsgCache   *redis_store.OfflineMsgCache
 	p2pAckStatus      base.AckMap
 	scanSessionMutex  sync.Mutex
 	p2pAckMutex       sync.Mutex
@@ -55,7 +55,7 @@ func NewMsgServer(cfg *MsgServerConfig, rs *redis_store.RedisStore) *MsgServer {
 		server             : new(libnet.Server),
 		sessionCache       : redis_store.NewSessionCache(rs),
 		topicCache         : redis_store.NewTopicCache(rs),
-		offlineMsgCache    : redis_store.NewOfflineMsgStore(rs),
+		offlineMsgCache    : redis_store.NewOfflineMsgCache(rs),
 		p2pAckStatus       : make(base.AckMap),
 	}
 }

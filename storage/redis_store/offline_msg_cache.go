@@ -22,13 +22,13 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type OfflineMsgStore struct {
+type OfflineMsgCache struct {
 	RS       *RedisStore
 	rwMutex  sync.Mutex
 }
 
-func NewOfflineMsgStore(RS *RedisStore) *OfflineMsgStore {
-	return &OfflineMsgStore {
+func NewOfflineMsgCache(RS *RedisStore) *OfflineMsgCache {
+	return &OfflineMsgCache {
 		RS    : RS,
 	}
 }
@@ -47,28 +47,28 @@ func NewOfflineMsgData(msg string, fromID string, uuid string) *OfflineMsgData {
 	}
 }
 
-type OfflineMsgStoreData struct {
+type OfflineMsgCacheData struct {
 	OwnerName     string
 	MsgList       []*OfflineMsgData
 	MaxAge        time.Duration
 }
 
-func (self *OfflineMsgStoreData) AddMsg(d *OfflineMsgData) {
+func (self *OfflineMsgCacheData) AddMsg(d *OfflineMsgData) {
 	self.MsgList = append(self.MsgList, d)
 }
 
-func (self *OfflineMsgStoreData) ClearMsg() {
+func (self *OfflineMsgCacheData) ClearMsg() {
 	self.MsgList = self.MsgList[:0]
 }
 
-func NewOfflineMsgStoreData(ownerName string) *OfflineMsgStoreData {
-	return &OfflineMsgStoreData {
+func NewOfflineMsgCacheData(ownerName string) *OfflineMsgCacheData {
+	return &OfflineMsgCacheData {
 		OwnerName : ownerName,
 	}
 }
 
 // Get the session from the store.
-func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
+func (self *OfflineMsgCache) Get(k string) (*OfflineMsgCacheData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	key := k + OFFLINE_MSG_UNIQ_PREFIX
@@ -79,7 +79,7 @@ func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
 	if err != nil {
 		return nil, err
 	}
-	var sess OfflineMsgStoreData
+	var sess OfflineMsgCacheData
 	err = json.Unmarshal(b, &sess)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (self *OfflineMsgStore) Get(k string) (*OfflineMsgStoreData, error) {
 }
 
 // Save the session into the store.
-func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
+func (self *OfflineMsgCache) Set(sess *OfflineMsgCacheData) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	b, err := json.Marshal(sess)
@@ -115,7 +115,7 @@ func (self *OfflineMsgStore) Set(sess *OfflineMsgStoreData) error {
 }
 
 // Delete the session from the store.
-func (self *OfflineMsgStore) Delete(id string) error {
+func (self *OfflineMsgCache) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	key := id + OFFLINE_MSG_UNIQ_PREFIX
@@ -131,7 +131,7 @@ func (self *OfflineMsgStore) Delete(id string) error {
 
 // Clear all sessions from the store. Requires the use of a key
 // prefix in the store options, otherwise the method refuses to delete all keys.
-func (self *OfflineMsgStore) Clear() error {
+func (self *OfflineMsgCache) Clear() error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -154,7 +154,7 @@ func (self *OfflineMsgStore) Clear() error {
 // Get the number of session keys in the store. Requires the use of a
 // key prefix in the store options, otherwise returns -1 (cannot tell
 // session keys from other keys).
-func (self *OfflineMsgStore) Len() int {
+func (self *OfflineMsgCache) Len() int {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -164,7 +164,7 @@ func (self *OfflineMsgStore) Len() int {
 	return len(vals)
 }
 
-func (self *OfflineMsgStore) getSessionKeys() ([]interface{}, error) {
+func (self *OfflineMsgCache) getSessionKeys() ([]interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	if self.RS.opts.KeyPrefix != "" {
@@ -173,7 +173,7 @@ func (self *OfflineMsgStore) getSessionKeys() ([]interface{}, error) {
 	return nil, ErrNoKeyPrefix
 }
 
-func (self *OfflineMsgStore) IsKeyExist(k string) (interface{}, error) {
+func (self *OfflineMsgCache) IsKeyExist(k string) (interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	
