@@ -43,7 +43,7 @@ func (self *ProtoProc)procCacheSession(cmd protocol.Cmd, session *libnet.Session
 	log.Info("procCacheSession")
 	var err error
 	log.Info(cmd.GetAnyData())
-	err = self.Manager.sessionStore.Set(cmd.GetAnyData().(*redis_store.SessionCacheData))
+	err = self.Manager.sessionCache.Set(cmd.GetAnyData().(*redis_store.SessionCacheData))
 	if err != nil {
 		return err
 		log.Error("error:", err)
@@ -57,7 +57,7 @@ func (self *ProtoProc)procCacheTopic(cmd protocol.Cmd, session *libnet.Session) 
 	log.Info("procCacheTopic")
 	var err error
 	log.Info(cmd.GetAnyData())
-	err = self.Manager.topicStore.Set(cmd.GetAnyData().(*redis_store.TopicCacheData))
+	err = self.Manager.topicCache.Set(cmd.GetAnyData().(*redis_store.TopicCacheData))
 	if err != nil {
 		return err
 		log.Error("error:", err)
