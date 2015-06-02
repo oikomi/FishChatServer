@@ -22,7 +22,7 @@ import (
 type TopicCacheCmd struct {
 	CmdName string
 	Args    []string
-	AnyData *redis_store.TopicStoreData
+	AnyData *redis_store.TopicCacheData
 }
 
 func (self TopicCacheCmd)GetCmdName() string {

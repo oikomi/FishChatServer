@@ -28,7 +28,7 @@ type Topic struct {
 	Channel       *libnet.Channel
 	TA            *TopicAttribute
 	ClientIDList  []string
-	TSD           *redis_store.TopicStoreData
+	TSD           *redis_store.TopicCacheData
 }
 
 func NewTopic(topicName string, msgAddr string, CreaterID string, CreaterSession *libnet.Session) *Topic {

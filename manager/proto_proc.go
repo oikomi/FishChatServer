@@ -57,7 +57,7 @@ func (self *ProtoProc)procCacheTopic(cmd protocol.Cmd, session *libnet.Session) 
 	log.Info("procCacheTopic")
 	var err error
 	log.Info(cmd.GetAnyData())
-	err = self.Manager.topicStore.Set(cmd.GetAnyData().(*redis_store.TopicStoreData))
+	err = self.Manager.topicStore.Set(cmd.GetAnyData().(*redis_store.TopicCacheData))
 	if err != nil {
 		return err
 		log.Error("error:", err)

@@ -22,18 +22,18 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-type TopicStore struct {
+type TopicCache struct {
 	RS       *RedisStore
 	rwMutex  sync.Mutex
 }
 
-func NewTopicStore(RS *RedisStore) *TopicStore {
-	return &TopicStore {
+func NewTopicCache(RS *RedisStore) *TopicCache {
+	return &TopicCache {
 		RS    : RS,
 	}
 }
 
-type TopicStoreData struct {
+type TopicCacheData struct {
 	TopicName     string
 	CreaterID     string
 	MemberList    []*Member
@@ -51,8 +51,8 @@ func NewMember(ID string) *Member {
 	}
 }
 
-func NewTopicStoreData(TopicName string, CreaterID string, MsgServerAddr string) *TopicStoreData {
-	return &TopicStoreData {
+func NewTopicCacheData(TopicName string, CreaterID string, MsgServerAddr string) *TopicCacheData {
+	return &TopicCacheData {
 		TopicName     : TopicName,
 		CreaterID     : CreaterID,
 		MemberList    : make([]*Member, 0),
@@ -60,16 +60,16 @@ func NewTopicStoreData(TopicName string, CreaterID string, MsgServerAddr string)
 	}
 }
 
-func (self *TopicStoreData)StoreKey() string {
+func (self *TopicCacheData)StoreKey() string {
 	return self.TopicName
 }
 
-func (self *TopicStoreData)AddMember(m *Member) {
+func (self *TopicCacheData)AddMember(m *Member) {
 	self.MemberList = append(self.MemberList, m)
 }
 
 // Get the session from the store.
-func (self *TopicStore) Get(k string) (*TopicStoreData, error) {
+func (self *TopicCache) Get(k string) (*TopicCacheData, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	key := k + TOPIC_UNIQ_PREFIX
@@ -80,7 +80,7 @@ func (self *TopicStore) Get(k string) (*TopicStoreData, error) {
 	if err != nil {
 		return nil, err
 	}
-	var sess TopicStoreData
+	var sess TopicCacheData
 	err = json.Unmarshal(b, &sess)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (self *TopicStore) Get(k string) (*TopicStoreData, error) {
 }
 
 // Save the session into the store.
-func (self *TopicStore) Set(sess *TopicStoreData) error {
+func (self *TopicCache) Set(sess *TopicCacheData) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	b, err := json.Marshal(sess)
@@ -116,7 +116,7 @@ func (self *TopicStore) Set(sess *TopicStoreData) error {
 }
 
 // Delete the session from the store.
-func (self *TopicStore) Delete(id string) error {
+func (self *TopicCache) Delete(id string) error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	key := id + TOPIC_UNIQ_PREFIX
@@ -132,7 +132,7 @@ func (self *TopicStore) Delete(id string) error {
 
 // Clear all sessions from the store. Requires the use of a key
 // prefix in the store options, otherwise the method refuses to delete all keys.
-func (self *TopicStore) Clear() error {
+func (self *TopicCache) Clear() error {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -154,7 +154,7 @@ func (self *TopicStore) Clear() error {
 // Get the number of session keys in the store. Requires the use of a
 // key prefix in the store options, otherwise returns -1 (cannot tell
 // session keys from other keys).
-func (self *TopicStore) Len() int {
+func (self *TopicCache) Len() int {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	vals, err := self.getSessionKeys()
@@ -163,7 +163,7 @@ func (self *TopicStore) Len() int {
 	}
 	return len(vals)
 }
-func (self *TopicStore) getSessionKeys() ([]interface{}, error) {
+func (self *TopicCache) getSessionKeys() ([]interface{}, error) {
 	self.rwMutex.Lock()
 	defer self.rwMutex.Unlock()
 	if self.RS.opts.KeyPrefix != "" {

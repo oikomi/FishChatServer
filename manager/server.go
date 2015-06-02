@@ -29,7 +29,7 @@ import (
 type Manager struct {
 	cfg          *ManagerConfig
 	sessionStore *redis_store.SessionCache
-	topicStore   *redis_store.TopicStore
+	topicStore   *redis_store.TopicCache
 	mongoStore   *mongo_store.MongoStore
 }   
 
@@ -45,7 +45,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			Database       : 1,
 			KeyPrefix      : base.COMM_PREFIX,
 		})),
-		topicStore         : redis_store.NewTopicStore(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
+		topicStore         : redis_store.NewTopicCache(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
 			Network        : "tcp",
 			Address        : cfg.Redis.Addr + cfg.Redis.Port,
 			ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,

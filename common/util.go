@@ -69,7 +69,7 @@ func DelSessionFromCID(sessionStore *redis_store.SessionCache, ID string) error 
 	return nil
 }
 
-func GetTopicFromTopicName(topicStore *redis_store.TopicStore, topicName string) (*redis_store.TopicStoreData, error) {
+func GetTopicFromTopicName(topicStore *redis_store.TopicCache, topicName string) (*redis_store.TopicCacheData, error) {
 	topic ,err := topicStore.Get(topicName)
 	
 	if err != nil {

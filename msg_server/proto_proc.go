@@ -272,24 +272,24 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	}
 	topicName := cmd.GetArgs()[0]
 	
-	topicStoreData := redis_store.NewTopicStoreData(topicName, session.State.(*base.SessionState).ClientID, 
+	topicCacheData := redis_store.NewTopicCacheData(topicName, session.State.(*base.SessionState).ClientID, 
 		self.msgServer.cfg.LocalIP)
 
 	t := protocol.NewTopic(topicName, self.msgServer.cfg.LocalIP, session.State.(*base.SessionState).ClientID, session)
 	t.ClientIDList = append(t.ClientIDList, session.State.(*base.SessionState).ClientID)
-	t.TSD = topicStoreData
+	t.TSD = topicCacheData
 	self.msgServer.topics[topicName] = t
 	self.msgServer.topics[topicName].Channel = libnet.NewChannel(self.msgServer.server.Protocol())
 	
 	self.msgServer.topics[topicName].Channel.Join(session, nil)
 	
 
-	log.Info(topicStoreData)
+	log.Info(topicCacheData)
 	args := make([]string, 0)
 	args = append(args, topicName)
-	CCmd := protocol.NewCmdInternal(protocol.CACHE_TOPIC_CMD, args, topicStoreData)
+	CCmd := protocol.NewCmdInternal(protocol.CACHE_TOPIC_CMD, args, topicCacheData)
 	m := redis_store.NewMember(session.State.(*base.SessionState).ClientID)
-	CCmd.AnyData.(*redis_store.TopicStoreData).MemberList = append(CCmd.AnyData.(*redis_store.TopicStoreData).MemberList, m)
+	CCmd.AnyData.(*redis_store.TopicCacheData).MemberList = append(CCmd.AnyData.(*redis_store.TopicCacheData).MemberList, m)
 	
 	log.Info(CCmd)
 	
@@ -304,7 +304,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 	return nil
 }
 
-func (self *ProtoProc)findTopicMsgAddr(topicName string) (*redis_store.TopicStoreData, error) {
+func (self *ProtoProc)findTopicMsgAddr(topicName string) (*redis_store.TopicCacheData, error) {
 	log.Info("findTopicMsgAddr")
 	t, err := common.GetTopicFromTopicName(self.msgServer.topicStore, topicName)
 	
