@@ -71,7 +71,7 @@ func (self *MongoStore)Update(db string, c string, data interface{}) error {
 		case *SessionStoreData:
 			cid := data.(*SessionStoreData).ClientID
 			log.Info("cid : " , cid)
-			_, err = op.Upsert(bson.M{"ClientID": cid}, data.(*SessionStoreData))
+			_, err = op.Upsert(bson.M{"clientid": cid}, data.(*SessionStoreData))
 			if err != nil {
 				log.Error(err.Error())
 				return err
