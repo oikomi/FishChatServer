@@ -46,6 +46,7 @@ func NewMongoStore(ip string, port string, user string, password string) *MongoS
 	log.Info("connect to mongo : " , url)
 	maxWait := time.Duration(5 * time.Second)
 	session, err := mgo.DialWithTimeout(url, maxWait)
+	session.SetMode(mgo.Monotonic, true)
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +72,7 @@ func (self *MongoStore)Update(db string, c string, data interface{}) error {
 		case *SessionStoreData:
 			cid := data.(*SessionStoreData).ClientID
 			log.Info("cid : " , cid)
-			_, err = op.Upsert(bson.M{"clientid": cid}, data.(*SessionStoreData))
+			_, err = op.Upsert(bson.M{"ClientID": cid}, data.(*SessionStoreData))
 			if err != nil {
 				log.Error(err.Error())
 				return err

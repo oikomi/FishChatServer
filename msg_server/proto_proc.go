@@ -125,7 +125,7 @@ func (self *ProtoProc)procClientID(cmd protocol.Cmd, session *libnet.Session) er
 	
 	// for store data
 	sessionStoreData := mongo_store.SessionStoreData{ID, session.Conn().RemoteAddr().String(), 
-		self.msgServer.cfg.LocalIP, false}
+		self.msgServer.cfg.LocalIP, true}
 		
 	log.Info(sessionStoreData)
 	args = make([]string, 0)
