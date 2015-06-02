@@ -38,9 +38,9 @@ type MsgServer struct {
 	channels          base.ChannelMap
 	topics            protocol.TopicMap
 	server            *libnet.Server
-	sessionStore      *redis_store.SessionCache
-	topicStore        *redis_store.TopicCache
-	offlineMsgStore   *redis_store.OfflineMsgStore
+	sessionCache      *redis_store.SessionCache
+	topicCache        *redis_store.TopicCache
+	offlineMsgCache   *redis_store.OfflineMsgStore
 	p2pAckStatus      base.AckMap
 	scanSessionMutex  sync.Mutex
 	p2pAckMutex       sync.Mutex
@@ -53,9 +53,9 @@ func NewMsgServer(cfg *MsgServerConfig, rs *redis_store.RedisStore) *MsgServer {
 		channels           : make(base.ChannelMap),
 		topics             : make(protocol.TopicMap),
 		server             : new(libnet.Server),
-		sessionStore       : redis_store.NewSessionCache(rs),
-		topicStore         : redis_store.NewTopicCache(rs),
-		offlineMsgStore    : redis_store.NewOfflineMsgStore(rs),
+		sessionCache       : redis_store.NewSessionCache(rs),
+		topicCache         : redis_store.NewTopicCache(rs),
+		offlineMsgCache    : redis_store.NewOfflineMsgStore(rs),
 		p2pAckStatus       : make(base.AckMap),
 	}
 }

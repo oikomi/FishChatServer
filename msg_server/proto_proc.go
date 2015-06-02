@@ -69,11 +69,11 @@ func (self *ProtoProc)procPing(cmd protocol.Cmd, session *libnet.Session) error 
 
 func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 	var err error
-	exist, err := self.msgServer.offlineMsgStore.IsKeyExist(ID)
+	exist, err := self.msgServer.offlineMsgCache.IsKeyExist(ID)
 	if exist.(int64) == 0 {
 		return err
 	} else {
-		omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgStore, ID)
+		omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgCache, ID)
 		if err != nil {
 			log.Error(err.Error())
 			return err
@@ -94,7 +94,7 @@ func (self *ProtoProc)procOfflineMsg(session *libnet.Session, ID string) error {
 		}
 		
 		omrd.ClearMsg()
-		self.msgServer.offlineMsgStore.Set(omrd)
+		self.msgServer.offlineMsgCache.Set(omrd)
 	}
 	
 	return err
@@ -159,7 +159,7 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
 	fromID := cmd.GetArgs()[2]
-	store_session, err := common.GetSessionFromCID(self.msgServer.sessionStore, send2ID)
+	store_session, err := common.GetSessionFromCID(self.msgServer.sessionCache, send2ID)
 	if err != nil {
 		log.Warningf("no ID : %s", send2ID)
 		
@@ -178,24 +178,24 @@ func (self *ProtoProc)procSendMessageP2P(cmd protocol.Cmd, session *libnet.Sessi
 	if self.msgServer.sessions[send2ID] == nil {
 		//offline
 		log.Info(send2ID + " | is offline")
-		exist, err := self.msgServer.offlineMsgStore.IsKeyExist(send2ID)
+		exist, err := self.msgServer.offlineMsgCache.IsKeyExist(send2ID)
 		if exist.(int64) == 0 {
 			tmp := redis_store.NewOfflineMsgStoreData(send2ID)
 			tmp.AddMsg(redis_store.NewOfflineMsgData(send2Msg, fromID, uuid))
 			
-			self.msgServer.offlineMsgStore.Set(tmp)
+			self.msgServer.offlineMsgCache.Set(tmp)
 			if err != nil {
 				log.Error(err.Error())
 				return err
 			}
 		} else {
-			omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgStore, send2ID)
+			omrd, err := common.GetOfflineMsgFromOwnerName(self.msgServer.offlineMsgCache, send2ID)
 			if err != nil {
 				log.Error(err.Error())
 				return err
 			}
 			omrd.AddMsg(redis_store.NewOfflineMsgData(send2Msg, fromID, uuid))
-			self.msgServer.offlineMsgStore.Set(omrd)
+			self.msgServer.offlineMsgCache.Set(omrd)
 			if err != nil {
 				log.Error(err.Error())
 				return err
@@ -239,7 +239,7 @@ func (self *ProtoProc)procRouteMessageP2P(cmd protocol.Cmd, session *libnet.Sess
 	send2Msg := cmd.GetArgs()[1]
 	fromID := cmd.GetArgs()[2]
 	uuid := cmd.GetArgs()[3]
-	_, err = common.GetSessionFromCID(self.msgServer.sessionStore, send2ID)
+	_, err = common.GetSessionFromCID(self.msgServer.sessionCache, send2ID)
 	if err != nil {
 		log.Warningf("no ID : %s", send2ID)
 		
@@ -306,7 +306,7 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 
 func (self *ProtoProc)findTopicMsgAddr(topicName string) (*redis_store.TopicCacheData, error) {
 	log.Info("findTopicMsgAddr")
-	t, err := common.GetTopicFromTopicName(self.msgServer.topicStore, topicName)
+	t, err := common.GetTopicFromTopicName(self.msgServer.topicCache, topicName)
 	
 	return t, err
 }
