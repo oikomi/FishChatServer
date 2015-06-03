@@ -301,6 +301,27 @@ func (self *ProtoProc)procCreateTopic(cmd protocol.Cmd, session *libnet.Session)
 		}
 	}
 	
+	// store topic
+	topicStoreData := mongo_store.NewTopicStoreData(topicName, session.State.(*base.SessionState).ClientID, 
+		self.msgServer.cfg.LocalIP)
+
+	args = make([]string, 0)
+	args = append(args, topicName)
+	CCmd = protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, topicStoreData)
+	member := mongo_store.NewMember(session.State.(*base.SessionState).ClientID)
+	CCmd.AnyData.(*mongo_store.TopicStoreData).MemberList = append(CCmd.AnyData.(*mongo_store.TopicStoreData).MemberList, member)
+	
+	log.Info(CCmd)
+	
+	if self.msgServer.channels[protocol.STORE_TOPIC_INFO] != nil {
+		_, err = self.msgServer.channels[protocol.STORE_TOPIC_INFO].Channel.Broadcast(libnet.Json(CCmd))
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+	}	
+	
+	
 	return nil
 }
 

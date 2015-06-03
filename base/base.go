@@ -31,7 +31,7 @@ var ChannleList []string
 
 func init() {
 	ChannleList = []string{protocol.SYSCTRL_CLIENT_STATUS, protocol.SYSCTRL_TOPIC_STATUS, protocol.SYSCTRL_TOPIC_SYNC, 
-		protocol.SYSCTRL_SEND, protocol.SYSCTRL_MONITOR, protocol.STORE_CLIENT_INFO}
+		protocol.SYSCTRL_SEND, protocol.SYSCTRL_MONITOR, protocol.STORE_CLIENT_INFO, protocol.STORE_TOPIC_INFO}
 }
 
 type ChannelState struct {

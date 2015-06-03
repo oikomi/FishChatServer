@@ -25,4 +25,5 @@ const (
 
 const (
 	STORE_CLIENT_INFO     = "/store/client-info" 
+	STORE_TOPIC_INFO      = "/store/topic-info" 
 )
