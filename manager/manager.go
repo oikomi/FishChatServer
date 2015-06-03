@@ -46,7 +46,7 @@ func init() {
 	flag.Set("log_dir", "false")
 }
 
-const VERSION string = "0.12"
+const VERSION string = "0.15"
 
 func version() {
 	fmt.Printf("manager version %s Copyright (c) 2014-2015 Harold Miao (miaohong@miaohong.org)  \n", VERSION)
