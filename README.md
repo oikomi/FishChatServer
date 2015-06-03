@@ -114,6 +114,21 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 
 > **NOTE:** router、manager和monitor一定要在msg_server启动之后启动，因为他们都订阅了msg_server的channel 
 
+
+测试
+======
+<pre><code>
+测试点对点聊天
+cd client/client_p2p
+go build
+
+测试群聊
+cd client/client_topic
+go build
+</code></pre>
+
+> **NOTE:** FishChatAndroid暂时不可用 
+
 技术细节
 ======
 FishChatServer的消息系统完全采用Golang开发(https://golang.org/)
