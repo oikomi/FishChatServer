@@ -20,6 +20,9 @@ import (
 	"fmt"
 	"github.com/oikomi/FishChatServer/log"
 	"github.com/oikomi/FishChatServer/libnet"
+	_ "github.com/oikomi/FishChatServer/monitor/routers"
+	"github.com/oikomi/FishChatServer/monitor/controllers"
+	"github.com/astaxie/beego"
 )
 
 /*
@@ -75,7 +78,11 @@ func main() {
 	m := NewMonitor(cfg)
 	//TODO not use go
 	m.subscribeChannels()
-	server.Serve(func(session *libnet.Session) {
+	go server.Serve(func(session *libnet.Session) {
 	
 	})
+	
+	beego.Router("api/v1/monitor", &controllers.MonitorController{})
+	beego.SetStaticPath("/views", "/mh/mygo/src/github.com/oikomi/FishChatServer/monitor/views")
+	beego.Run()
 }

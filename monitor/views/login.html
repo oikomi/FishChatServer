@@ -1,0 +1,13 @@
+﻿<div class="container" ng-if="showLogin" ng-controller="LoginController">
+	<div class="form-signin">
+		<h2 class="form-signin-heading">登录</h2>
+		<label for="userName" class="sr-only">用户名</label>
+		<input type="text" id="userName" name="uname" class="span8 form-control" placeholder="用户名" ng-model="user.name" required autofocus>
+		<label for="password" class="sr-only">密码</label>
+		<input type="password" id="password" name="password" class="form-control" placeholder="密码" ng-model="user.password" required>
+		
+		<button type="submit" class="btn btn-primary btn-lg btn-block" ng-click="login(user)">
+			<i class="ace-icon fa fa-key bigger-110"></i>登录
+		</button>
+	</div>
+</div>
