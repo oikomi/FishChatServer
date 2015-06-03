@@ -402,6 +402,32 @@ func (self *ProtoProc)procJoinTopic(cmd protocol.Cmd, session *libnet.Session) e
 		}
 	}
 	
+	
+	// for store mongo
+	
+	//member := mongo_store.NewMember(clientID)
+
+	//self.msgServer.topics[topicName].ClientIDList = append(self.msgServer.topics[topicName].ClientIDList, 
+		//clientID)
+	
+	//self.msgServer.topics[topicName].AddMember(member)
+	
+	//self.msgServer.topics[topicName].Channel.Join(session, nil)
+	
+	args = make([]string, 0)
+	args = append(args, topicName)
+	CCmd = protocol.NewCmdInternal(protocol.STORE_TOPIC_CMD, args, self.msgServer.topics[topicName].TSD)
+	
+	log.Info(CCmd)
+	
+	if self.msgServer.channels[protocol.STORE_TOPIC_INFO] != nil {
+		_, err = self.msgServer.channels[protocol.STORE_TOPIC_INFO].Channel.Broadcast(libnet.Json(CCmd))
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+	}
+	
 	return nil
 }
 
