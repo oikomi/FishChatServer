@@ -128,7 +128,13 @@ func (self *Manager)parseProtocol(cmd []byte, session *libnet.Session) error {
 		
 
 		case protocol.STORE_TOPIC_CMD:
-			err = pp.procStoreTopic(c.GetAnyData(), session)
+			var tsd TopicStoreCmd
+			err = json.Unmarshal(cmd, &tsd)
+			if err != nil {
+				log.Error("error:", err)
+				return err
+			}
+			err = pp.procStoreTopic(tsd.GetAnyData(), session)
 			if err != nil {
 				log.Error("error:", err)
 				return err
@@ -179,6 +185,16 @@ func (self *Manager)subscribeChannels() error {
 
 		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
 		cmd.AddArg(protocol.STORE_CLIENT_INFO)
+		cmd.AddArg(self.cfg.UUID)
+		
+		err = msgServerClient.Send(libnet.Json(cmd))
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+		
+		cmd = protocol.NewCmdSimple(protocol.SUBSCRIBE_CHANNEL_CMD)
+		cmd.AddArg(protocol.STORE_TOPIC_INFO)
 		cmd.AddArg(self.cfg.UUID)
 		
 		err = msgServerClient.Send(libnet.Json(cmd))

@@ -83,7 +83,14 @@ func (self *ProtoProc)procStoreSession(data interface{}, session *libnet.Session
 
 func (self *ProtoProc)procStoreTopic(data interface{}, session *libnet.Session) error {
 	log.Info("procStoreTopic")
-
+	var err error
+	log.Info(data)
+	
+	err = self.Manager.mongoStore.Update(mongo_store.DATA_BASE_NAME, mongo_store.TOPIC_INFO_COLLECTION, data)
+	if err != nil {
+		return err
+		log.Error("error:", err)
+	}
 	
 	return nil
 }

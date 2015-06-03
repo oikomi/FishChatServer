@@ -76,7 +76,16 @@ func (self *MongoStore)Update(db string, c string, data interface{}) error {
 			if err != nil {
 				log.Error(err.Error())
 				return err
-			}	
+			}
+		
+		case *TopicStoreData:
+			topicName := data.(*TopicStoreData).TopicName
+			log.Info("topicName : " , topicName)
+			_, err = op.Upsert(bson.M{"TopicName": topicName}, data.(*TopicStoreData))
+			if err != nil {
+				log.Error(err.Error())
+				return err
+			}
 	}
 	
 	return err
