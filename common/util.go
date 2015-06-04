@@ -44,18 +44,37 @@ func SelectServer(serverList []string, serverNum int) string {
 	return serverList[rand.Intn(serverNum)]
 }
 
-func GetSessionFromCID(sessionCache  *redis_store.SessionCache, ID string) (*redis_store.SessionCacheData, error) {
-	session ,err := sessionCache.Get(ID)
+func GetSessionFromCID(storeOp  interface{}, ID string) (*redis_store.SessionCacheData, error) {
 	
-	if err != nil {
-		log.Warningf("no ID : %s", ID)
-		return nil, err
-	}
-	if session != nil {
-		log.Info(session)
+	switch storeOp.(type) {
+		case *redis_store.SessionCache:	
+			session ,err := storeOp.(*redis_store.SessionCache).Get(ID)
+			
+			if err != nil {
+				log.Warningf("no ID : %s", ID)
+				return nil, err
+			}
+			if session != nil {
+				log.Info(session)
+			}
+			
+			return session, nil
+			
 	}
 	
-	return session, nil
+	return nil, nil
+	
+//	session ,err := sessionCache.Get(ID)
+	
+//	if err != nil {
+//		log.Warningf("no ID : %s", ID)
+//		return nil, err
+//	}
+//	if session != nil {
+//		log.Info(session)
+//	}
+	
+//	return session, nil
 }
 
 func DelSessionFromCID(sessionCache *redis_store.SessionCache, ID string) error {

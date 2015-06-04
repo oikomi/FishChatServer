@@ -43,9 +43,6 @@ func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) 
 	var err error
 	send2ID := cmd.GetArgs()[0]
 	send2Msg := cmd.GetArgs()[1]
-	//fromID := cmd.GetArgs()[2]
-	// add uuid
-	//uuid := cmd.GetArgs()[2]
 	log.Info(send2Msg)
 	self.Router.readMutex.Lock()
 	defer self.Router.readMutex.Unlock()
