@@ -38,6 +38,8 @@ Status
 
 It is not usable yet and still under early development.
 
+[Back to TOC](#table-of-contents)
+
 Todo
 ======
 - [x] support p2p communication
@@ -47,10 +49,14 @@ Todo
 - [ ] support audio
 - [ ] support video
 
+[Back to TOC](#table-of-contents)
+
 系统架构
 ======
 
 ![](./docs/pics/fishchat.png)
+
+[Back to TOC](#table-of-contents)
 
 
 关键服务器详解
@@ -85,6 +91,8 @@ manager主要是管理client信息存储、topic信息存储、离线消息存�
 ### monitor
 monitor主要是收集监控各服务器状态信息，目前monitor是可选项，可按需要启动它
 
+[Back to TOC](#table-of-contents)
+
 依赖
 ======
 FishChatServer采用了redis和MongoDB分别做cache和持久化存储，需要安装两者的驱动：
@@ -96,6 +104,8 @@ go get github.com/garyburd/redigo
 
 go get github.com/astaxie/beego
 </code></pre>
+
+[Back to TOC](#table-of-contents)
 
 
 部署
@@ -141,10 +151,14 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 
 > **NOTE:** router、manager和monitor一定要在msg_server启动之后启动，因为他们都订阅了msg_server的channel 
 
+[Back to TOC](#table-of-contents)
+
 
 监控
 ======
 当启动了monitor后，monitor将在30000端口开启一个http监听，提供web化的服务器集群监控
+
+[Back to TOC](#table-of-contents)
 
 
 测试
@@ -160,6 +174,8 @@ go build
 </code></pre>
 
 > **NOTE:** FishChatAndroid暂时不可用 
+
+[Back to TOC](#table-of-contents)
 
 技术细节
 ======
@@ -232,6 +248,8 @@ router,manager,monitor use this cmd to SUBSCRIBE channel from msg_server.
 **format:** *ROUTE_MESSAGE_P2P send2ID send2Msg*
 
 router use this cmd to router message between msg_servers.
+
+[Back to TOC](#table-of-contents)
 
 
 
