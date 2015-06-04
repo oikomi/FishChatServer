@@ -16,7 +16,7 @@
 package conf
 
 const (
-    IFI = "enp2s1"
+    IFI = "eth0"
     BaseDir = "/home/data"
 )
 
@@ -24,11 +24,6 @@ const (
 	KEY_ACTION = "action"
 	KEY_PATH = "path"
 	KEY_TOKEN = "token"
-	KEY_DIR = "dir"
-	KEY_OLD_DIR = "old_dir"
-	KEY_NEW_DIR = "new_dir"
-	KEY_FROM_PATH = "from_path"
-	KEY_TO_PATH = "to_path"
 )
 
 const (

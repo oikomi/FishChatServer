@@ -44,29 +44,13 @@ type TotalStatus struct {
 	Ip               string `json:"ip"`
 	Mac              string `json:"mac"`
 	AllStorage       uint64 `json:"allStorage"`
-	UsedStorage      uint64  `json:"usedStorage"`
+	UsedStorage      uint64 `json:"usedStorage"`
 	Modify           int64  `json:"modify"`
 	Type             string `json:"type"`
 }
 
 func NewTotalStatus() TotalStatus {
 	return TotalStatus{}
-}
-
-type DiskUsageData struct {
-	Status     uint32 `json:"status"`
-	All        uint64 `json:"all"`
-	Used       uint64 `json:"used"`
-}
-
-func NewDiskUsageData() DiskUsageData {
-	return DiskUsageData{}
-}
-
-type DiskStatus struct {
-    All  uint64 `json:"all"`
-    Used uint64 `json:"used"`
-    Free uint64 `json:"free"`
 }
 
 
