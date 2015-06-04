@@ -10,6 +10,24 @@ FishChat的访谈 : http://www.oschina.net/question/2306979_236368
 
 FishChat Android客户端见 https://github.com/oikomi/FishChatAndroid (紧张开发中, not usable yet)
 
+
+Table of Contents
+=================
+
+* [FishChatServer](#fishChatServer)
+* [Status](#status)
+* [Todo](#todo)
+* [系统架构](#系统架构)
+* [关键服务器详解](#关键服务器详解)
+* [依赖](#依赖)
+* [部署](#部署)
+* [监控](#监控)
+* [测试](#测试)
+* [技术细节](#技术细节)
+* [Copyright & License](#Copyright & License)
+
+
+
 Status
 ======
 
