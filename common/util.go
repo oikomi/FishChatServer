@@ -77,43 +77,88 @@ func GetSessionFromCID(storeOp  interface{}, ID string) (*redis_store.SessionCac
 //	return session, nil
 }
 
-func DelSessionFromCID(sessionCache *redis_store.SessionCache, ID string) error {
-	err := sessionCache.Delete(ID)
-	
-	if err != nil {
-		log.Warningf("no ID : %s", ID)
-		return err
+func DelSessionFromCID(storeOp  interface{}, ID string) error {
+	switch storeOp.(type) {
+		case *redis_store.SessionCache:
+			err := storeOp.(*redis_store.SessionCache).Delete(ID)
+			
+			if err != nil {
+				log.Warningf("no ID : %s", ID)
+				return err
+			}			
 	}
+	
+//	err := sessionCache.Delete(ID)
+	
+//	if err != nil {
+//		log.Warningf("no ID : %s", ID)
+//		return err
+//	}
 
 	return nil
 }
 
-func GetTopicFromTopicName(topicCache *redis_store.TopicCache, topicName string) (*redis_store.TopicCacheData, error) {
-	topic ,err := topicCache.Get(topicName)
-	
-	if err != nil {
-		log.Warningf("no topicName : %s", topicName)
-		return nil, err
+func GetTopicFromTopicName(storeOp  interface{}, topicName string) (*redis_store.TopicCacheData, error) {
+	switch storeOp.(type) {
+		case *redis_store.TopicCache:
+			topic ,err := storeOp.(*redis_store.TopicCache).Get(topicName)
+			
+			if err != nil {
+				log.Warningf("no topicName : %s", topicName)
+				return nil, err
+			}
+			if topic != nil {
+				log.Info(topic)
+			}
+			
+			return topic, nil			
 	}
-	if topic != nil {
-		log.Info(topic)
-	}
 	
-	return topic, nil
+	return nil, nil
+	
+//	topic ,err := topicCache.Get(topicName)
+	
+//	if err != nil {
+//		log.Warningf("no topicName : %s", topicName)
+//		return nil, err
+//	}
+//	if topic != nil {
+//		log.Info(topic)
+//	}
+	
+//	return topic, nil
 }
 
-func GetOfflineMsgFromOwnerName(offlineMsgCache *redis_store.OfflineMsgCache, ownerName string) (*redis_store.OfflineMsgCacheData, error) {
-	o ,err := offlineMsgCache.Get(ownerName)
-	
-	if err != nil {
-		log.Warningf("no ownerName : %s", ownerName)
-		return nil, err
+func GetOfflineMsgFromOwnerName(storeOp  interface{}, ownerName string) (*redis_store.OfflineMsgCacheData, error) {
+	switch storeOp.(type) {
+		case *redis_store.OfflineMsgCache:
+			o ,err := storeOp.(*redis_store.OfflineMsgCache).Get(ownerName)
+			
+			if err != nil {
+				log.Warningf("no ownerName : %s", ownerName)
+				return nil, err
+			}
+			if o != nil {
+				log.Info(o)
+			}
+			
+			return o, nil		
 	}
-	if o != nil {
-		log.Info(o)
-	}
 	
-	return o, nil
+	
+	return nil, nil
+	
+//	o ,err := offlineMsgCache.Get(ownerName)
+	
+//	if err != nil {
+//		log.Warningf("no ownerName : %s", ownerName)
+//		return nil, err
+//	}
+//	if o != nil {
+//		log.Info(o)
+//	}
+	
+//	return o, nil
 }
 
 
