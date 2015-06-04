@@ -24,12 +24,14 @@ import (
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/storage/redis_store"
+	"github.com/oikomi/FishChatServer/storage/mongo_store"
 )
 
 type Router struct {
 	cfg                 *RouterConfig
 	msgServerClientMap  map[string]*libnet.Session
-	sessionStore        *redis_store.SessionCache
+	sessionCache        *redis_store.SessionCache
+	mongoStore          *mongo_store.MongoStore
 	topicServerMap      map[string]string
 	readMutex           sync.Mutex
 }   
@@ -38,7 +40,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 	return &Router {
 		cfg                : cfg,
 		msgServerClientMap : make(map[string]*libnet.Session),
-		sessionStore       : redis_store.NewSessionCache(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
+		sessionCache       : redis_store.NewSessionCache(redis_store.NewRedisStore(&redis_store.RedisStoreOptions {
 					Network :   "tcp",
 					Address :   cfg.Redis.Addr + cfg.Redis.Port,
 					ConnectTimeout : time.Duration(cfg.Redis.ConnectTimeout)*time.Millisecond,
@@ -47,6 +49,7 @@ func NewRouter(cfg *RouterConfig) *Router {
 					Database :  1,
 					KeyPrefix : base.COMM_PREFIX,
 		})),
+		mongoStore         : mongo_store.NewMongoStore(cfg.Mongo.Addr, cfg.Mongo.Port, cfg.Mongo.User, cfg.Mongo.Password),
 		topicServerMap     : make(map[string]string),
 	}
 }

@@ -91,6 +91,24 @@ func (self *MongoStore)Update(db string, c string, data interface{}) error {
 	return err
 }
 
+func (self *MongoStore)GetSessionFromCid(db string, c string, cid string) (*SessionStoreData, error) {
+	log.Info("MongoStore GetSessionFromCid")
+	var err error
+	self.rwMutex.Lock()
+	defer self.rwMutex.Unlock()	
+	
+	op := self.session.DB(db).C(c)
+	
+	var result *SessionStoreData
+	
+	err = op.Find(bson.M{"ClientID": cid}).One(result)
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
+	
+	return result, nil
+}
 
 
 func (self *MongoStore)Close() {

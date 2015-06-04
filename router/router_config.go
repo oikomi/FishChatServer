@@ -36,6 +36,12 @@ type RouterConfig struct {
 		ReadTimeout time.Duration
 		WriteTimeout time.Duration
 	} 
+	Mongo struct { 
+		Addr           string 
+		Port           string
+		User           string
+		Password       string
+	} 
 }
 
 func NewRouterConfig(configfile string) *RouterConfig {

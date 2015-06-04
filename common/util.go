@@ -44,8 +44,7 @@ func SelectServer(serverList []string, serverNum int) string {
 	return serverList[rand.Intn(serverNum)]
 }
 
-func GetSessionFromCID(storeOp  interface{}, ID string) (*redis_store.SessionCacheData, error) {
-	
+func GetSessionFromCID(storeOp  interface{}, ID string) (*redis_store.SessionCacheData, error) {	
 	switch storeOp.(type) {
 		case *redis_store.SessionCache:	
 			session ,err := storeOp.(*redis_store.SessionCache).Get(ID)
@@ -58,11 +57,11 @@ func GetSessionFromCID(storeOp  interface{}, ID string) (*redis_store.SessionCac
 				log.Info(session)
 			}
 			
-			return session, nil
+			return session, nil			
 			
 	}
 	
-	return nil, nil
+	return nil, NOTFOUNT
 	
 //	session ,err := sessionCache.Get(ID)
 	
@@ -76,6 +75,7 @@ func GetSessionFromCID(storeOp  interface{}, ID string) (*redis_store.SessionCac
 	
 //	return session, nil
 }
+
 
 func DelSessionFromCID(storeOp  interface{}, ID string) error {
 	switch storeOp.(type) {
@@ -95,7 +95,7 @@ func DelSessionFromCID(storeOp  interface{}, ID string) error {
 //		return err
 //	}
 
-	return nil
+	return NOTFOUNT
 }
 
 func GetTopicFromTopicName(storeOp  interface{}, topicName string) (*redis_store.TopicCacheData, error) {
@@ -114,7 +114,7 @@ func GetTopicFromTopicName(storeOp  interface{}, topicName string) (*redis_store
 			return topic, nil			
 	}
 	
-	return nil, nil
+	return nil, NOTFOUNT
 	
 //	topic ,err := topicCache.Get(topicName)
 	
@@ -146,7 +146,7 @@ func GetOfflineMsgFromOwnerName(storeOp  interface{}, ownerName string) (*redis_
 	}
 	
 	
-	return nil, nil
+	return nil, NOTFOUNT
 	
 //	o ,err := offlineMsgCache.Get(ownerName)
 	

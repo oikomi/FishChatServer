@@ -21,6 +21,7 @@ import (
 	"github.com/oikomi/FishChatServer/libnet"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/common"
+	"github.com/oikomi/FishChatServer/storage/mongo_store"
 )
 
 func init() {
@@ -46,20 +47,33 @@ func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) 
 	log.Info(send2Msg)
 	self.Router.readMutex.Lock()
 	defer self.Router.readMutex.Unlock()
-	store_session, err := common.GetSessionFromCID(self.Router.sessionStore, send2ID)
+	cacheSession, err := common.GetSessionFromCID(self.Router.sessionCache, send2ID)
 	if err != nil {
-		log.Warningf("no ID : %s", send2ID)
+		log.Warningf("no ID in cache : %s", send2ID)	
+		storeSession, err := self.Router.mongoStore.GetSessionFromCid(mongo_store.DATA_BASE_NAME, 
+				mongo_store.TOPIC_INFO_COLLECTION, send2ID)	
+		if err != nil {
+			return err	
+		}
+		log.Info(storeSession.MsgServerAddr)
 		
-		return err
-	}
-	log.Info(store_session.MsgServerAddr)
-	
-	cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
-	
-	err = self.Router.msgServerClientMap[store_session.MsgServerAddr].Send(libnet.Json(cmd))
-	if err != nil {
-		log.Error("error:", err)
-		return err
+		cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
+		
+		err = self.Router.msgServerClientMap[storeSession.MsgServerAddr].Send(libnet.Json(cmd))
+		if err != nil {
+			log.Error("error:", err)
+			return err
+		}
+	} else {
+		log.Info(cacheSession.MsgServerAddr)
+		
+		cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
+		
+		err = self.Router.msgServerClientMap[cacheSession.MsgServerAddr].Send(libnet.Json(cmd))
+		if err != nil {
+			log.Error("error:", err)
+			return err
+		}
 	}
 	
 	return nil

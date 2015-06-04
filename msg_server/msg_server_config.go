@@ -39,6 +39,12 @@ type MsgServerConfig struct {
 		ReadTimeout time.Duration
 		WriteTimeout time.Duration
 	} 
+	Mongo struct { 
+		Addr           string 
+		Port           string
+		User           string
+		Password       string
+	} 
 }
 
 func NewMsgServerConfig(configfile string) *MsgServerConfig {

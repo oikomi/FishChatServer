@@ -25,6 +25,7 @@ import (
 	"github.com/oikomi/FishChatServer/base"
 	"github.com/oikomi/FishChatServer/protocol"
 	"github.com/oikomi/FishChatServer/storage/redis_store"
+	"github.com/oikomi/FishChatServer/storage/mongo_store"
 )
 
 func init() {
@@ -41,6 +42,7 @@ type MsgServer struct {
 	sessionCache      *redis_store.SessionCache
 	topicCache        *redis_store.TopicCache
 	offlineMsgCache   *redis_store.OfflineMsgCache
+	mongoStore        *mongo_store.MongoStore
 	p2pAckStatus      base.AckMap
 	scanSessionMutex  sync.Mutex
 	p2pAckMutex       sync.Mutex
@@ -56,6 +58,7 @@ func NewMsgServer(cfg *MsgServerConfig, rs *redis_store.RedisStore) *MsgServer {
 		sessionCache       : redis_store.NewSessionCache(rs),
 		topicCache         : redis_store.NewTopicCache(rs),
 		offlineMsgCache    : redis_store.NewOfflineMsgCache(rs),
+		mongoStore         : mongo_store.NewMongoStore(cfg.Mongo.Addr, cfg.Mongo.Port, cfg.Mongo.User, cfg.Mongo.Password),
 		p2pAckStatus       : make(base.AckMap),
 	}
 }
