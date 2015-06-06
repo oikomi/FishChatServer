@@ -33,6 +33,11 @@ privateCloudStorageWebApp.config(['$routeProvider', '$locationProvider', functio
 			templateUrl: 'views/root.html', 
 			controller: 'RootController' 
 		}) 
+		
+		.when('/msg_server', { 
+			templateUrl: 'views/msg_server.html', 
+			controller: 'MsgServerController' 
+		}) 
 		.otherwise({ 
 			redirectTo: '/' 
 		}); 

@@ -32,7 +32,6 @@ type MongoStore struct {
 	session         *mgo.Session
 	
 	rwMutex         sync.Mutex
-	
 }
 
 func NewMongoStore(ip string, port string, user string, password string) *MongoStore {

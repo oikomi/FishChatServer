@@ -63,3 +63,7 @@ controllersModule.controller('RootController', function($scope, $location, $cook
 	// });
 });
 
+controllersModule.controller('MsgServerController', function($scope, $location, $cookies, getServerDataService) { 
+	
+});
+
