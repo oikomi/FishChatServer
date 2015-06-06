@@ -53,5 +53,13 @@ func NewTotalStatus() TotalStatus {
 	return TotalStatus{}
 }
 
+type MsgServerData struct {
+	Status           string `json:"status"`
+	Num              uint32 `json:"num"`            
+}
 
+
+func NewMsgServerData() MsgServerData {
+	return MsgServerData{}
+}
 

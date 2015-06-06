@@ -17,10 +17,10 @@ package main
 
 import (
 	"flag"
-	"github.com/oikomi/FishChatServer/log"
-	"github.com/oikomi/FishChatServer/libnet"
-	"github.com/oikomi/FishChatServer/protocol"
-	"github.com/oikomi/FishChatServer/common"
+//	"github.com/oikomi/FishChatServer/log"
+//	"github.com/oikomi/FishChatServer/libnet"
+//	"github.com/oikomi/FishChatServer/protocol"
+//	"github.com/oikomi/FishChatServer/common"
 )
 
 func init() {
@@ -38,31 +38,31 @@ func NewProtoProc(r *Monitor) *ProtoProc {
 	}
 }
 
-func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) error {
-	log.Info("procSendMsgP2P")
-	var err error
-	send2ID := cmd.GetArgs()[0]
-	send2Msg := cmd.GetArgs()[1]
-	log.Info(send2Msg)
-	self.Monitor.readMutex.Lock()
-	defer self.Monitor.readMutex.Unlock()
-	store_session, err := common.GetSessionFromCID(self.Monitor.sessionStore, send2ID)
-	if err != nil {
-		log.Warningf("no ID : %s", send2ID)
+//func (self *ProtoProc)procSendMsgP2P(cmd protocol.Cmd, session *libnet.Session) error {
+//	log.Info("procSendMsgP2P")
+//	var err error
+//	send2ID := cmd.GetArgs()[0]
+//	send2Msg := cmd.GetArgs()[1]
+//	log.Info(send2Msg)
+//	self.Monitor.readMutex.Lock()
+//	defer self.Monitor.readMutex.Unlock()
+//	store_session, err := common.GetSessionFromCID(self.Monitor.sessionStore, send2ID)
+//	if err != nil {
+//		log.Warningf("no ID : %s", send2ID)
 		
-		return err
-	}
-	log.Info(store_session.MsgServerAddr)
+//		return err
+//	}
+//	log.Info(store_session.MsgServerAddr)
 	
-	cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
+//	cmd.ChangeCmdName(protocol.ROUTE_MESSAGE_P2P_CMD)
 	
-	err = self.Monitor.msgServerClientMap[store_session.MsgServerAddr].Send(libnet.Json(cmd))
-	if err != nil {
-		log.Error("error:", err)
-		return err
-	}
+//	err = self.Monitor.msgServerClientMap[store_session.MsgServerAddr].Send(libnet.Json(cmd))
+//	if err != nil {
+//		log.Error("error:", err)
+//		return err
+//	}
 	
-	return nil
-}
+//	return nil
+//}
 
 

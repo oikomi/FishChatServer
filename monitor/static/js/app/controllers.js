@@ -64,6 +64,16 @@ controllersModule.controller('RootController', function($scope, $location, $cook
 });
 
 controllersModule.controller('MsgServerController', function($scope, $location, $cookies, getServerDataService) { 
+	var isLogin = $cookies.isLogin;
+	
+	if (!isLogin) {
+		$location.path("/");
+	}
+	
+	var reqParams = {
+		action : "login"
+	};
+	
 	
 });
 

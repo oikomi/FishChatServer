@@ -27,8 +27,9 @@ const (
 )
 
 const (
-	ACTION_GET_TOTAL_STATUS = "get_total_status"
 	ACTION_REBOOT = "reboot"
 	
 	ACTION_LOGIN = "login"
+	
+	ACTION_GET_MSG_SERVER_DATA = "get_msg_server_data"
 )

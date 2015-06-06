@@ -25,21 +25,6 @@ type MonitorController struct {
 	beego.Controller
 }
 
-func (this *MonitorController) Get() {
-	beego.Info("MonitorController Get")
-	action := this.GetString(conf.KEY_ACTION)
-	if action == "" {
-		beego.Error("[para is null] | action ")
-		this.Abort("400")
-		return
-	}
-	
-	//ifo := NewInfoOperation()
-	switch action {
-		
-	}
-}
-
 func (this *MonitorController) Post() {
 	beego.Info("MonitorController Post")
 	action := this.GetString(conf.KEY_ACTION)
@@ -65,6 +50,23 @@ func (this *MonitorController) Post() {
 	}
 }
 
+func (this *MonitorController) Get() {
+	beego.Info("MonitorController Get")
+	action := this.GetString(conf.KEY_ACTION)
+	if action == "" {
+		beego.Error("[para is null] | action ")
+		this.Abort("400")
+		return
+	}
+	
+	ifo := NewInfoOperation()
+	switch action {
+	case conf.ACTION_GET_MSG_SERVER_DATA:
+		ifo.getMsgServerData()
+	}
+}
+
+
 type InfoOperation struct {
 
 }
@@ -81,6 +83,14 @@ func (this *InfoOperation)login(username, password string)  (*LoginStatus, error
 	if username == "admin" && password == "admin" {
 		ts.Status = "0"
 	}
+	
+	return &ts, nil
+}
+
+func (this *InfoOperation)getMsgServerData()  (*MsgServerData, error) {
+	ts := NewMsgServerData()
+	ts.Status = "1"
+	
 	
 	return &ts, nil
 }
