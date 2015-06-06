@@ -83,6 +83,7 @@ func main() {
 	})
 	
 	beego.Router("api/v1/monitor", &controllers.MonitorController{})
-	beego.SetStaticPath("/views", "/mh/mygo/src/github.com/oikomi/FishChatServer/monitor/views")
+	//beego.SetStaticPath("/views", "/mh/mygo/src/github.com/oikomi/FishChatServer/monitor/views")
+	beego.SetStaticPath("/views", "views")
 	beego.Run()
 }

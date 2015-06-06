@@ -54,7 +54,6 @@ func (this *MonitorController) Post() {
 	case conf.ACTION_LOGIN:
 		var ob LoginPostData
 		json.Unmarshal(this.Ctx.Input.RequestBody, &ob)
-		beego.Info(ob.Username)
 		ts, err := ifo.login(ob.Username, ob.Password)
 		if err != nil {
 			beego.Error(err)

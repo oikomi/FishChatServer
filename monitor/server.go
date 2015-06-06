@@ -63,7 +63,7 @@ func (self *Monitor)connectMsgServer(ms string) (*libnet.Session, error) {
 
 func (self *Monitor)handleMsgServerClient(msc *libnet.Session) {
 	msc.Process(func(msg *libnet.InBuffer) error {
-		log.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
+		//log.Info("msg_server", msc.Conn().RemoteAddr().String()," say: ", string(msg.Data))
 		var c protocol.CmdMonitor
 		
 		err := json.Unmarshal(msg.Data, &c)

@@ -16,7 +16,7 @@
 var servicesModule = angular.module("ServicesModule", []);
 
 servicesModule.factory('loginService', function($http) {
-	var url = 'api/v1/monitor'; 
+	var url = 'api/v1/monitor:30000'; 
 
 	var runLoginRequest = function(reqParams, postData) { 
 		return $http.post(url, postData, {params: reqParams, timeout:5000});
@@ -29,7 +29,7 @@ servicesModule.factory('loginService', function($http) {
 });
 
 servicesModule.factory('rebootService', function($http) {
-	var url = 'api/v1/monitor'; 
+	var url = 'api/v1/monitor:30000'; 
 
 	var runRebootRequest = function(reqParams) { 
 		return $http.get(url, {params: reqParams, timeout:5000});
@@ -43,7 +43,7 @@ servicesModule.factory('rebootService', function($http) {
 
 
 servicesModule.factory('getServerDataService', function($http) {
-	var url = 'api/v1/monitor'; 
+	var url = 'api/v1/monitor:30000'; 
 	var runRequest = function(reqParams) { 
 		return $http.get(url, {params: reqParams, timeout:5000});
 	}; 
