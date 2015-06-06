@@ -158,6 +158,11 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 ======
 当启动了monitor后，monitor将在30000端口开启一个http监听，提供web化的服务器集群监控
 
+技术方案采用angularJS和bootstrap(暂时没有太多精力做)
+
+
+![](./docs/pics/web_monitor.png)
+
 [Back to TOC](#table-of-contents)
 
 
