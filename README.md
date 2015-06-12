@@ -10,6 +10,7 @@ FishChat的访谈 : http://www.oschina.net/question/2306979_236368
 
 FishChat Android客户端见 https://github.com/oikomi/FishChatAndroid (紧张开发中, not usable yet)
 
+FishChatServer的Java版本同时也在开发中 (https://github.com/oikomi/FishChatServerJava)
 
 Table of Contents
 =================
