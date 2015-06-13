@@ -10,7 +10,8 @@ FishChat的访谈 : http://www.oschina.net/question/2306979_236368
 
 FishChat Android客户端见 https://github.com/oikomi/FishChatAndroid (紧张开发中, not usable yet)
 
-FishChatServer的Java版本同时也在开发中 (https://github.com/oikomi/FishChatServerJava)
+<font color="#4590a3" size = "6px">FishChatServer的Java版本同时也在开发中 (https://github.com/oikomi/FishChatServerJava)</font>
+
 
 Table of Contents
 =================
@@ -81,6 +82,8 @@ msg_server是消息的主体，维护着客户端连接和keeplive,同时要注�
 	SYSCTRL_TOPIC_SYNC    = "/sysctrl/topic-sync"
 	SYSCTRL_SEND          = "/sysctrl/send"
 	SYSCTRL_MONITOR       = "/sysctrl/monitor"
+	STORE_CLIENT_INFO     = "/store/client-info" 
+	STORE_TOPIC_INFO      = "/store/topic-info" 
 </code></pre>
 这些channel保证了msg_server在事件触发时会广播通知后面的router、manager和monitor服务
 
