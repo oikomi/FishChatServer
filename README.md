@@ -10,7 +10,7 @@ FishChat的访谈 : http://www.oschina.net/question/2306979_236368
 
 FishChat Android客户端见 https://github.com/oikomi/FishChatAndroid (紧张开发中, not usable yet)
 
-<font color="#4590a3" size = "6px">FishChatServer的Java版本同时也在开发中 (https://github.com/oikomi/FishChatServerJava)</font>
+**FishChatServer的Java版本同时也在开发中 (https://github.com/oikomi/FishChatServerJava)**
 
 
 Table of Contents
@@ -124,9 +124,7 @@ go get github.com/astaxie/beego
 ======
 FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可以动态增减)。如果没有多机条件，可以单机部署：
 
-建议：
 单机测试部署(建议配置) 
-
 
 *   gateway一台
 *   msg_server两台
@@ -138,7 +136,7 @@ FishChatServer采用分布式可伸缩部署方式(各类服务器角色都可�
 
 同时需要注意：
 
-> **NOTE:**  注意FishChatServer的持久化存储采用了MongoDB(http://www.mongodb.org/), 需要启动mongodb
+> **NOTE:**  注意FishChatServer的持久化存储采用了MongoDB(http://www.mongodb.org/), 需要启动mongod
 
 <pre><code>
 ./gateway
