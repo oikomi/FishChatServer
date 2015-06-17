@@ -19,6 +19,7 @@ Table of Contents
 * [FishChatServer](#fishChatServer)
 * [Status](#status)
 * [Todo](#todo)
+* [FIXME](#FIXME)
 * [系统架构](#系统架构)
 * [关键服务器详解](#关键服务器详解)
 	* [gateway](#gateway)
@@ -51,6 +52,13 @@ Todo
 - [ ] support file transfer
 - [ ] support audio
 - [ ] support video
+
+[Back to TOC](#table-of-contents)
+
+FIXME
+======
+- [ ] signal process (SIGPIPE ...)
+- [ ] timer support  
 
 [Back to TOC](#table-of-contents)
 
