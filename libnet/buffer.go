@@ -386,10 +386,12 @@ func (out *OutBuffer) broadcastFree() {
 
 // Return the buffer to buffer pool.
 func (out *OutBuffer) free() {
-	if out.isFreed {
-		panic("link.OutBuffer: double free")
+	if enableBufferPool {
+		if out.isFreed {
+			panic("link.OutBuffer: double free")
+		}
+		out.pool.PutOutBuffer(out)
 	}
-	out.pool.PutOutBuffer(out)
 }
 
 // Prepare for next message.
