@@ -46,7 +46,7 @@ func (this *MonitorController) Post() {
 			return
 		}
 		this.Data["json"] = ts
-		this.ServeJson()
+		this.ServeJSON()
 	}
 }
 
