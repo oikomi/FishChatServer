@@ -1,3 +1,8 @@
+
+**请移步第二版 https://github.com/oikomi/FishChatServer2**
+
+
+
 ![logo](./docs/pics/logo.png)
 
 FishChatServer
